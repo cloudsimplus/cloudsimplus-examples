@@ -27,6 +27,9 @@ git clone https://github.com/cloudsimplus/cloudsimplus-examples.git
 
 ## Running Examples
 
+> **Warning**
+> Before trying to use this project, make sure you have JDK 17 installed.
+
 There are 2 ways to run the examples in this project, as presented below.
 
 ### By Means of an IDE
