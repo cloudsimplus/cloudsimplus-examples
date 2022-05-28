@@ -12,7 +12,7 @@ The example places all the required code inside the `main()` method just for con
 However, that code is not reusable. If you try to build simulations that way, you'll end up with a messy and duplicated code.
 Therefore, after you understood how to build basic simulations, you may want to try checking the [BasicFirstExample.java](src/main/java/org/cloudsimplus/examples/BasicFirstExample.java). It's a structured and reusable code that gives a picture of the best ways to write your simulations.
 
-## Downloading the project
+## 1. Downloading the project
 
 You can download this project using (i) the download button on top of this page (ii) your own IDE for it or (iii) the command line as described below.
 
@@ -25,7 +25,7 @@ download the project source by cloning the repository issuing the following comm
 git clone https://github.com/cloudsimplus/cloudsimplus-examples.git
 ```
 
-## Running Examples
+## 2 Running Examples
 
 > **Warning**
 > Before trying to use this project, make sure you have JDK 17 installed.
