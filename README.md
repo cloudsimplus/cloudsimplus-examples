@@ -38,10 +38,10 @@ The easiest way to run the examples is relying on some IDE.
 Below are required steps:
 
 - Open/import the project in your IDE:
-    - For NetBeans, just use the "Open project" menu and select the directory where the project was downloaded/cloned.
+    - For NetBeans, just use the "Open project" menu and select the directory where the project was downloaded/cloned. Check a [NetBeans tutorial here](https://youtu.be/k2enNoxTYVw).
     - For Eclipse or IntelliJ IDEA, 
       you have to import the project selecting the folder where the project was cloned. 
-      **Check an Eclipse tutorial [here](https://youtu.be/oO-a5-cZBps)**.
+      Check an [Eclipse tutorial here](https://youtu.be/oO-a5-cZBps).
 - The most basic examples are in the root of the org.cloudbus.cloudsim.examples package. 
   You can run any one of the classes in this package to get a specific example. 
 - If you want to build your own simulations, the easiest way is to create another class inside this project.
