@@ -191,7 +191,7 @@ public class VerticalVmCpuScalingExample {
 
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
-        final long storage = 10000000; //in Megabites/s
+        final long storage = 10000000; //in Megabytes
         return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 

@@ -196,7 +196,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
 
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
-        final long storage = 10000000; //in Megabites/s
+        final long storage = 10000000; //in Megabytes
         final int id = hostList.size();
         return new HostSimple(ram, bw, storage, peList)
             .setRamProvisioner(new ResourceProvisionerSimple())
