@@ -61,24 +61,22 @@ import static java.util.Comparator.comparingDouble;
 import static org.cloudbus.cloudsim.utilizationmodels.UtilizationModel.Unit;
 
 /**
- * An example that scales VM RAM up or down, according to current Cloudlets requests.
- * It is used a {@link UtilizationModelDynamic} object to
- * define Vm RAM usage increasingly along the time.
- * Cloudlets are created with different length, so that they will finish gradually.
+ * An example that scales VM RAM up or down, according to resource requests from running Cloudlets.
+ * It relies on {@link UtilizationModelDynamic} to
+ * set Vm RAM usage increasingly along the time.
+ * Cloudlets are created with different lengths, so that they will finish gradually.
  * This way, it's possible to check that RAM usage decreases along the time.
  *
  * <p>A {@link VerticalVmScaling}
- * is set to each {@link #createListOfScalableVms(int) initially created VM},
- * that will check at {@link #SCHEDULING_INTERVAL specific time intervals}
- * if a VM RAM {@link #upperRamUtilizationThreshold(Vm) is overloaded or not},
+ * is set to each initially created VM (check {@link #createListOfScalableVms(int)}),
+ * which will check at {@link #SCHEDULING_INTERVAL specific time intervals}
+ * if a VM's RAM {@link #upperRamUtilizationThreshold(Vm) is overloaded or not},
  * according to a <b>static computed utilization threshold</b>.
  * Then it requests the RAM to be scaled up.</p>
  *
  * <p>The example uses the CloudSim Plus {@link EventListener} feature
  * to enable monitoring the simulation and dynamically creating objects such as Cloudlets and VMs.
- * It relies on
- * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">Java 8 Lambda Expressions</a>
- * to create a Listener for the {@link Simulation#addOnClockTickListener(EventListener) onClockTick event}
+ * It creates a Listener for the {@link Simulation#addOnClockTickListener(EventListener) onClockTick event}
  * to get notifications when the simulation clock advances, then creating and submitting new cloudlets.
  * </p>
  *
@@ -89,11 +87,11 @@ import static org.cloudbus.cloudsim.utilizationmodels.UtilizationModel.Unit;
 public class VerticalVmRamScalingExample {
     /**
      * The interval in which the Datacenter will schedule events.
-     * As lower is this interval, sooner the processing of VMs and Cloudlets
-     * is updated and you will get more notifications about the simulation execution.
+     * As lower this interval is, sooner the processing of VMs and Cloudlets
+     * is updated, and you get more notifications about the simulation execution.
      * However, it can affect the simulation performance.
      *
-     * <p>For this example, a large schedule interval such as 15 will make that just
+     * <p>For this example, a larger schedule interval such as 15 will make that just
      * at every 15 seconds the processing of VMs is updated. If a VM is overloaded, just
      * after this time the creation of a new one will be requested
      * by the VM's {@link HorizontalVmScaling Horizontal Scaling} mechanism.</p>
@@ -118,7 +116,7 @@ public class VerticalVmRamScalingExample {
 
     /**
      * Different lengths to be used when creating Cloudlets.
-     * For each VM, one Cloudlet with each one these lengths will be created.
+     * For each VM, one Cloudlet for each one of these lengths will be created.
      * Creating Cloudlets with different lengths, since some Cloudlets will finish prior to others along the time,
      * the VM resource usage will reduce when a Cloudlet finishes.
      */
@@ -182,9 +180,6 @@ public class VerticalVmRamScalingExample {
         new CloudletsTableBuilder(finishedCloudlets).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
     private void createDatacenter() {
         for (int i = 0; i < HOSTS; i++) {
             hostList.add(createHost());
@@ -202,7 +197,7 @@ public class VerticalVmRamScalingExample {
 
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
-        final long storage = 10000000; //in Megabites/s
+        final long storage = 10000000; //in Megabytes/s
         return new HostSimple(ram, bw, storage, peList)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
@@ -210,7 +205,7 @@ public class VerticalVmRamScalingExample {
     }
 
     /**
-     * Creates a list of initial VMs in which each VM is able to scale horizontally
+     * Creates a list of initial VMs in which each one is able to scale horizontally
      * when it is overloaded.
      *
      * @param numberOfVms number of VMs to create
@@ -228,11 +223,6 @@ public class VerticalVmRamScalingExample {
         return newList;
     }
 
-    /**
-     * Creates a Vm object.
-     *
-     * @return the created Vm
-     */
     private Vm createVm() {
         final int id = createsVms++;
 
@@ -250,10 +240,10 @@ public class VerticalVmRamScalingExample {
     private void createVerticalRamScalingForVm(Vm vm) {
         VerticalVmScalingSimple verticalRamScaling = new VerticalVmScalingSimple(Ram.class, 0.1);
         /* By uncommenting the line below, you will see that, instead of gradually
-         * increasing or decreasing the RAM, when the scaling object detects
-         * the RAM usage is above or below the defined thresholds,
+         * increasing or decreasing the RAM when the scaling object detects
+         * the RAM usage is up or down the defined thresholds,
          * it will automatically calculate the amount of RAM to add/remove to
-         * move the VM from the over or underload condition.
+         * move the VM from the over or under-load condition.
         */
         //verticalRamScaling.setResourceScaling(new ResourceScalingInstantaneous());
         verticalRamScaling.setLowerThresholdFunction(this::lowerRamUtilizationThreshold);
@@ -265,11 +255,11 @@ public class VerticalVmRamScalingExample {
      * Defines the minimum RAM utilization percentage that indicates a Vm is underloaded.
      * This function is using a statically defined threshold, but it would be defined
      * a dynamic threshold based on any condition you want.
-     * A reference to this method is assigned to each Vertical VM Scaling created.
+     * A reference to this method is assigned to each {@link VerticalVmScaling} created.
      *
-     * @param vm the VM to check if its RAM underloaded.
+     * @param vm the VM to check if its RAM is underloaded.
      *        The parameter is not being used internally, that means the same
-     *        threshold is used for any Vm.
+     *        threshold is applied for any Vm.
      * @return the lower RAM utilization threshold
      */
     private double lowerRamUtilizationThreshold(Vm vm) {
@@ -280,11 +270,11 @@ public class VerticalVmRamScalingExample {
      * Defines the maximum RAM utilization percentage that indicates a Vm is overloaded.
      * This function is using a statically defined threshold, but it would be defined
      * a dynamic threshold based on any condition you want.
-     * A reference to this method is assigned to each Vertical VM Scaling created.
+     * A reference to this method is assigned to each {@link VerticalVmScaling} created.
      *
      * @param vm the VM to check if its RAM is overloaded.
      *        The parameter is not being used internally, that means the same
-     *        threshold is used for any Vm.
+     *        threshold is applied for any Vm.
      * @return the upper RAM utilization threshold
      */
     private double upperRamUtilizationThreshold(Vm vm) {
@@ -317,10 +307,10 @@ public class VerticalVmRamScalingExample {
     }
 
     /**
-     * Increments the RAM resource utilization, that is defined in absolute values,
+     * Increments the RAM resource utilization (which is defined in absolute values)
      * in 10MB every second.
      *
-     * @param um the Utilization Model that called this function
+     * @param um the Utilization Model that has called this function
      * @return the new resource utilization after the increment
      */
     private double utilizationIncrement(UtilizationModelDynamic um) {
