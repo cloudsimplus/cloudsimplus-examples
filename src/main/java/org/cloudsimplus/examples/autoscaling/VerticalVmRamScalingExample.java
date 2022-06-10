@@ -104,21 +104,27 @@ public class VerticalVmRamScalingExample {
 
     public static final int HOST_MIPS = 1000;
     private static final int VMS = 1;
-    private static final int VM_PES = 5;
+    /**
+     * Vm RAM capacity in Megabytes.
+     */
     private static final int VM_RAM = 800;
+    private static final int VM_PES = 5;
+    private static final int VM_MIPS = 1000;
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
-    private List<Host> hostList;
-    private List<Vm> vmList;
-    private List<Cloudlet> cloudletList;
+    private final DatacenterBroker broker0;
+    private final List<Host> hostList;
+    private final List<Vm> vmList;
+    private final List<Cloudlet> cloudletList;
 
     /**
-     * Different lengths to be used when creating Cloudlets.
+     * Different lengths (in MI) to be used when creating Cloudlets.
      * For each VM, one Cloudlet for each one of these lengths will be created.
      * Creating Cloudlets with different lengths, since some Cloudlets will finish prior to others along the time,
      * the VM resource usage will reduce when a Cloudlet finishes.
      */
-    private static final long CLOUDLET_LENGTHS[] = {40_000, 50_000, 60_000, 70_000, 80_000};
+    private static final long[] CLOUDLET_LENGTHS = {40_000, 50_000, 60_000, 70_000, 80_000};
+
+    private static final int CLOUDLET_PES = 1;
 
     private int createdCloudlets;
     private int createsVms;
@@ -221,7 +227,7 @@ public class VerticalVmRamScalingExample {
     private Vm createVm() {
         final int id = createsVms++;
 
-        return new VmSimple(id, 1000, VM_PES)
+        return new VmSimple(id, VM_MIPS, VM_PES)
             .setRam(VM_RAM).setBw(1000).setSize(10000);
     }
 
@@ -288,11 +294,16 @@ public class VerticalVmRamScalingExample {
         cloudletList.get(0).setUtilizationModelRam(ramModel);
     }
 
+    /**
+     * Creates a Cloudlet
+     * @param ramUtilizationModel the object that defines how Cloudlet will use RAM
+     * @param length the length of the Cloudlet in MI
+     * @return
+     */
     private Cloudlet createCloudlet(UtilizationModel ramUtilizationModel, long length) {
         final int id = createdCloudlets++;
-        //randomly selects a length for the cloudlet
         var utilizationFull = new UtilizationModelFull();
-        return new CloudletSimple(id, length, 1)
+        return new CloudletSimple(id, length, CLOUDLET_PES)
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModelBw(utilizationFull)
