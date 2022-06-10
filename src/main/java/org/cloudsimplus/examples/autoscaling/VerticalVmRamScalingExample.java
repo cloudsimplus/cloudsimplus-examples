@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples.autoscaling;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -34,12 +33,9 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.resources.Ram;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
@@ -105,6 +101,8 @@ public class VerticalVmRamScalingExample {
 
     private static final int HOSTS = 1;
     private static final int HOST_PES = 8;
+
+    public static final int HOST_MIPS = 1000;
     private static final int VMS = 1;
     private static final int VM_PES = 5;
     private static final int VM_RAM = 800;
@@ -172,12 +170,12 @@ public class VerticalVmRamScalingExample {
     }
 
     private void printSimulationResults() {
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var finishedCloudletsList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
         final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
-        finishedCloudlets.sort(sortByVmId.thenComparing(sortByStartTime));
+        finishedCloudletsList.sort(sortByVmId.thenComparing(sortByStartTime));
 
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new CloudletsTableBuilder(finishedCloudletsList).build();
     }
 
     private void createDatacenter() {
@@ -185,50 +183,46 @@ public class VerticalVmRamScalingExample {
             hostList.add(createHost());
         }
 
-        Datacenter dc0 = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc0 = new DatacenterSimple(simulation, hostList);
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(HOST_MIPS));
         }
 
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
-        final long storage = 10000000; //in Megabytes/s
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        final long storage = 10000000; //in Megabytes
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     /**
      * Creates a list of initial VMs in which each one is able to scale horizontally
      * when it is overloaded.
      *
-     * @param numberOfVms number of VMs to create
+     * @param vmsNumber number of VMs to create
      * @return the list of scalable VMs
      * @see #createVerticalRamScalingForVm(Vm)
      */
-    private List<Vm> createListOfScalableVms(final int numberOfVms) {
-        final List<Vm> newList = new ArrayList<>(numberOfVms);
-        for (int i = 0; i < numberOfVms; i++) {
+    private List<Vm> createListOfScalableVms(final int vmsNumber) {
+        final var newVmList = new ArrayList<Vm>(vmsNumber);
+        for (int i = 0; i < vmsNumber; i++) {
             Vm vm = createVm();
             createVerticalRamScalingForVm(vm);
-            newList.add(vm);
+            newVmList.add(vm);
         }
 
-        return newList;
+        return newVmList;
     }
 
     private Vm createVm() {
         final int id = createsVms++;
 
         return new VmSimple(id, 1000, VM_PES)
-            .setRam(VM_RAM).setBw(1000).setSize(10000)
-            .setCloudletScheduler(new CloudletSchedulerTimeShared());
+            .setRam(VM_RAM).setBw(1000).setSize(10000);
     }
 
     /**
@@ -238,7 +232,7 @@ public class VerticalVmRamScalingExample {
      * @see #createListOfScalableVms(int)
      */
     private void createVerticalRamScalingForVm(Vm vm) {
-        VerticalVmScalingSimple verticalRamScaling = new VerticalVmScalingSimple(Ram.class, 0.1);
+        var verticalRamScaling = new VerticalVmScalingSimple(Ram.class, 0.1);
         /* By uncommenting the line below, you will see that, instead of gradually
          * increasing or decreasing the RAM when the scaling object detects
          * the RAM usage is up or down the defined thresholds,
@@ -282,7 +276,7 @@ public class VerticalVmRamScalingExample {
     }
 
     private void createCloudletList() {
-        UtilizationModelDynamic ramModel = new UtilizationModelDynamic(Unit.ABSOLUTE, 200);
+        var ramModel = new UtilizationModelDynamic(Unit.ABSOLUTE, 200);
         for (long length: CLOUDLET_LENGTHS) {
             cloudletList.add(createCloudlet(ramModel, length));
         }
@@ -297,7 +291,7 @@ public class VerticalVmRamScalingExample {
     private Cloudlet createCloudlet(UtilizationModel ramUtilizationModel, long length) {
         final int id = createdCloudlets++;
         //randomly selects a length for the cloudlet
-        UtilizationModel utilizationFull = new UtilizationModelFull();
+        var utilizationFull = new UtilizationModelFull();
         return new CloudletSimple(id, length, 1)
             .setFileSize(1024)
             .setOutputSize(1024)
