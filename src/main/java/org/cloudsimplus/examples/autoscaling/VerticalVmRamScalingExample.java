@@ -102,7 +102,7 @@ public class VerticalVmRamScalingExample {
     private static final int HOSTS = 1;
     private static final int HOST_PES = 8;
 
-    public static final int HOST_MIPS = 1000;
+    private static final int HOST_MIPS = 1000;
     private static final int VMS = 1;
     /**
      * Vm RAM capacity in Megabytes.
@@ -282,16 +282,20 @@ public class VerticalVmRamScalingExample {
     }
 
     private void createCloudletList() {
-        var ramModel = new UtilizationModelDynamic(Unit.ABSOLUTE, 200);
+        final int initialRamUtilization1 = 200; //in MB
+        final int maxRamUtilization = 500; //MB
+
+        final var ramModel1 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization1);
         for (long length: CLOUDLET_LENGTHS) {
-            cloudletList.add(createCloudlet(ramModel, length));
+            cloudletList.add(createCloudlet(ramModel1, length));
         }
 
-        ramModel = new UtilizationModelDynamic(Unit.ABSOLUTE, 10);
-        ramModel
-            .setMaxResourceUtilization(500)
+        final int initialRamUtilization2 = 10; //in MB
+        final var ramModel2 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization2);
+        ramModel2
+            .setMaxResourceUtilization(maxRamUtilization)
             .setUtilizationUpdateFunction(this::utilizationIncrement);
-        cloudletList.get(0).setUtilizationModelRam(ramModel);
+        cloudletList.get(0).setUtilizationModelRam(ramModel2);
     }
 
     /**
@@ -302,7 +306,7 @@ public class VerticalVmRamScalingExample {
      */
     private Cloudlet createCloudlet(UtilizationModel ramUtilizationModel, long length) {
         final int id = createdCloudlets++;
-        var utilizationFull = new UtilizationModelFull();
+        final var utilizationFull = new UtilizationModelFull();
         return new CloudletSimple(id, length, CLOUDLET_PES)
             .setFileSize(1024)
             .setOutputSize(1024)
@@ -319,6 +323,7 @@ public class VerticalVmRamScalingExample {
      * @return the new resource utilization after the increment
      */
     private double utilizationIncrement(UtilizationModelDynamic um) {
-        return um.getUtilization() + um.getTimeSpan()*10;
+        final int ramIncreaseMB = 10;
+        return um.getUtilization() + um.getTimeSpan() * ramIncreaseMB;
     }
 }
