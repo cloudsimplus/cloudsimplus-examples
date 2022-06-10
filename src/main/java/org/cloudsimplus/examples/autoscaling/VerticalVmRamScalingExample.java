@@ -301,10 +301,10 @@ public class VerticalVmRamScalingExample {
     /**
      * Creates a Cloudlet
      * @param ramUtilizationModel the object that defines how Cloudlet will use RAM
-     * @param length the length of the Cloudlet in MI
+     * @param length the Cloudlet length in MI
      * @return
      */
-    private Cloudlet createCloudlet(UtilizationModel ramUtilizationModel, long length) {
+    private Cloudlet createCloudlet(final UtilizationModel ramUtilizationModel, final long length) {
         final int id = createdCloudlets++;
         final var utilizationFull = new UtilizationModelFull();
         return new CloudletSimple(id, length, CLOUDLET_PES)
