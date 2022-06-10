@@ -306,12 +306,12 @@ public class VerticalVmRamScalingExample {
      */
     private Cloudlet createCloudlet(final UtilizationModel ramUtilizationModel, final long length) {
         final int id = createdCloudlets++;
-        final var utilizationFull = new UtilizationModelFull();
+        final double initialBwUtilizationPercent = 0.1;
         return new CloudletSimple(id, length, CLOUDLET_PES)
             .setFileSize(1024)
             .setOutputSize(1024)
-            .setUtilizationModelBw(utilizationFull)
-            .setUtilizationModelCpu(utilizationFull)
+            .setUtilizationModelBw(new UtilizationModelDynamic(initialBwUtilizationPercent))
+            .setUtilizationModelCpu(new UtilizationModelFull())
             .setUtilizationModelRam(ramUtilizationModel);
     }
 
