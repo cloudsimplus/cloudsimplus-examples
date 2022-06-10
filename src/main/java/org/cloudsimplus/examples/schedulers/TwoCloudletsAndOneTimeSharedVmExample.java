@@ -173,7 +173,6 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        final int id = hostList.size();
         Host host = new HostSimple(ram, bw, storage, peList)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
