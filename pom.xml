@@ -4,6 +4,10 @@
 
     <groupId>org.cloudsimplus</groupId>
     <artifactId>cloudsimplus-examples</artifactId>
+    <!--
+    The module version defines the version of CloudSim Plus to be used.
+    This way, it cannot be a version number which doesn't exist for CloudSim Plus.
+    -->
     <version>7.3.0</version>
 
     <name>CloudSim Plus Examples</name>
@@ -76,8 +80,8 @@
 							 hierarchical directory structure of a maven repository !-->
 							<classpathLayoutType>repository</classpathLayoutType>
 
-							<!-- Defines the root folder where the dependencies are. In this case
-							 is the the root of the local maven repository. !-->
+							<!-- Defines the root folder where the dependencies are.
+							 In this case is the root of the local maven repository. !-->
 							<classpathPrefix>${user.home}/.m2/repository/</classpathPrefix>
 						</manifest>
 					</archive>
