@@ -1,4 +1,5 @@
-# CloudSim Plus Examples [![Build Status](https://github.com/cloudsimplus/cloudsimplus-examples/actions/workflows/maven.yml/badge.svg)](https://github.com/cloudsimplus/cloudsimplus-examples/actions/workflows/maven.yml)
+# CloudSim Plus Examples   [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/cloudsimplus/cloudsimplus-examples)
+[![Build Status](https://github.com/cloudsimplus/cloudsimplus-examples/actions/workflows/maven.yml/badge.svg)](https://github.com/cloudsimplus/cloudsimplus-examples/actions/workflows/maven.yml)
 
 This module contains several [CloudSim Plus](https://github.com/cloudsimplus/cloudsimplus) examples,
 including those inherited from CloudSim and new ones for exclusive features. 
