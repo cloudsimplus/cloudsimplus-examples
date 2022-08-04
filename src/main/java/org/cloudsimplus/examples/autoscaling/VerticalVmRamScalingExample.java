@@ -102,12 +102,15 @@ public class VerticalVmRamScalingExample {
     private static final int HOSTS = 1;
     private static final int HOST_PES = 8;
 
+    /** Host RAM capacity in Megabytes. */
+    private static final long HOST_RAM = 20000;
+
     private static final int HOST_MIPS = 1000;
     private static final int VMS = 1;
     /**
      * Vm RAM capacity in Megabytes.
      */
-    private static final int VM_RAM = 800;
+    private static final int VM_RAM = 1000;
     private static final int VM_PES = 5;
     private static final int VM_MIPS = 1000;
     private final CloudSim simulation;
@@ -199,10 +202,9 @@ public class VerticalVmRamScalingExample {
             peList.add(new PeSimple(HOST_MIPS));
         }
 
-        final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(HOST_RAM, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     /**
@@ -282,7 +284,7 @@ public class VerticalVmRamScalingExample {
     }
 
     private void createCloudletList() {
-        final int initialRamUtilization1 = 200; //MB
+        final int initialRamUtilization1 = 100; //MB
 
         final var ramModel1 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization1);
         for (long length: CLOUDLET_LENGTHS) {
