@@ -264,7 +264,8 @@ public class VerticalVmCpuScalingExample {
          * using the available ones such as the {@link ResourceScalingGradual}
          * or {@link ResourceScalingInstantaneous}.
          */
-        verticalCpuScaling.setResourceScaling(vs -> 2 * vs.getScalingFactor() * vs.getAllocatedResource());
+        final double multiplier = 2;
+        verticalCpuScaling.setResourceScaling(vs -> multiplier * vs.getScalingFactor() * vs.getAllocatedResource());
 
         verticalCpuScaling.setLowerThresholdFunction(this::lowerCpuUtilizationThreshold);
         verticalCpuScaling.setUpperThresholdFunction(this::upperCpuUtilizationThreshold);
