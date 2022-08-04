@@ -364,14 +364,11 @@ public class VerticalVmCpuScalingExample {
         final var utilizationCpu = new UtilizationModelFull();
 
         /**
-         * Since BW e RAM are shared resources that don't enable preemption,
-         * two Cloudlets can't use the same portion of such resources at the same time
-         * (unless virtual memory is enabled, but such a feature is not available in simulation).
-         * This way, the total capacity of such resources is being evenly split among created Cloudlets.
+         * BW and RAM capacity is being evenly split among created Cloudlets.
          * If there are 10 Cloudlets, each one will use just 10% of such resources.
          * This value can be defined in different ways, as you want. For instance, some Cloudlets
          * can require more resources than other ones.
-         * To enable that, you would need to instantiate specific {@link UtilizationModelDynamic} for each Cloudlet,
+         * To enable that, you would need to: instantiate specific {@link UtilizationModelDynamic} for each Cloudlet,
          * use a {@link UtilizationModelStochastic} to define resource usage randomly,
          * or use any other {@link UtilizationModel} implementation.
         */
