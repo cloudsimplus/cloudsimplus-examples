@@ -283,7 +283,6 @@ public class VerticalVmRamScalingExample {
 
     private void createCloudletList() {
         final int initialRamUtilization1 = 200; //MB
-        final int maxRamUtilization = 500; //MB
 
         final var ramModel1 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization1);
         for (long length: CLOUDLET_LENGTHS) {
@@ -291,6 +290,7 @@ public class VerticalVmRamScalingExample {
         }
 
         final int initialRamUtilization2 = 10; //MB
+        final int maxRamUtilization = 500; //MB
         final var ramModel2 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization2);
         ramModel2
             .setMaxResourceUtilization(maxRamUtilization)
