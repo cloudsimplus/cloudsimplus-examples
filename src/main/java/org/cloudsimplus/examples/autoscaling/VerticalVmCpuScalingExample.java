@@ -315,10 +315,11 @@ public class VerticalVmCpuScalingExample {
     private void createCloudletListsWithDifferentDelays() {
         final int initialCloudletsNumber = (int)(CLOUDLETS/2.5);
         final int remainingCloudletsNumber = CLOUDLETS-initialCloudletsNumber;
+        final int pesNumber[] = {2, 1};
         //Creates a List of Cloudlets that will start running immediately when the simulation starts
         for (int i = 0; i < initialCloudletsNumber; i++) {
             final int length = CLOUDLET_LEN_BASE + (i * CLOUDLET_LEN_INCREASE);
-            cloudletList.add(createCloudlet(length, 2));
+            cloudletList.add(createCloudlet(length, pesNumber[0]));
         }
 
         /*
@@ -334,7 +335,7 @@ public class VerticalVmCpuScalingExample {
         for (int i = 1; i <= remainingCloudletsNumber; i++) {
             final int delay = i * 2;
             final int length = CLOUDLET_LEN_BASE * 2 / i;
-            cloudletList.add(createCloudlet(length, 1, delay));
+            cloudletList.add(createCloudlet(length, pesNumber[1], delay));
         }
     }
 
