@@ -162,10 +162,10 @@ public class VerticalVmRamScalingExample {
         printSimulationResults();
     }
 
-    private void onClockTickListener(EventInfo eventInfo) {
+    private void onClockTickListener(EventInfo event) {
         for (Vm vm : vmList) {
             System.out.printf("\t\tTime %6.1f: Vm %d Ram Usage: %6.2f%% (%4d of %4d MB)",
-                eventInfo.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
+                event.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
                 vm.getRam().getAllocatedResource(), vm.getRam().getCapacity());
 
             System.out.printf(" | Host Ram Allocation: %6.2f%% (%5d of %5d MB). Running Cloudlets: %d",
@@ -282,7 +282,7 @@ public class VerticalVmRamScalingExample {
     }
 
     private void createCloudletList() {
-        final int initialRamUtilization1 = 200; //in MB
+        final int initialRamUtilization1 = 200; //MB
         final int maxRamUtilization = 500; //MB
 
         final var ramModel1 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization1);
@@ -290,7 +290,7 @@ public class VerticalVmRamScalingExample {
             cloudletList.add(createCloudlet(ramModel1, length));
         }
 
-        final int initialRamUtilization2 = 10; //in MB
+        final int initialRamUtilization2 = 10; //MB
         final var ramModel2 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization2);
         ramModel2
             .setMaxResourceUtilization(maxRamUtilization)
@@ -308,15 +308,13 @@ public class VerticalVmRamScalingExample {
         final int id = createdCloudlets++;
         final double initialBwUtilizationPercent = 0.1;
         return new CloudletSimple(id, length, CLOUDLET_PES)
-            .setFileSize(1024)
-            .setOutputSize(1024)
             .setUtilizationModelBw(new UtilizationModelDynamic(initialBwUtilizationPercent))
             .setUtilizationModelCpu(new UtilizationModelFull())
             .setUtilizationModelRam(ramUtilizationModel);
     }
 
     /**
-     * Increments the RAM resource utilization (which is defined in absolute values)
+     * Increments the RAM resource utilization (defined in absolute values)
      * in 10MB every second.
      *
      * @param um the Utilization Model that has called this function
