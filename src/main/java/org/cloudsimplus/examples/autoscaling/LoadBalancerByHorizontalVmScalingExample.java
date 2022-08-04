@@ -42,6 +42,7 @@ import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -305,12 +306,15 @@ public class LoadBalancerByHorizontalVmScalingExample {
 
     private Cloudlet createCloudlet() {
         final int id = createdCloudlets++;
+        final var utilizadionModelDynamic = new UtilizationModelDynamic(0.1);
+
         //randomly selects a length for the cloudlet
         final long length = CLOUDLET_LENGTHS[(int) rand.sample()];
-        UtilizationModel utilization = new UtilizationModelFull();
         return new CloudletSimple(id, length, 2)
             .setFileSize(1024)
             .setOutputSize(1024)
-            .setUtilizationModel(utilization);
+            .setUtilizationModelBw(utilizadionModelDynamic)
+            .setUtilizationModelRam(utilizadionModelDynamic)
+            .setUtilizationModelCpu(new UtilizationModelFull());
     }
 }
