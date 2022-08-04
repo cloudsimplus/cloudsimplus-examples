@@ -98,7 +98,7 @@ public class VerticalVmCpuScalingExample {
     private static final int SCHEDULING_INTERVAL = 1;
     private static final int HOSTS = 1;
 
-    private static final int HOST_PES = 32;
+    private static final int HOST_PES = 64;
     private static final int VMS = 1;
     private static final int VM_PES = 14;
     private static final int VM_RAM = 1200;
@@ -112,11 +112,7 @@ public class VerticalVmCpuScalingExample {
     private static final int CLOUDLETS = 10;
 
     /** A base length (in MI) for initially created Cloudlets. */
-    private static final int CLOUDLET_LEN_BASE = 20_000;
-
-    /** Minimal increase in length (in MI) for dynamically submitted Cloudlets,
-     * making VMs to have different finish time. */
-    private static final int CLOUDLET_LEN_INCREASE = 1000;
+    private static final int CLOUDLET_LEN_BASE = 80_000;
 
     private int createsVms;
 
@@ -308,34 +304,19 @@ public class VerticalVmCpuScalingExample {
     }
 
     /**
-     * Creates lists of Cloudlets to be submitted to the broker with different delays,
+     * Creates several Cloudlets by increasing the arrival delay,
      * simulating their arrivals at different times.
-     * Adds all created Cloudlets to the {@link #cloudletList}.
+     * That enables VMs CPU usage to rise gradually, along the arrival of
+     * new Cloudlets (triggering CPU up scaling at some point in time).
+     * Check the logs to understand how the scaling is working.
      */
     private void createCloudletListsWithDifferentDelays() {
-        final int initialCloudletsNumber = (int)(CLOUDLETS/2.5);
-        final int remainingCloudletsNumber = CLOUDLETS-initialCloudletsNumber;
-        final int pesNumber[] = {2, 1};
-        //Creates a List of Cloudlets that will start running immediately when the simulation starts
-        for (int i = 0; i < initialCloudletsNumber; i++) {
-            final int length = CLOUDLET_LEN_BASE + (i * CLOUDLET_LEN_INCREASE);
-            cloudletList.add(createCloudlet(length, pesNumber[0]));
-        }
-
-        /*
-         * Creates several Cloudlets, increasing the arrival delay and decreasing the length of each one.
-         * The progressing delay enables CPU usage to increase gradually, along the arrival of
-         * new Cloudlets (triggering CPU up scaling at some point in time).
-         *
-         * The decreasing length enables Cloudlets to finish in different paces,
-         * to gradually reduce CPU usage (triggering CPU down scaling at some point in time).
-         *
-         * Check the logs to understand how the scaling is working.
-        */
-        for (int i = 1; i <= remainingCloudletsNumber; i++) {
+        final int pesNumber = 2;
+        final long cloudlets = Math.round(CLOUDLETS * 1.5);
+        for (int i = 1; i <= cloudlets; i++) {
             final int delay = i * 2;
-            final int length = CLOUDLET_LEN_BASE * 2 / i;
-            cloudletList.add(createCloudlet(length, pesNumber[1], delay));
+            final int length = CLOUDLET_LEN_BASE * i;
+            cloudletList.add(createCloudlet(length, pesNumber, delay));
         }
     }
 
@@ -370,19 +351,10 @@ public class VerticalVmCpuScalingExample {
          */
         final var utilizationCpu = new UtilizationModelFull();
 
-        /**
-         * BW and RAM capacity is being evenly split among created Cloudlets.
-         * If there are 10 Cloudlets, each one will use just 10% of such resources.
-         * This value can be defined in different ways, as you want. For instance, some Cloudlets
-         * can require more resources than other ones.
-         * To enable that, you would need to: instantiate specific {@link UtilizationModelDynamic} for each Cloudlet,
-         * use a {@link UtilizationModelStochastic} to define resource usage randomly,
-         * or use any other {@link UtilizationModel} implementation.
-        */
-        final var utilizationModelDynamic = new UtilizationModelDynamic(1.0/CLOUDLETS);
+        //Each Cloudlet will use 1% of RAM and BW
+        final var utilizationModelDynamic = new UtilizationModelDynamic(0.01);
         final var cl = new CloudletSimple(length, pesNumber);
-        cl.setFileSize(1024)
-            .setOutputSize(1024)
+        cl
             .setUtilizationModelBw(utilizationModelDynamic)
             .setUtilizationModelRam(utilizationModelDynamic)
             .setUtilizationModelCpu(utilizationCpu)
