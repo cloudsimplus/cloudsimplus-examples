@@ -111,10 +111,12 @@ public class VerticalVmCpuScalingExample {
 
     private static final int CLOUDLETS = 10;
 
-    /**
-     * A base length used to define Cloudlets' length (in MI)
-     */
-    private static final int CLOUDLETS_BASE_LENGTH = 20_000;
+    /** A base length (in MI) for initially created Cloudlets. */
+    private static final int CLOUDLET_LEN_BASE = 20_000;
+
+    /** Minimal increase in length (in MI) for dynamically submitted Cloudlets,
+     * making VMs to have different finish time. */
+    private static final int CLOUDLET_LEN_INCREASE = 1000;
 
     private int createsVms;
 
@@ -315,7 +317,8 @@ public class VerticalVmCpuScalingExample {
         final int remainingCloudletsNumber = CLOUDLETS-initialCloudletsNumber;
         //Creates a List of Cloudlets that will start running immediately when the simulation starts
         for (int i = 0; i < initialCloudletsNumber; i++) {
-            cloudletList.add(createCloudlet(CLOUDLETS_BASE_LENGTH +(i*1000), 2));
+            final int length = CLOUDLET_LEN_BASE + (i * CLOUDLET_LEN_INCREASE);
+            cloudletList.add(createCloudlet(length, 2));
         }
 
         /*
@@ -329,7 +332,9 @@ public class VerticalVmCpuScalingExample {
          * Check the logs to understand how the scaling is working.
         */
         for (int i = 1; i <= remainingCloudletsNumber; i++) {
-            cloudletList.add(createCloudlet(CLOUDLETS_BASE_LENGTH *2/i, 1,i*2));
+            final int delay = i * 2;
+            final int length = CLOUDLET_LEN_BASE * 2 / i;
+            cloudletList.add(createCloudlet(length, 1, delay));
         }
     }
 
