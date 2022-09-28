@@ -71,7 +71,6 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
         final UtilizationModel utilizationModel = new UtilizationModelFull();
         final var cloudlet = new NetworkCloudlet(1, CLOUDLET_PES);
         cloudlet
-                .setMemory(CLOUDLET_RAM)
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)
                 .setUtilizationModel(utilizationModel)

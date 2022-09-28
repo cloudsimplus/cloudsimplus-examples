@@ -19,7 +19,6 @@ import java.util.List;
  * @author Manoel Campos da Silva Filho
  */
 public class NetworkVmsExampleBagOfTasksApp extends NetworkVmExampleAbstract {
-    private static final long TASK_MEMORY = 1000; // in Megabytes
     private static final long CLOUDLET_LENGTH = 1;
 
     /**
@@ -45,7 +44,6 @@ public class NetworkVmsExampleBagOfTasksApp extends NetworkVmExampleAbstract {
             final var cloudlet = new NetworkCloudlet(i, CLOUDLET_LENGTH, CLOUDLET_PES);
             final NetworkVm vm = getVmList().get(i);
             cloudlet
-                    .setMemory(TASK_MEMORY)
                     .setFileSize(CLOUDLET_FILE_SIZE)
                     .setOutputSize(CLOUDLET_OUTPUT_SIZE)
                     .setUtilizationModel(utilizationModel)

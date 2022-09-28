@@ -71,7 +71,7 @@ abstract class NetworkVmExampleAbstract {
     public static final int TASK_LENGTH = 4000;
     public static final int CLOUDLET_FILE_SIZE = 300;
     public static final int CLOUDLET_OUTPUT_SIZE = 300;
-    public static final long CLOUDLET_RAM = 100; // in Megabytes
+    public static final long TASK_RAM = 100; // in Megabytes
     private static final long PACKET_DATA_LENGTH_IN_BYTES = 1000;
     private static final long PACKETS_TO_SEND = 100;
     private static final int SCHEDULING_INTERVAL = 5;
@@ -122,7 +122,7 @@ abstract class NetworkVmExampleAbstract {
      */
     protected static void addExecutionTask(NetworkCloudlet cloudlet) {
         final var task = new CloudletExecutionTask(cloudlet.getTasks().size(), TASK_LENGTH);
-        task.setMemory(CLOUDLET_RAM);
+        task.setMemory(TASK_RAM);
         cloudlet.addTask(task);
     }
 
@@ -326,7 +326,7 @@ abstract class NetworkVmExampleAbstract {
         NetworkCloudlet destinationCloudlet)
     {
         final var task = new CloudletSendTask(sourceCloudlet.getTasks().size());
-        task.setMemory(CLOUDLET_RAM);
+        task.setMemory(TASK_RAM);
         sourceCloudlet.addTask(task);
         for(int i = 0; i < PACKETS_TO_SEND; i++) {
             task.addPacket(destinationCloudlet, PACKET_DATA_LENGTH_IN_BYTES);
@@ -341,7 +341,7 @@ abstract class NetworkVmExampleAbstract {
      */
     protected void addReceiveTask(NetworkCloudlet cloudlet, NetworkCloudlet sourceCloudlet) {
         final var task = new CloudletReceiveTask(cloudlet.getTasks().size(), sourceCloudlet.getVm());
-        task.setMemory(CLOUDLET_RAM);
+        task.setMemory(TASK_RAM);
         task.setExpectedPacketsToReceive(PACKETS_TO_SEND);
         cloudlet.addTask(task);
     }

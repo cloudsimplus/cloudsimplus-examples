@@ -205,7 +205,6 @@ public class NetworkVmsExampleSimpleApp {
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm) {
         final var netCloudlet = new NetworkCloudlet(4000, HOST_PES);
         netCloudlet
-                .setMemory(TASK_RAM)
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)
                 .setUtilizationModel(new UtilizationModelFull())
