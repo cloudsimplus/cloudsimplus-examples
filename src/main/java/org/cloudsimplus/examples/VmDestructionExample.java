@@ -41,7 +41,6 @@ import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -218,11 +217,11 @@ public class VmDestructionExample {
      */
     private List<Cloudlet> createCloudlets() {
         final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var utilization = new UtilizationModelFull();
 
         /*Creates a utilization model that enables increasing resource usage over time.
         * It is used to define the CPU usage of VMs dynamically.*/
-        UtilizationModelDynamic dynamicUtilization = new UtilizationModelDynamic();
+        final var dynamicUtilization = new UtilizationModelDynamic();
 
         /**
          * Sets a {@link Function} that enables the utilization model to increment resource usage by 10% over time.

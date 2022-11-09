@@ -39,7 +39,7 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerCompletelyFair;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -176,15 +176,13 @@ public class LinuxCompletelyFairSchedulerExample {
     private Cloudlet createCloudlet(DatacenterBroker broker) {
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
-
-        //Defines how CPU, RAM and Bandwidth resources are used
-        //Sets the same utilization model for all these resources.
-        final UtilizationModel utilization = new UtilizationModelFull();
+        final var utilization = new UtilizationModelFull();
 
         return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LEN, CLOUDLET_PES)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
-            .setUtilizationModel(utilization);
+            .setUtilizationModelCpu(utilization)
+            .setUtilizationModelRam(new UtilizationModelDynamic(0.2));
     }
 }
 

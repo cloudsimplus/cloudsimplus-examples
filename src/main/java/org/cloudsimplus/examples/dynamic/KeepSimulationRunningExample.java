@@ -40,7 +40,6 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -219,7 +218,7 @@ public class KeepSimulationRunningExample {
     }
 
     private Cloudlet createCloudlet() {
-        UtilizationModel um = new UtilizationModelDynamic(0.2);
+        final var um = new UtilizationModelDynamic(0.2);
         return new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
             .setFileSize(1024)
             .setOutputSize(1024)

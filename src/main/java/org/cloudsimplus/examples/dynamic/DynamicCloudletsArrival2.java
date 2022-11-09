@@ -39,7 +39,7 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -198,12 +198,14 @@ public class DynamicCloudletsArrival2 {
         long outputSize = 300;
         long length = 10000; //in number of Million Instructions (MI)
         int pesNumber = 1;
-        UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
         return new CloudletSimple(id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
-            .setUtilizationModel(utilizationModel)
+            .setUtilizationModelCpu(new UtilizationModelFull())
+            .setUtilizationModelRam(new UtilizationModelDynamic(0.1))
+            .setUtilizationModelBw(new UtilizationModelDynamic(0.3))
             .setVm(vm);
     }
 

@@ -39,7 +39,7 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -121,19 +121,21 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
         long length = 10000;
         long fileSize = 300;
         long outputSize = 300;
-        UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
-        Cloudlet cloudlet1 = new CloudletSimple(++id, length, pesNumber)
+        final var cloudlet1 = new CloudletSimple(++id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
-            .setUtilizationModel(utilizationModel)
+            .setUtilizationModelCpu(utilizationModel)
+            .setUtilizationModelRam(new UtilizationModelDynamic(0.2))
             .setVm(vm);
         cloudletList.add(cloudlet1);
 
-        Cloudlet cloudlet2 = new CloudletSimple(++id, length, pesNumber)
+        final var cloudlet2 = new CloudletSimple(++id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
-            .setUtilizationModel(utilizationModel)
+            .setUtilizationModelCpu(utilizationModel)
+            .setUtilizationModelRam(new UtilizationModelDynamic(0.2))
             .setVm(vm);
         cloudletList.add(cloudlet2);
 

@@ -38,7 +38,6 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.util.TraceReaderAbstract;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -242,7 +241,7 @@ public class GoogleMachineEventsExample1 {
     }
 
     private Cloudlet createCloudlet(Vm vm) {
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var utilization = new UtilizationModelFull();
         return new CloudletSimple(CLOUDLET_LENGTH, vm.getNumberOfPes())
             .setFileSize(1024)
             .setOutputSize(1024)

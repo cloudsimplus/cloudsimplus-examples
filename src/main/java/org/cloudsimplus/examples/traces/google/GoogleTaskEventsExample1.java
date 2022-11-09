@@ -223,8 +223,8 @@ public class GoogleTaskEventsExample1 {
         return new CloudletSimple(CLOUDLET_LENGTH, pesNumber)
             .setFileSize(sizeInBytes)
             .setOutputSize(sizeInBytes)
-            .setUtilizationModelBw(new UtilizationModelFull())
             .setUtilizationModelCpu(new UtilizationModelFull())
+            .setUtilizationModelBw(new UtilizationModelDynamic(0.25))
             .setUtilizationModelRam(utilizationRam);
     }
 
