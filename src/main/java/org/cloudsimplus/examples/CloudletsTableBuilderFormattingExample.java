@@ -110,6 +110,10 @@ public class CloudletsTableBuilderFormattingExample {
         
     }
     
+    /**
+     * Displays a list of cloudlets as a table while demonstrating several formatting/display options.
+     * @param finishedCloudlets The list of cloudlets to use for the demonstration.
+     */
     private void demonstrateCloudletTableFormattingOptions(List<Cloudlet> finishedCloudlets) {
     	
     	/**
