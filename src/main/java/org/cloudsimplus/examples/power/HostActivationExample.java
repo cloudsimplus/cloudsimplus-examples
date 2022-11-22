@@ -38,7 +38,6 @@ import org.cloudbus.cloudsim.power.models.PowerModelHost;
 import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -297,15 +296,14 @@ public class HostActivationExample {
      * @return
      */
     private Cloudlet createCloudlet(Vm vm) {
-        final UtilizationModel utilizationModel = new UtilizationModelDynamic(0.4);
+        final var utilizationModel = new UtilizationModelDynamic(0.4);
         /* Reduces the length to let the firstly created Cloudlets to run longer,
          * ensuring that a positive length is generated (Cloudlets
          * with negative length run indefinitely until being explicitly stopped. */
         final long len = Math.abs(CLOUDLET_LENGTH - cloudletList.size()*3000);
-        final Cloudlet cloudlet = new CloudletSimple(len, VM_PES);
-        cloudlet.setUtilizationModelCpu(new UtilizationModelFull());
-        cloudlet.setUtilizationModelRam(utilizationModel);
-        cloudlet.setVm(vm);
-        return cloudlet;
+        return new CloudletSimple(len, VM_PES)
+                .setUtilizationModelCpu(new UtilizationModelFull())
+                .setUtilizationModelRam(utilizationModel)
+                .setVm(vm);
     }
 }

@@ -190,7 +190,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         cloudletList = createCloudlets(vmList.get(0), new UtilizationModelDynamic(0.5), utilizationModelBwList);
 
         /* UtilizationModelDynamic defining that Cloudlets require 60% of the RAM capacity each one all the time.
-         * This this adds up to 120%, virtual memory will be used for the second cloudlet. */
+         * This adds up to 120%, virtual memory will be used for the second cloudlet. */
         final UtilizationModel utilizationModelRam = new UtilizationModelDynamic(0.6);
         final List<Cloudlet> newList = createCloudlets(vmList.get(1), utilizationModelRam, utilizationModelBwList);
         cloudletList.addAll(newList);

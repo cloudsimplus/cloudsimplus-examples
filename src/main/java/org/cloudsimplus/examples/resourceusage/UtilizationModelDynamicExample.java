@@ -39,7 +39,6 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -167,14 +166,13 @@ public class UtilizationModelDynamicExample {
         long numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
 
         //Defines that the Cloudlet will use all the VM's RAM and Bandwidth.
-        UtilizationModel utilizationFull = new UtilizationModelFull();
+        final var utilizationFull = new UtilizationModelFull();
 
         /* Defines that the Cloudlet will use just 50% of the vPEs' MIPS capacity.
         *  Virtual PEs or simply vPEs are the PEs allocated to a given VM,
         *  which will be used to run Cloudlets.*/
-        UtilizationModel utilizationHalfCapacity = new UtilizationModelDynamic(0.5);
-        Cloudlet cloudlet
-                = new CloudletSimple(
+        final var utilizationHalfCapacity = new UtilizationModelDynamic(0.5);
+        return new CloudletSimple(
                         cloudletList.size(), length, numberOfCpuCores)
                         .setFileSize(fileSize)
                         .setOutputSize(outputSize)
@@ -182,8 +180,6 @@ public class UtilizationModelDynamicExample {
                         .setUtilizationModelRam(utilizationFull)
                         .setUtilizationModelCpu(utilizationHalfCapacity)
                         .setVm(vm);
-
-        return cloudlet;
     }
 
 }

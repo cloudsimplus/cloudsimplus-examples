@@ -43,6 +43,7 @@ import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -240,7 +241,8 @@ public class DynamicHostCreation {
                 new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
-                    .setUtilizationModel(utilization);
+                    .setUtilizationModelCpu(new UtilizationModelFull())
+                    .setUtilizationModelRam(new UtilizationModelDynamic(0.2));
             list.add(cloudlet);
         }
 

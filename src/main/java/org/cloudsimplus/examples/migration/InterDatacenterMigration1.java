@@ -367,8 +367,8 @@ public final class InterDatacenterMigration1 {
             new CloudletSimple(createdCloudlets++, CLOUDLET_LENGTH, vm.getNumberOfPes())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)
-                .setUtilizationModelRam(utilizationModelFull)
-                .setUtilizationModelBw(utilizationModelFull)
+                .setUtilizationModelRam(new UtilizationModelDynamic(0.4))
+                .setUtilizationModelBw(new UtilizationModelDynamic(0.2))
                 .setUtilizationModelCpu(cpuUtilizationModel);
         broker.bindCloudletToVm(cloudlet, vm);
 

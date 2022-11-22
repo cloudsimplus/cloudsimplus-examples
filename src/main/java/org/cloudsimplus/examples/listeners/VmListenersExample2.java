@@ -39,7 +39,6 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -215,7 +214,7 @@ public class VmListenersExample2 {
         long length = 400000;  //in MI (Million Instructions)
         long fileSize = 300;
         long outputSize = 300;
-        UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
         return new CloudletSimple(id, length, VM_PES_NUMBER)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)

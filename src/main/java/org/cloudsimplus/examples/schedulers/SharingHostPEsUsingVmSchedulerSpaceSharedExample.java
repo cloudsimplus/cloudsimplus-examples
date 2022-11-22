@@ -39,7 +39,7 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -203,14 +203,12 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
         long outputSize = 300; //Size (in bytes) after execution
         long  numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
 
-        //Defines how CPU, RAM and Bandwidth resources are used
-        //Sets the same utilization model for all these resources.
-        UtilizationModel utilization = new UtilizationModelFull();
-
         return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LENGTH, numberOfCpuCores)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
-            .setUtilizationModel(utilization)
+            .setUtilizationModelCpu(new UtilizationModelFull())
+            .setUtilizationModelRam(new UtilizationModelDynamic(0.2))
+            .setUtilizationModelBw(new UtilizationModelDynamic(0.3))
             .setVm(vm);
     }
 

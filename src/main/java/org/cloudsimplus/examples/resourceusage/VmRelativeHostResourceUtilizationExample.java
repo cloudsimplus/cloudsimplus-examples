@@ -162,7 +162,7 @@ public class VmRelativeHostResourceUtilizationExample {
         final UtilizationModelDynamic utilizationModelRamAndBw = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
             cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                     .setUtilizationModelBw(utilizationModelRamAndBw)
                     .setUtilizationModelRam(utilizationModelRamAndBw)
