@@ -123,7 +123,7 @@ public class VmGroupPlacementExample1 {
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
         finishedCloudlets.sort(Comparator.comparingLong(cl -> cl.getVm().getId()));
         new CloudletsTableBuilder(finishedCloudlets)
-            .addColumn(7, new TextTableColumn("      VmGroup"), cl -> cl.getVm().getGroup())
+            .addColumn(new TextTableColumn("      VmGroup"), cl -> cl.getVm().getGroup(), 7)
             .build();
     }
 

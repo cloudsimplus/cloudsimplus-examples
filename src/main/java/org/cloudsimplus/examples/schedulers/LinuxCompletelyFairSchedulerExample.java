@@ -110,7 +110,7 @@ public class LinuxCompletelyFairSchedulerExample {
 
         List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets)
-            .addColumn(2, new TextTableColumn("Priority"), Cloudlet::getPriority)
+            .addColumn(new TextTableColumn("Priority"), Cloudlet::getPriority, 2)
             .build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }

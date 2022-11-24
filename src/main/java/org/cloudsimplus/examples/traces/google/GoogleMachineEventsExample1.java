@@ -118,7 +118,7 @@ public class GoogleMachineEventsExample1 {
 
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets)
-                .addColumn(5, new TextTableColumn("Host Startup", "Time"), this::getHostStartupTime)
+                .addColumn(new TextTableColumn("Host Startup", "Time"), this::getHostStartupTime, 5)
                 .build();
     }
 
