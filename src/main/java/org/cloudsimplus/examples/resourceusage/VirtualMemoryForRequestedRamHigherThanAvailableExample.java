@@ -158,7 +158,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final Comparator<Cloudlet> comparator = Comparator.comparingLong(cl -> cl.getVm().getId());
         finishedCloudlets.sort(comparator.thenComparing(Cloudlet::getId));
         new CloudletsTableBuilder(finishedCloudlets)
-            .addColumn(7, new TextTableColumn("VM RAM", "MB"), cl -> cl.getVm().getRam().getCapacity())
+            .addColumn(new TextTableColumn("VM RAM", "MB"), cl -> cl.getVm().getRam().getCapacity(), 7)
             .build();
 
         printOverSubscriptionDelay();

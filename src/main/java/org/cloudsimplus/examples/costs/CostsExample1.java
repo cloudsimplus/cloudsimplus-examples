@@ -121,7 +121,6 @@ public class CostsExample1 {
         final DatacenterBroker broker = new DatacenterBrokerSimple(simulation);
         //Destroys idle VMs after some time (in seconds)
         broker.setVmDestructionDelay(0.2);
-        broker.setFailedVmsRetryDelay(-1);
         return broker;
     }
 
