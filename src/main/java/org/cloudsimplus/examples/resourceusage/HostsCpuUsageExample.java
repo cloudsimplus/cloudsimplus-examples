@@ -113,8 +113,8 @@ public class HostsCpuUsageExample {
 
         List<Cloudlet> newList = broker.getCloudletFinishedList();
         new CloudletsTableBuilder(newList)
-            .addColumn(5, new TextTableColumn("Host  ", "MIPS  "), cloudlet -> cloudlet.getVm().getHost().getMips())
-            .addColumn(7, new TextTableColumn("VM MIPS"), cloudlet -> cloudlet.getVm().getMips())
+            .addColumn(new TextTableColumn("Host  ", "MIPS  "), cloudlet -> cloudlet.getVm().getHost().getMips(), 5)
+            .addColumn(new TextTableColumn("VM MIPS"), cloudlet -> cloudlet.getVm().getMips(), 7)
             .build();
 
         System.out.printf("%nHosts CPU utilization statistics%n");

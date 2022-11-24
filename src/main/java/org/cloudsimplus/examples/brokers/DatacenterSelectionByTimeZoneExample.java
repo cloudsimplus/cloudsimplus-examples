@@ -130,8 +130,8 @@ public class DatacenterSelectionByTimeZoneExample {
         finishedCloudlets.sort(Comparator.comparingDouble(cl -> cl.getVm().getTimeZone()));
 
         new CloudletsTableBuilder(finishedCloudlets)
-                .addColumn(3, new TextTableColumn("   DC   ", "TimeZone"), this::getDatacenterTimeZone)
-                .addColumn(8, new TextTableColumn("VM Expected", " TimeZone "), this::getVmTimeZone)
+                .addColumn(new TextTableColumn("   DC   ", "TimeZone"), this::getDatacenterTimeZone, 3)
+                .addColumn(new TextTableColumn("VM Expected", " TimeZone "), this::getVmTimeZone, 8)
                 .build();
     }
 

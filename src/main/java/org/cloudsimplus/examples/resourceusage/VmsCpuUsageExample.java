@@ -110,7 +110,7 @@ public class VmsCpuUsageExample {
         simulation.start();
 
         new CloudletsTableBuilder(broker.getCloudletFinishedList())
-            .addColumn(7, new TextTableColumn("VM MIPS"), cl -> cl.getVm().getMips())
+            .addColumn(new TextTableColumn("VM MIPS"), cl -> cl.getVm().getMips(), 7)
             .build();
 
         printCpuUtilizationForAllVms();
