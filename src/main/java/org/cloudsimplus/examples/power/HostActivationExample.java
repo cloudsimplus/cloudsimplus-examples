@@ -156,8 +156,8 @@ public class HostActivationExample {
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
         finishedCloudlets.sort(Comparator.comparingLong(Cloudlet::getLength).reversed());
         new CloudletsTableBuilder(finishedCloudlets)
-            .addColumn(4, new TextTableColumn("Start up time", "Seconds"), cl -> cl.getVm().getHost().getStartTime())
-            .addColumn(7, new TextTableColumn("Submission delay", "Seconds"), cl -> cl.getVm().getSubmissionDelay())
+            .addColumn(new TextTableColumn("Start up time", "Seconds"), cl -> cl.getVm().getHost().getStartTime(), 4)
+            .addColumn(new TextTableColumn("Submission delay", "Seconds"), cl -> cl.getVm().getSubmissionDelay(),  7)
             .build();
         printHostsUpTime();
     }
@@ -201,14 +201,14 @@ public class HostActivationExample {
 
         /*Indicates that idle VMs must be destroyed after some seconds.
         * This forces the Host to become idle.
-        * The delay should be larger then the simulation minTimeBetweenEvents to ensure VMs are gracefully shutdown. */
+        * The delay should be larger than the simulation minTimeBetweenEvents to ensure VMs are gracefully shutdown. */
         broker.setVmDestructionDelay(1.0);
 
         /*
          * Ensures that VMs which couldn't be created due to lack of suitable and active Hosts
          * will be retried to be placed after some time.
          */
-        broker.setFailedVmsRetryDelay(HOST_START_UP_DELAY+1);
+        broker.getVmCreation().setRetryDelay(HOST_START_UP_DELAY+1);
 
         return broker;
     }
@@ -222,7 +222,8 @@ public class HostActivationExample {
      */
     private void clockTickListener(final EventInfo info) {
         final double time = Math.floor(info.getTime());
-        if(time > lastClockTime && time > broker0.getFailedVmsRetryDelay() && time % SCHEDULING_INTERVAL == 0) {
+        final double retryDelay = broker0.getVmCreation().getRetryDelay();
+        if(time > lastClockTime && time > retryDelay && time % SCHEDULING_INTERVAL == 0) {
             if(vmList.size() < MAX_VMS) {
                 createAndSubmitVmsAndCloudlets(MIN_VMS);
             }
