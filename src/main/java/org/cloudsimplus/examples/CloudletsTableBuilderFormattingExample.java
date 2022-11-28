@@ -131,27 +131,17 @@ public class CloudletsTableBuilderFormattingExample {
     	
     	/**
     	 * Prints the results with 3 instead of one decimal point for time columns.
-    	 * It uses the column indices to address columns.
     	 */
     	new CloudletsTableBuilder(finishedCloudlets)
-    		.setFormatByIndex(new int[] { 10, 11, 12 }, "%.3f")
-    		.setTitle("3 decimal points in time columns (selected via index)")
-    		.build();
-    	
-    	/**
-    	 * Again prints the results with 3 instead of one decimal point for time columns.
-    	 * It uses the subtitle to select all columns that show "Seconds".
-    	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
-    		.setFormatBySubTitle("Seconds", "%.3f")
-    		.setTitle("3 decimal points in time columns (selected via subtitle)")
+    		.setTimeFormat("%.3f")
+    		.setTitle("3 decimal points in time columns")
     		.build();
     	
     	/**
     	 * Prints the results with additional separators in the length columns to increase readability.
     	 */
     	new CloudletsTableBuilder(finishedCloudlets)
-    		.setFormatByIndex(new int[] {7,8},"%,d")
+    		.setLengthFormat("%,d")
     		.setTitle("Separators in length columns")
     		.build();
     	
@@ -159,11 +149,8 @@ public class CloudletsTableBuilderFormattingExample {
     	 * Adds an entire additional column for displaying the submission delay of a cloudlet.
     	 */
     	new CloudletsTableBuilder(finishedCloudlets)
-    		.addColumn(
-    				10,
-    				new MarkdownTableColumn("SubmissionDelay","Seconds").setFormat("%.1f"),
-    				cloudlet -> cloudlet.getSubmissionDelay())
     		.setTitle("Additional column for submission delay")
+    		.addColumn( new MarkdownTableColumn("SubmissionDelay") , cloudlet -> cloudlet.getSubmissionDelay())
     		.build();
     }
 
