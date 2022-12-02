@@ -53,7 +53,8 @@ import java.util.function.Function;
  * 
  * The actual simulation is not the focus in this example, the formatting is.
  * 
- * @author Manoel Campos da Silva Filho, Lennart Demes
+ * @author Lennart Demes
+ * @author Manoel Campos da Silva Filho
  */
 public class CloudletsTableBuilderFormattingExample {
     private static final int  HOSTS = 1;
