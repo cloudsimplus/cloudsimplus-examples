@@ -151,7 +151,7 @@ public class CloudletsTableBuilderFormattingExample {
     	 */
     	new CloudletsTableBuilder(finishedCloudlets)
     		.setTitle("Additional column for submission delay")
-    		.addColumn( new MarkdownTableColumn("SubmissionDelay") , cloudlet -> cloudlet.getSubmissionDelay())
+    		.addColumn( new MarkdownTableColumn("SubmissionDelay") , Cloudlet::getSubmissionDelay)
     		.build();
     }
 
