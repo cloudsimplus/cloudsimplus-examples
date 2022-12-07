@@ -43,7 +43,10 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
 import org.cloudsimplus.util.Log;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An example showing how to use the {@link DatacenterBrokerSimple}
@@ -61,23 +64,18 @@ public class DatacenterSelectionByTimeZoneExample {
      * Amazon Web Services Regions (just some of them).
      * @see <a href="https://aws.amazon.com/about-aws/global-infrastructure/">AWS Global Infrastructure</a>
      */
-    private static final Map<String, Double> DATACENTERS_TIMEZONES = new TreeMap<String, Double>(){{
-        put("Oregon",     -7.0);
-        put("California", -7.0);
-        put("Canada",     -4.0);
-        put("São Paulo",  -3.0);
-        put("Ireland",     1.0);
-        put("London",      1.0);
-        put("Paris",       2.0);
-        put("Frankfurt",   2.0);
-        put("Cape Town",   2.0);
-        put("Bahrain",     3.0);
-        put("Mumbai",      5.5);
-        put("Singapore",   8.0);
-        put("Tokyo",       9.0);
-        put("Seoul",       9.0);
-        put("Sydney",     10.0);
-    }};
+    private static final Map<String, Double> DATACENTERS_TIMEZONES = Map.of(
+        "Oregon",     -7.0,
+        "Canada",     -4.0,
+        "São Paulo",  -3.0,
+        "Ireland",     1.0,
+        "London",      1.0,
+        "Paris",       2.0,
+        "Bahrain",     3.0,
+        "Mumbai",      5.5,
+        "Singapore",   8.0,
+        "Seoul",       9.0
+    );
 
     private static final int HOSTS = 5;
     private static final int HOST_PES = 8;
