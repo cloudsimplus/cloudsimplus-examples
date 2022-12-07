@@ -147,15 +147,15 @@ public class DatacenterSelectionByTimeZoneExample {
      * @return
      */
     private List<Datacenter> createDatacenters(){
-        final List<Datacenter> list = new ArrayList<>(DATACENTERS_TIMEZONES.size());
+        final var dcList = new ArrayList<Datacenter>(DATACENTERS_TIMEZONES.size());
         for (Map.Entry<String, Double> entry : DATACENTERS_TIMEZONES.entrySet()) {
             final Datacenter dc = createDatacenter(entry.getValue());
-            list.add(dc);
+            dcList.add(dc);
             System.out.printf("Created Datacenter %2d in %15s | %s%n", dc.getId(), entry.getKey(), TimeZoned.format(entry.getValue()));
         }
         System.out.println();
 
-        return list;
+        return dcList;
     }
 
     /**
@@ -163,20 +163,20 @@ public class DatacenterSelectionByTimeZoneExample {
      * @param timeZone the time zone offset
      */
     private Datacenter createDatacenter(final double timeZone) {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
             Host host = createHost();
             hostList.add(host);
         }
 
         //Uses a VmAllocationPolicySimple by default to allocate VMs
-        final Datacenter dc = new DatacenterSimple(simulation, hostList);
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setTimeZone(timeZone);
         return dc;
     }
 
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -191,7 +191,7 @@ public class DatacenterSelectionByTimeZoneExample {
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final Host host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, peList);
         host.setId(++lastHostId);
         return host;
     }
@@ -202,22 +202,22 @@ public class DatacenterSelectionByTimeZoneExample {
      * Datacenter as possible.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS_TIMEZONES.length);
+        final var vmList = new ArrayList<Vm>(VMS_TIMEZONES.length);
         for (final double timezone : VMS_TIMEZONES) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(1000, VM_PES);
             vm.setRam(512).setBw(1000).setSize(10000).setTimeZone(timezone);
-            list.add(vm);
+            vmList.add(vm);
         }
 
-        return list;
+        return vmList;
     }
 
     /**
      * Creates a list of Cloudlets.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 
         //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
         final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
@@ -225,9 +225,9 @@ public class DatacenterSelectionByTimeZoneExample {
         for (int i = 0; i < CLOUDLETS; i++) {
             final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
             cloudlet.setSizes(1024);
-            list.add(cloudlet);
+            cloudletList.add(cloudlet);
         }
 
-        return list;
+        return cloudletList;
     }
 }
