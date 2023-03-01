@@ -35,13 +35,10 @@ import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.HostResourceStats;
@@ -164,7 +161,7 @@ public class PowerExampleSchedulingInterval {
     private Host createPowerHost(final int id) {
         final List<Pe> peList = new ArrayList<>(HOST_PES);
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
@@ -173,8 +170,6 @@ public class PowerExampleSchedulingInterval {
 
         final Host host = new HostSimple(ram, bw, storage, peList);
         host
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared())
             .setPowerModel(new PowerModelHostSimple(MAX_POWER, STATIC_POWER));
         host.setId(id);
@@ -196,12 +191,12 @@ public class PowerExampleSchedulingInterval {
     }
 
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
-        final UtilizationModel utilization = new UtilizationModelDynamic(0.2);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
+        final var utilization = new UtilizationModelDynamic(0.2);
         for (int i = 0; i < CLOUDLETS; i++) {
             //Sets half of the cloudlets with the defined length and the other half with the double of it
             final long length = i < CLOUDLETS/2 ? CLOUDLET_LENGTH : CLOUDLET_LENGTH*2;
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(i, length, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)

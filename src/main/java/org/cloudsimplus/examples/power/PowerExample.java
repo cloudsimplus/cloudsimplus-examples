@@ -243,6 +243,7 @@ public class PowerExample {
      * Creates a {@link Datacenter} and its {@link Host}s.
      */
     private Datacenter createDatacenter() {
+
         for(int i = 0; i < HOSTS; i++) {
             final var host = createPowerHost(i);
             hostList.add(host);
