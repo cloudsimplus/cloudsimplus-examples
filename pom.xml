@@ -8,7 +8,7 @@
     The module version defines the version of CloudSim Plus to be used.
     This way, it cannot be a version number which doesn't exist for CloudSim Plus.
     -->
-    <version>7.3.2</version>
+    <version>7.3.3</version>
 
     <name>CloudSim Plus Examples</name>
     <description>
