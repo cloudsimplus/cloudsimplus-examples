@@ -43,7 +43,7 @@ import java.util.Map;
 abstract class NetworkVmExampleAbstract {
     public static final int MAX_VMS_PER_HOST = 2;
 
-    public static final double COST = 3.0; // the cost of using processing in this resource
+    public static final double COST_PER_CPU_SEC = 3.0; // the cost of using processing in this resource
     public static final double COST_PER_MEM = 0.05; // the cost of using memory in this resource
     public static final double COST_PER_STORAGE = 0.001; // the cost of using storage in this resource
     public static final double COST_PER_BW = 0.0; // the cost of using bw in this resource
@@ -182,7 +182,7 @@ abstract class NetworkVmExampleAbstract {
         final var dc = new NetworkDatacenter(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         dc.getCharacteristics()
-            .setCostPerSecond(COST)
+            .setCostPerSecond(COST_PER_CPU_SEC)
             .setCostPerMem(COST_PER_MEM)
             .setCostPerStorage(COST_PER_STORAGE)
             .setCostPerBw(COST_PER_BW);
