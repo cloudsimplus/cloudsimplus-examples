@@ -156,8 +156,8 @@ public class SwfWorkloadFormatExample1 {
 
             simulation.start();
 
-            List<Cloudlet> newList = broker.getCloudletFinishedList();
-            new CloudletsTableBuilder(newList).build();
+            final var cloudletFinishedList = broker.getCloudletFinishedList();
+            new CloudletsTableBuilder(cloudletFinishedList).build();
 
             System.out.println(getClass().getSimpleName() + " finished!");
             System.out.printf("Simulation finished at %s. Execution time: %.2f seconds%n", LocalTime.now(), TimeUtil.elapsedSeconds(startSecs));
@@ -196,7 +196,7 @@ public class SwfWorkloadFormatExample1 {
 
         vmlist = new ArrayList<>();
         for (int i = 0; i < totalVms; i++) {
-            Vm vm = new VmSimple(VM_MIPS, VM_PES)
+            final var vm = new VmSimple(VM_MIPS, VM_PES)
                             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
                             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
             vmlist.add(vm);
@@ -206,7 +206,7 @@ public class SwfWorkloadFormatExample1 {
     }
 
     private void createCloudletsFromWorkloadFile() {
-        SwfWorkloadFileReader reader = SwfWorkloadFileReader.getInstance(WORKLOAD_FILENAME, VM_MIPS);
+        final var reader = SwfWorkloadFileReader.getInstance(WORKLOAD_FILENAME, VM_MIPS);
         reader.setMaxLinesToRead(maximumNumberOfCloudletsToCreateFromTheWorkloadFile);
         this.cloudletList = reader.generateWorkload();
 
@@ -220,8 +220,8 @@ public class SwfWorkloadFormatExample1 {
      * @return the created Datacenter
      */
     private Datacenter createDatacenter() {
-        List<Host> hostList = createHosts(vmlist.size()/2);
-        Datacenter datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        final var hostList = createHosts(vmlist.size()/2);
+        var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
 
         System.out.printf("# Added   %12d Hosts to %s%n", hostList.size(), datacenter);
         return datacenter;
@@ -238,23 +238,22 @@ public class SwfWorkloadFormatExample1 {
         final long storage = VM_SIZE * 1000;
         final long bw = VM_BW * 1000;
 
-        final List<Host> list = new ArrayList<>((int)hostsNumber);
+        final var hostList = new ArrayList<Host>((int)hostsNumber);
         for (int i = 0; i < hostsNumber; i++) {
             List<Pe> peList = createPeList(VM_MIPS);
-            Host host = new HostSimple(ram, bw, storage, peList);
-            list.add(host);
+            final var host = new HostSimple(ram, bw, storage, peList);
+            hostList.add(host);
         }
 
-        return list;
+        return hostList;
     }
 
     private List<Pe> createPeList(final long mips) {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         for (int i = 0; i < HOST_PES; i++) {
             peList.add(new PeSimple(mips));
         }
 
         return peList;
     }
-
 }

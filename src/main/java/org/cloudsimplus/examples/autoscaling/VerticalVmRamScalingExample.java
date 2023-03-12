@@ -166,7 +166,7 @@ public class VerticalVmRamScalingExample {
     }
 
     private void onClockTickListener(EventInfo event) {
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             System.out.printf("\t\tTime %6.1f: Vm %d Ram Usage: %6.2f%% (%4d of %4d MB)",
                 event.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
                 vm.getRam().getAllocatedResource(), vm.getRam().getCapacity());
@@ -179,12 +179,12 @@ public class VerticalVmRamScalingExample {
     }
 
     private void printSimulationResults() {
-        final var finishedCloudletsList = broker0.getCloudletFinishedList();
+        final var cloudletFinishedListList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
         final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
-        finishedCloudletsList.sort(sortByVmId.thenComparing(sortByStartTime));
+        cloudletFinishedListList.sort(sortByVmId.thenComparing(sortByStartTime));
 
-        new CloudletsTableBuilder(finishedCloudletsList).build();
+        new CloudletsTableBuilder(cloudletFinishedListList).build();
     }
 
     private void createDatacenter() {
@@ -218,7 +218,7 @@ public class VerticalVmRamScalingExample {
     private List<Vm> createListOfScalableVms(final int vmsNumber) {
         final var newVmList = new ArrayList<Vm>(vmsNumber);
         for (int i = 0; i < vmsNumber; i++) {
-            Vm vm = createVm();
+            final var vm = createVm();
             createVerticalRamScalingForVm(vm);
             newVmList.add(vm);
         }
@@ -248,8 +248,8 @@ public class VerticalVmRamScalingExample {
          * move the VM from the over or under-load condition.
         */
         //verticalRamScaling.setResourceScaling(new ResourceScalingInstantaneous());
-        verticalRamScaling.setLowerThresholdFunction(this::lowerRamUtilizationThreshold);
-        verticalRamScaling.setUpperThresholdFunction(this::upperRamUtilizationThreshold);
+        verticalRamScaling.setLowerThresholdFunction(this::lowerRamUtilizationThreshold)
+                          .setUpperThresholdFunction(this::upperRamUtilizationThreshold);
         vm.setRamVerticalScaling(verticalRamScaling);
     }
 

@@ -33,7 +33,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
@@ -100,8 +99,8 @@ public class CloudletSchedulerSpaceSharedExample1 {
 
         simulation.start();
 
-        final var finishedCloudletsList = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudletsList).build();
+        final var cloudletFinishedListList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedListList).build();
     }
 
     /**
@@ -123,7 +122,7 @@ public class CloudletSchedulerSpaceSharedExample1 {
         final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes

@@ -103,13 +103,13 @@ public class CostsExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedListList = broker0.getCloudletFinishedList();
 
         //Sorts cloudlets by VM id then Cloudlet id
         final Comparator<Cloudlet> vmComparator = Comparator.comparingLong(c -> c.getVm().getId());
-        finishedCloudlets.sort(vmComparator.thenComparing(Cloudlet::getId));
+        cloudletFinishedListList.sort(vmComparator.thenComparing(Cloudlet::getId));
 
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new CloudletsTableBuilder(cloudletFinishedListList).build();
 
         printTotalVmsCost();
     }
@@ -119,7 +119,7 @@ public class CostsExample1 {
      * It disables VMs creation retry, this way, failed VMs will be just added to the {@link DatacenterBroker#getVmFailedList()}.
      */
     private DatacenterBroker createBroker() {
-        final DatacenterBroker broker = new DatacenterBrokerSimple(simulation);
+        final var broker = new DatacenterBrokerSimple(simulation);
         //Destroys idle VMs after some time (in seconds)
         broker.setVmDestructionDelay(0.2);
         return broker;
@@ -129,14 +129,14 @@ public class CostsExample1 {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
         //Uses a VmAllocationPolicySimple by default to allocate VMs
-        final Datacenter dc = new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
+        final var dc = new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
 
         // Those are monetary values. Consider any currency you want (such as Dollar)
         dc.setCharacteristics(new DatacenterCharacteristicsSimple(0.01, 0.02, 0.001, 0.005));
@@ -144,7 +144,7 @@ public class CostsExample1 {
     }
 
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -166,39 +166,39 @@ public class CostsExample1 {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var vmList = new ArrayList<Vm>(VMS);
         for (int id = 0; id < VMS; id++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(id, HOST_MIPS, VM_PES);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
-            list.add(vm);
+            vmList.add(vm);
         }
 
-        return list;
+        return vmList;
     }
 
     /**
      * Creates Cloudlets only for some VMs.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(VMS * CLOUDLET_BY_VM);
+        final var newCloudletList = new ArrayList<Cloudlet>(VMS * CLOUDLET_BY_VM);
 
         //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         long cloudletId = 0;
         for (int i = 1; i <= VMS/3; i++) {
             final Vm vm = vmList.get(i-1);
             for (int j = 0; j < CLOUDLET_BY_VM; j++) {
-                final Cloudlet cloudlet = new CloudletSimple(cloudletId, (cloudletId+1) * CLOUDLET_LENGTH, CLOUDLET_PES);
+                final var cloudlet = new CloudletSimple(cloudletId, (cloudletId+1) * CLOUDLET_LENGTH, CLOUDLET_PES);
                 cloudlet.setSizes(1024).setUtilizationModel(utilizationModel);
                 cloudlet.setVm(vm);
-                list.add(cloudlet);
+                newCloudletList.add(cloudlet);
                 cloudletId++;
             }
         }
 
-        return list;
+        return newCloudletList;
     }
 
     /**
@@ -211,7 +211,7 @@ public class CostsExample1 {
         int totalNonIdleVms = 0;
         double processingTotalCost = 0, memoryTotaCost = 0, storageTotalCost = 0, bwTotalCost = 0;
         for (final Vm vm : broker0.getVmCreatedList()) {
-            final VmCost cost = new VmCost(vm);
+            final var cost = new VmCost(vm);
             processingTotalCost += cost.getProcessingCost();
             memoryTotaCost += cost.getMemoryCost();
             storageTotalCost += cost.getStorageCost();

@@ -25,7 +25,6 @@
 package org.cloudsimplus.examples;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -38,12 +37,10 @@ import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
 import org.cloudbus.cloudsim.distributions.UniformDistr;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -81,12 +78,12 @@ public class MinTimeBetweenEventsExample {
     /**
      * The minimum time between an event and the previous one to get the current event to be processed.
      *
-     * If events happen in a time interval smaller than this value, that will
+     * <p>If events happen in a time interval smaller than this value, that will
      * impact results accuracy. The created Cloudlets take about 0.1 second to finish,
      * but with the current MIN_TIME_BETWEEN_EVENTS, you'll see the ExecTime is greater than
-     * that.
+     * that.</p>
      *
-     * You can fix that by changing this constant to 0.01, for instance.
+     * <p>You can fix that by changing this constant to 0.01, for instance.</p>
      *
      * @see CloudSim#getMinTimeBetweenEvents()
      */
@@ -125,7 +122,7 @@ public class MinTimeBetweenEventsExample {
         this.datacenter = createDatacenter();
         this.broker = new DatacenterBrokerSimple(simulation);
 
-        Vm vm = createAndSubmitVm();
+        final var vm = createAndSubmitVm();
         final long seed = 1547040598054L;
         random =  new UniformDistr(seed);
         createAndSubmitCloudlets(vm);
@@ -135,13 +132,13 @@ public class MinTimeBetweenEventsExample {
 
     private Datacenter createDatacenter() {
         hostList.add(createHost());
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         for (int i = 0; i < HOST_PES_NUMBER; i++) {
-            PeSimple peSimple = new PeSimple(HOST_MIPS, new PeProvisionerSimple());
+            final var peSimple = new PeSimple(HOST_MIPS);
             peList.add(peSimple);
         }
 
@@ -156,7 +153,7 @@ public class MinTimeBetweenEventsExample {
     }
 
     private Vm createAndSubmitVm() {
-        final List<Vm> list = new ArrayList<>();
+        final var list = new ArrayList<Vm>();
         final Vm vm = createVm(this.vmList.size());
         list.add(vm);
 
@@ -182,7 +179,7 @@ public class MinTimeBetweenEventsExample {
      * @param vm the VM to run the Cloudlets
      */
     private void createAndSubmitCloudlets(final Vm vm) {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
             list.add(createCloudlet(vm));
@@ -200,9 +197,9 @@ public class MinTimeBetweenEventsExample {
     private Cloudlet createCloudlet(final Vm vm) {
         final long fileSize = 300;   //in bytes
         final long outputSize = 300; //in bytes
-        final UtilizationModel utilizationModel = new UtilizationModelDynamic(0.1);
+        final var utilizationModel = new UtilizationModelDynamic(0.1);
 
-        final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
+        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(new UtilizationModelFull())
@@ -220,7 +217,7 @@ public class MinTimeBetweenEventsExample {
         simulation.start();
 
         broker.getCloudletSubmittedList().sort(Comparator.comparingDouble(Cloudlet::getExecStartTime));
-        final CloudletsTableBuilder builder = new CloudletsTableBuilder(broker.getCloudletSubmittedList());
+        final var builder = new CloudletsTableBuilder(broker.getCloudletSubmittedList());
         builder
             .column(9,  this::formatColumn)
             .column(10, this::formatColumn)

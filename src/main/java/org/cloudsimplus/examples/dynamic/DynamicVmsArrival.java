@@ -134,7 +134,7 @@ public class DynamicVmsArrival {
 
     /**
      * Creates a broker defining that idle VMs will be destructed after some delay,
-     * instead of waiting the broker to shutdown to destroy them.
+     * instead of waiting the broker to shut down to destroy them.
      * This enables freeing Hosts to place new VMs.
      *
      * @return

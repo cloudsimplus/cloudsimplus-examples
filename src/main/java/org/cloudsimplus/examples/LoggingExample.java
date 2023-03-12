@@ -84,7 +84,7 @@ public class LoggingExample {
     private static final boolean DISABLE_MIGRATIONS = false;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -120,9 +120,9 @@ public class LoggingExample {
         configureLogs();
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingLong(Cloudlet::getId));
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingLong(Cloudlet::getId));
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     private void configureLogs() {
@@ -141,7 +141,7 @@ public class LoggingExample {
      * and keeps increasing along the time.
      */
     private UtilizationModelDynamic createDynamicUtilizationModel() {
-        UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final var utilizationModel = new UtilizationModelDynamic(0.5);
         utilizationModel.setUtilizationUpdateFunction(model -> model.getUtilization() + model.getTimeSpan()*0.1);
         return utilizationModel;
     }
@@ -150,18 +150,18 @@ public class LoggingExample {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOST_PES.length);
+        final var hostList = new ArrayList<Host>(HOST_PES.length);
         for (int pes : HOST_PES) {
-            Host host = createHost(pes);
+            final var host = createHost(pes);
             hostList.add(host);
         }
 
         /*Creates a VmAllocationPolicy that migrates VMs from under/overloaded hosts,
         selecting migrating VMs randomly.*/
-        VmAllocationPolicy vmAllocationPolicy =
+        final var vmAllocationPolicy =
             new VmAllocationPolicyMigrationStaticThreshold(
                 new VmSelectionPolicyRandomSelection(), HOST_OVER_UTILIZATION_MIGRATION_THRESHOLD);
-        Datacenter dc = new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
+        final var dc = new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL_SECS);
         if(DISABLE_MIGRATIONS) {
             dc.disableMigrations();
@@ -171,7 +171,7 @@ public class LoggingExample {
     }
 
     private Host createHost(final int pes) {
-        final List<Pe> peList = new ArrayList<>(pes);
+        final var peList = new ArrayList<Pe>(pes);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < pes; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -189,7 +189,7 @@ public class LoggingExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(VM_MIPS, VM_PES);
@@ -214,10 +214,10 @@ public class LoggingExample {
      * @param submissionDelay the delay to submit Cloudlets to the broker
      */
     private List<Cloudlet> createCloudlets(final UtilizationModel utilizationModel, final double submissionDelay) {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
             cloudlet.setSubmissionDelay(submissionDelay);
             cloudlet.setSizes(1024);
             list.add(cloudlet);

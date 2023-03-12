@@ -23,23 +23,19 @@
  */
 package org.cloudsimplus.examples.simulationstatus;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -97,24 +93,24 @@ public class TerminateSimulationAtGivenConditionExample {
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
 
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         /*
         Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer).
         */
-        DatacenterBroker broker0 = new DatacenterBrokerSimple(simulation);
+        final var broker0 = new DatacenterBrokerSimple(simulation);
 
-        Vm vm0 = createVm(broker0);
+        final var vm0 = createVm(broker0);
         this.vmList.add(vm0);
         broker0.submitVmList(vmList);
 
         for(int i = 0; i < 4; i++) {
-            Cloudlet cloudlet = createCloudlet(broker0, vm0);
+            final var cloudlet = createCloudlet(broker0, vm0);
             this.cloudletList.add(cloudlet);
         }
 
-        Cloudlet lastCloudlet = this.cloudletList.get(this.cloudletList.size()-1);
+        final var lastCloudlet = this.cloudletList.get(this.cloudletList.size()-1);
         lastCloudlet.addOnUpdateProcessingListener(this::onClouletProcessingUpdate);
 
         broker0.submitCloudletList(cloudletList);
@@ -124,8 +120,8 @@ public class TerminateSimulationAtGivenConditionExample {
 
         /*Prints results when the simulation is over
         (you can use your own code here to print what you want from this cloudlet list)*/
-        List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
@@ -144,11 +140,11 @@ public class TerminateSimulationAtGivenConditionExample {
     }
 
     private DatacenterSimple createDatacenter() {
-        List<Host> hostList = new ArrayList<>();
-        Host host0 = createHost();
+        final var hostList = new ArrayList<Host>();
+        final var host0 = createHost();
         hostList.add(host0);
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
@@ -157,11 +153,11 @@ public class TerminateSimulationAtGivenConditionExample {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        List<Pe> peList = new ArrayList<>(); //List of CPU cores
+        final var peList = new ArrayList<Pe>(); //List of CPU cores
 
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+        peList.add(new PeSimple(mips));
 
         return new HostSimple(ram, bw, storage, peList)
             .setRamProvisioner(new ResourceProvisionerSimple())
@@ -170,11 +166,11 @@ public class TerminateSimulationAtGivenConditionExample {
     }
 
     private Vm createVm(DatacenterBroker broker) {
-        long mips = 1000;
-        long   storage = 10000; // vm image size (Megabyte)
-        int    ram = 512; // vm memory (Megabyte)
-        long   bw = 1000; // vm bandwidth (Megabits/s)
-        int    pesNumber = 1; // number of CPU cores
+        final long mips = 1000;
+        final long   storage = 10000; // vm image size (Megabyte)
+        final int    ram = 512; // vm memory (Megabyte)
+        final long   bw = 1000; // vm bandwidth (Megabits/s)
+        final int    pesNumber = 1; // number of CPU cores
 
         return new VmSimple(numberOfCreatedVms++, mips, pesNumber)
                 .setRam(ram)
@@ -184,14 +180,14 @@ public class TerminateSimulationAtGivenConditionExample {
     }
 
     private Cloudlet createCloudlet(DatacenterBroker broker, Vm vm) {
-        long length = 10000; //in Million Instructions (MI)
-        long fileSize = 300; //Size (in bytes) before execution
-        long outputSize = 300; //Size (in bytes) after execution
-        long  numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
+        final long length = 10000; //in Million Instructions (MI)
+        final long fileSize = 300; //Size (in bytes) before execution
+        final long outputSize = 300; //Size (in bytes) after execution
+        final long  numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
 
         //Defines how CPU, RAM and Bandwidth resources are used
         //Sets the same utilization model for all these resources.
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var utilization = new UtilizationModelFull();
 
         return new CloudletSimple(
                 numberOfCreatedCloudlets++, length, numberOfCpuCores)
@@ -200,5 +196,4 @@ public class TerminateSimulationAtGivenConditionExample {
                 .setUtilizationModel(utilization)
                 .setVm(vm);
     }
-
 }

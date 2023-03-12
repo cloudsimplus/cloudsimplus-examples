@@ -29,11 +29,9 @@ import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
@@ -165,7 +163,7 @@ public class ParallelSimulationsExample implements Runnable {
 
         final var peList = new ArrayList<Pe>(pesNumber); // List of CPU cores
         for(int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
 
         return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
@@ -232,7 +230,7 @@ public class ParallelSimulationsExample implements Runnable {
      */
     @Override
     public void run() {
-        final Datacenter datacenter0 = new DatacenterSimple(simulation, createHosts());
+        final var datacenter0 = new DatacenterSimple(simulation, createHosts());
 
         /* Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer). */

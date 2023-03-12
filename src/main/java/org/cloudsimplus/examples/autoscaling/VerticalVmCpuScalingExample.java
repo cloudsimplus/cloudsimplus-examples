@@ -37,10 +37,8 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.resources.Processor;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelStochastic;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.autoscaling.HorizontalVmScaling;
@@ -104,7 +102,7 @@ public class VerticalVmCpuScalingExample {
     private static final int VM_RAM = 1200;
     private static final int VM_MIPS = 1000;
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Host> hostList;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -263,10 +261,9 @@ public class VerticalVmCpuScalingExample {
          * or {@link ResourceScalingInstantaneous}.
          */
         final double multiplier = 2;
-        verticalCpuScaling.setResourceScaling(vs -> multiplier * vs.getScalingFactor() * vs.getAllocatedResource());
-
-        verticalCpuScaling.setLowerThresholdFunction(this::lowerCpuUtilizationThreshold);
-        verticalCpuScaling.setUpperThresholdFunction(this::upperCpuUtilizationThreshold);
+        verticalCpuScaling.setResourceScaling(vs -> multiplier * vs.getScalingFactor() * vs.getAllocatedResource())
+                          .setLowerThresholdFunction(this::lowerCpuUtilizationThreshold)
+                          .setUpperThresholdFunction(this::upperCpuUtilizationThreshold);
 
         return verticalCpuScaling;
     }
@@ -312,8 +309,8 @@ public class VerticalVmCpuScalingExample {
      */
     private void createCloudletListsWithDifferentDelays() {
         final int pesNumber = 2;
-        final long cloudlets = Math.round(CLOUDLETS * 1.5);
-        for (int i = 1; i <= cloudlets; i++) {
+        final long cloudletsNumber = Math.round(CLOUDLETS * 1.5);
+        for (int i = 1; i <= cloudletsNumber; i++) {
             final int delay = i * 2;
             final int length = CLOUDLET_LEN_BASE * i;
             cloudletList.add(createCloudlet(length, pesNumber, delay));

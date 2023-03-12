@@ -33,7 +33,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
@@ -97,7 +96,7 @@ public class VmSchedulerTimeSharedExample {
     private static final int CLOUDLET_LENGTH = HOST_MIPS*10;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Host> hostList;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -139,7 +138,7 @@ public class VmSchedulerTimeSharedExample {
         System.out.printf("%n-------------------------------------- Hosts CPU usage History --------------------------------------%n");
         hostList.forEach(this::printHostStateHistory);
 
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             System.out.printf("%s: Requested MIPS: %.0f Allocated MIPS: %.0f%n", vm, vm.getCurrentRequestedMips(), vm.getMips());
         }
     }
@@ -179,7 +178,7 @@ public class VmSchedulerTimeSharedExample {
      */
     private void createDatacenter() {
         for(int h = 0; h < HOSTS; h++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -188,13 +187,13 @@ public class VmSchedulerTimeSharedExample {
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS, new PeProvisionerSimple()));
+            peList.add(new PeSimple(HOST_MIPS));
         }
 
-        Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
         host.setVmScheduler(new VmSchedulerTimeShared());
         host.enableStateHistory();
         return host;
@@ -205,7 +204,7 @@ public class VmSchedulerTimeSharedExample {
      */
     private void createVms() {
         for (int i = 0; i < VMS; i++) {
-            Vm vm =
+            final var vm =
                 new VmSimple(VM_MIPS, VM_PES)
                     .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             vmList.add(vm);
@@ -216,8 +215,8 @@ public class VmSchedulerTimeSharedExample {
      * Creates one Cloudlet for each VM belonging to {@link #broker0}.
      */
     private void createCloudlets() {
-        for (Vm vm : vmList) {
-            Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+        for (final var vm : vmList) {
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
             cloudlet.setVm(vm);
             cloudletList.add(cloudlet);
         }

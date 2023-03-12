@@ -33,7 +33,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
@@ -88,7 +87,7 @@ public class GoogleMachineEventsExample1 {
     private static final int DATACENTERS_NUMBER = 2;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Datacenter> datacenters;
 
     public static void main(String[] args) {
@@ -116,8 +115,8 @@ public class GoogleMachineEventsExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets)
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList)
                 .addColumn(new TextTableColumn("Host Startup", "Time"), this::getHostStartupTime, 5)
                 .build();
     }
@@ -166,7 +165,7 @@ public class GoogleMachineEventsExample1 {
         * The second Datacenter that is given as parameter will be used to add the Hosts with timestamp greater than 0.
         * */
         reader.setDatacenterForLaterHosts(datacenters.get(1));
-        final List<Host> hostList = new ArrayList<>(reader.process());
+        final var hostList = new ArrayList<Host>(reader.process());
 
         System.out.println();
         System.out.printf("# Created %d Hosts that were immediately available from the Google trace file%n", hostList.size());
@@ -194,7 +193,7 @@ public class GoogleMachineEventsExample1 {
     private List<Pe> createPesList(final int count) {
         List<Pe> cpuCoresList = new ArrayList<>(count);
         for(int i = 0; i < count; i++){
-            cpuCoresList.add(new PeSimple(HOST_MIPS, new PeProvisionerSimple()));
+            cpuCoresList.add(new PeSimple(HOST_MIPS));
         }
 
         return cpuCoresList;
@@ -204,7 +203,7 @@ public class GoogleMachineEventsExample1 {
      * Creates a list of VMs and Cloudlets in a given Datacenter.
      */
     private List<Vm> createAndSubmitVms(Datacenter datacenter) {
-        final List<Vm> list = new ArrayList<>(datacenter.getHostList().size());
+        final var list = new ArrayList<Vm>(datacenter.getHostList().size());
         /* Creates 1 VM for each available Host of the datacenter.
         *  Each VM will have the same RAM, BW and Storage of the its Host. */
         for (Host host : datacenter.getHostList()) {
@@ -231,9 +230,9 @@ public class GoogleMachineEventsExample1 {
      * Creates a list of Cloudlets for the given VMs.
      */
     private void createAndSubmitCloudlets(final List<Vm> vmList) {
-        final List<Cloudlet> list = new ArrayList<>(vmList.size());
-        for (Vm vm : vmList) {
-            Cloudlet cloudlet = createCloudlet(vm);
+        final var list = new ArrayList<Cloudlet>(vmList.size());
+        for (final var vm : vmList) {
+            final var cloudlet = createCloudlet(vm);
             list.add(cloudlet);
         }
 

@@ -2,7 +2,6 @@ package org.cloudbus.cloudsim.examples.network.applications;
 
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.network.NetworkVm;
 
@@ -36,11 +35,11 @@ public class NetworkVmsExampleBagOfTasksApp extends NetworkVmExampleAbstract {
     @Override
     public List<NetworkCloudlet> createNetworkCloudlets(DatacenterBroker broker){
         final int CLOUDLETS_BY_APP = 2;
-        final List<NetworkCloudlet> cloudletList = new ArrayList<>(CLOUDLETS_BY_APP+1);
+        final var netCloudletList = new ArrayList<NetworkCloudlet>(CLOUDLETS_BY_APP+1);
         //basically, each task runs the simulation and then data is consolidated in one task
 
         for(int i = 0; i < CLOUDLETS_BY_APP; i++){
-            final UtilizationModel utilizationModel = new UtilizationModelFull();
+            final var utilizationModel = new UtilizationModelFull();
             final var cloudlet = new NetworkCloudlet(i, CLOUDLET_LENGTH, CLOUDLET_PES);
             final NetworkVm vm = getVmList().get(i);
             cloudlet
@@ -49,16 +48,16 @@ public class NetworkVmsExampleBagOfTasksApp extends NetworkVmExampleAbstract {
                     .setUtilizationModel(utilizationModel)
                     .setVm(vm)
                     .setBroker(vm.getBroker());
-            cloudletList.add(cloudlet);
+            netCloudletList.add(cloudlet);
         }
 
-        createTasksForNetworkCloudlets(cloudletList);
+        createTasksForNetworkCloudlets(netCloudletList);
 
-        return cloudletList;
+        return netCloudletList;
     }
 
     private void createTasksForNetworkCloudlets(final List<NetworkCloudlet> networkCloudletList) {
-        for (NetworkCloudlet cloudlet : networkCloudletList) {
+        for (var cloudlet : networkCloudletList) {
             addExecutionTask(cloudlet);
 
             //NetworkCloudlet 0 waits data from other Cloudlets

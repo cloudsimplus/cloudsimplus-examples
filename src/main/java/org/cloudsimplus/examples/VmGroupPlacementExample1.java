@@ -34,7 +34,6 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -120,9 +119,9 @@ public class VmGroupPlacementExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingLong(cl -> cl.getVm().getId()));
-        new CloudletsTableBuilder(finishedCloudlets)
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingLong(cl -> cl.getVm().getId()));
+        new CloudletsTableBuilder(cloudletFinishedList)
             .addColumn(new TextTableColumn("      VmGroup"), cl -> cl.getVm().getGroup(), 7)
             .build();
     }
@@ -131,9 +130,9 @@ public class VmGroupPlacementExample1 {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 1; i <= HOSTS; i++) {
-            Host host = createHost(i, i);
+            final var host = createHost(i, i);
             hostList.add(host);
         }
 
@@ -142,7 +141,7 @@ public class VmGroupPlacementExample1 {
     }
 
     private Host createHost(final long id, final int pes) {
-        final List<Pe> peList = new ArrayList<>(pes);
+        final var peList = new ArrayList<Pe>(pes);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < pes; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -168,16 +167,16 @@ public class VmGroupPlacementExample1 {
      * Each group contains a List of VMs to try to place them into the same Host.
      */
     private List<VmGroup> createVmGroupList() {
-        final List<VmGroup> groupList = new ArrayList<>(GROUPS);
+        final var vmGroupList = new ArrayList<VmGroup>(GROUPS);
         for (int i = 0; i < GROUPS; i++) {
-            groupList.add(new VmGroup(createVms()));
+            vmGroupList.add(new VmGroup(createVms()));
         }
 
-        return groupList;
+        return vmGroupList;
     }
 
     private List<Vm> createVms() {
-        final List<Vm> vmList = new ArrayList<>(VMS_BY_GROUP);
+        final var vmList = new ArrayList<Vm>(VMS_BY_GROUP);
         for (int i = 0; i < VMS_BY_GROUP; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(HOST_MIPS, VM_PES);
@@ -194,11 +193,11 @@ public class VmGroupPlacementExample1 {
      */
     private void createCloudlets(final VmGroup group) {
         //UtilizationModel defining the Cloudlets use only 10% of RAM and BW all the time
-        final UtilizationModel utilizationModelRamBw = new UtilizationModelDynamic(0.1);
-        final UtilizationModel utilizationModelCpu = new UtilizationModelFull();
+        final var utilizationModelRamBw = new UtilizationModelDynamic(0.1);
+        final var utilizationModelCpu = new UtilizationModelFull();
 
         for (Vm vm : group.getVmList()) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_PES);
             cloudlet.setSizes(1024)
                     .setUtilizationModelCpu(utilizationModelCpu)
                     .setUtilizationModelRam(utilizationModelRamBw)

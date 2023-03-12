@@ -115,11 +115,11 @@ public class SynchronousSimulationDestroyVmExample1 {
             printVmCpuUtilization();
         }
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
         //Sorts finished Cloudlets by Vm ID and then Cloudlet ID
         final Comparator<Cloudlet> comparator = Comparator.comparingLong(cl -> cl.getVm().getId());
-        finishedCloudlets.sort(comparator.thenComparingLong(Cloudlet::getId));
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        cloudletFinishedList.sort(comparator.thenComparingLong(Cloudlet::getId));
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -169,9 +169,9 @@ public class SynchronousSimulationDestroyVmExample1 {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -180,7 +180,7 @@ public class SynchronousSimulationDestroyVmExample1 {
     }
 
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -202,7 +202,7 @@ public class SynchronousSimulationDestroyVmExample1 {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(1000, VM_PES);
@@ -217,10 +217,10 @@ public class SynchronousSimulationDestroyVmExample1 {
      * Creates a list of Cloudlets with different submission delays.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
             cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                     .setSizes(1024)
                     .setSubmissionDelay(i);

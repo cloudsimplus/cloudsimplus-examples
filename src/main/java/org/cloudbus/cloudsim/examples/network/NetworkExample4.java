@@ -19,12 +19,10 @@ import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.network.topologies.BriteNetworkTopology;
-import org.cloudbus.cloudsim.network.topologies.NetworkTopology;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -90,7 +88,7 @@ public class NetworkExample4 {
 
     private void configureNetwork() {
         //Configure network by mapping CloudSim entities to BRITE entities
-        final NetworkTopology networkTopology = new BriteNetworkTopology();
+        final var networkTopology = new BriteNetworkTopology();
         simulation.setNetworkTopology(networkTopology);
         networkTopology.addLink(datacenter0, broker, NETWORK_BW, NETWORK_LATENCY);
     }
@@ -99,9 +97,9 @@ public class NetworkExample4 {
         final long length = 100_000;
         final long fileSize = 1000; // in bytes
         final long outputSize = 1000;  // in bytes
-        final UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
-        final Cloudlet cloudlet1 =
+        final var cloudlet1 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
@@ -125,8 +123,8 @@ public class NetworkExample4 {
     }
 
     private Datacenter createDatacenter() {
-        List<Host> hostList = new ArrayList<>();
-        List<Pe> peList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
+        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
         peList.add(new PeSimple(mips));
@@ -141,7 +139,7 @@ public class NetworkExample4 {
             .setVmScheduler(new VmSchedulerTimeShared());
         hostList.add(host);
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList);
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setCharacteristics(new DatacenterCharacteristicsSimple(3.0, 0.05, 0.1, 0.1));
         return dc;
     }

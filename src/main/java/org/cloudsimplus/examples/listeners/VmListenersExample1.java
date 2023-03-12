@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples.listeners;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -33,8 +32,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
@@ -119,20 +116,20 @@ public class VmListenersExample1 {
     private void runSimulationAndPrintResults() {
         simulation.start();
 
-        List<Cloudlet> finishedCloudlets = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
      * Create cloudlets and submit them to the broker.
      */
     private void createAndSubmitCloudlets() {
-        Cloudlet cloudlet0 = createCloudlet(0, vmList.get(0));
+        final var cloudlet0 = createCloudlet(0, vmList.get(0));
         this.cloudletList.add(cloudlet0);
 
         /*This cloudlet will not be run because vm1 will not be placed
         due to lack of a suitable host.*/
-        Cloudlet cloudlet1 = createCloudlet(1, vmList.get(1));
+        final var cloudlet1 = createCloudlet(1, vmList.get(1));
         this.cloudletList.add(cloudlet1);
 
         this.broker.submitCloudletList(cloudletList);
@@ -142,7 +139,7 @@ public class VmListenersExample1 {
      * Creates VMs and submit them to the broker.
      */
     private void createAndSubmitVms() {
-        Vm vm0 = createVm(0);
+        final var vm0 = createVm(0);
 
         /* Sets the Listener to intercept allocation of a Host to the Vm.
          * The Listener is created using Java 8 Lambda Expressions.
@@ -161,7 +158,7 @@ public class VmListenersExample1 {
         /* This VM will not be place due to lack of a suitable host.
          * The Listener is created using Java 8 Lambda Expressions.
          */
-        Vm vm1 = createVm(1);
+        final var vm1 = createVm(1);
         vm1.addOnCreationFailureListener(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Vm %d could not be placed into any host of Datacenter %d at time %.2f due to lack of a host with enough resources.%n",
                 eventInfo.getVm().getId(), eventInfo.getDatacenter().getId(), eventInfo.getTime()));
@@ -178,10 +175,10 @@ public class VmListenersExample1 {
      * @return the created VM
      */
     private Vm createVm(int id) {
-        int mips = 1000;
-        long size = 10000; // image size (Megabyte)
-        int ram = 512; // vm memory (Megabyte)
-        long bw = 1000;
+        final int mips = 1000;
+        final long size = 10000; // image size (Megabyte)
+        final int ram = 512; // vm memory (Megabyte)
+        final long bw = 1000;
 
         return new VmSimple(id, mips, VM_PES_NUMBER)
             .setRam(ram).setBw(bw).setSize(size)
@@ -196,9 +193,9 @@ public class VmListenersExample1 {
      * @return the created cloudlet
      */
     private Cloudlet createCloudlet(int id, Vm vm) {
-        long length = 400000;  //in MI (Million Instructions)
-        long fileSize = 300;
-        long outputSize = 300;
+        final long length = 400000;  //in MI (Million Instructions)
+        final long fileSize = 300;
+        final long outputSize = 300;
         final var utilizationModel = new UtilizationModelFull();
         return new CloudletSimple(id, length, VM_PES_NUMBER)
             .setFileSize(fileSize)
@@ -213,10 +210,10 @@ public class VmListenersExample1 {
      * @return the created Datacenter
      */
     private Datacenter createDatacenter() {
-        Host host = createHost(0);
+        final var host = createHost(0);
         hostList.add(host);
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     /**
@@ -226,20 +223,16 @@ public class VmListenersExample1 {
      * @return the created host
      */
     private Host createHost(int id) {
-        List<Pe> peList = new ArrayList<>();
-        long mips = 1000;
+        final var peList = new ArrayList<Pe>();
+        final long mips = 1000;
         for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
 
-        long ram = 2048; // host memory (Megabyte)
-        long storage = 1000000; // host storage (Megabyte)
-        long bw = 10000; //Megabits/s
+        final long ram = 2048; // host memory (Megabyte)
+        final long storage = 1000000; // host storage (Megabyte)
+        final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
-
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 }

@@ -24,7 +24,6 @@
 package org.cloudsimplus.examples.migration;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationFirstFitStaticThreshold;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
@@ -42,7 +41,6 @@ import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.selectionpolicies.VmSelectionPolicyMinimumUtilization;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -129,7 +127,7 @@ public final class InterDatacenterMigration1 {
      * The number of rows (length of the matrix) define the number of Datacenters to create.
      * The number of cols (length of each row) define the number of Hosts for each Datacenter.
      *
-     * The total number of items define the number of Hosts to create.
+     * <p>The total number of items define the number of Hosts to create.</p>
      */
     private static final int[][] DC_HOST_PES = {{4, 5}, {8, 8, 8}};
 
@@ -179,8 +177,8 @@ public final class InterDatacenterMigration1 {
      * A matrix where each row defines the number of PEs required by each VM in one Datacenter.
      * The total number of items define the number of VMs to create.
      *
-     * The length of this matrix (number of rows) must be equal to the number of datacenters,
-     * defined by the length of {@link #DC_HOST_PES}.
+     * <p>The length of this matrix (number of rows) must be equal to the number of datacenters,
+     * defined by the length of {@link #DC_HOST_PES}.</p>
      */
     private static final int[][] VM_PES = {{3, 2, 2}, {4, 4, 4}};
 
@@ -286,7 +284,7 @@ public final class InterDatacenterMigration1 {
     }
 
     private void printResults() {
-        for (final var broker : brokerList) {
+        for (final DatacenterBroker broker : brokerList) {
             final var cloudletFinishedList = broker.getCloudletFinishedList();
             final Comparator<Cloudlet> cloudletComparator =
                 comparingLong((Cloudlet c) -> c.getVm().getHost().getId())
@@ -317,7 +315,7 @@ public final class InterDatacenterMigration1 {
      */
     private void createVmsAndCloudlets() {
         int i = 0;
-        for (final var broker : brokerList) {
+        for (final DatacenterBroker broker : brokerList) {
             createAndSubmitVms(broker, VM_PES[i++]);
             createAndSubmitCloudlets(broker);
             broker.addOnVmsCreatedListener(this::onVmsCreatedListener);
@@ -360,10 +358,8 @@ public final class InterDatacenterMigration1 {
      * @return the created Cloudlets
      */
     public Cloudlet createCloudlet(final Vm vm, final UtilizationModel cpuUtilizationModel) {
-        final var utilizationModelFull = new UtilizationModelFull();
-
         final var broker = vm.getBroker();
-        final Cloudlet cloudlet =
+        final var cloudlet =
             new CloudletSimple(createdCloudlets++, CLOUDLET_LENGTH, vm.getNumberOfPes())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)
@@ -376,9 +372,9 @@ public final class InterDatacenterMigration1 {
     }
 
     public void createAndSubmitVms(final DatacenterBroker broker, final int[] vmPesArray) {
-        final List<Vm> list = Arrays.stream(vmPesArray).mapToObj(this::createVm).toList();
-        broker.submitVmList(list);
-        list.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
+        final var vmList = Arrays.stream(vmPesArray).mapToObj(this::createVm).toList();
+        broker.submitVmList(vmList);
+        vmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
     }
 
     /**
@@ -448,8 +444,8 @@ public final class InterDatacenterMigration1 {
 
     private Datacenter createDatacenter(final int index) {
         final var hostList = createHosts(DC_HOST_PES[index]);
-        final VmAllocationPolicy allocationPolicy = createVmAllocationPolicy();
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var allocationPolicy = createVmAllocationPolicy();
+        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY);
 
@@ -462,21 +458,21 @@ public final class InterDatacenterMigration1 {
     }
 
     private List<Host> createHosts(final int[] pesNumberArray) {
-        final List<Host> list = new ArrayList<>(DC_HOST_PES.length);
+        final var hostList = new ArrayList<Host>(DC_HOST_PES.length);
         for (int i = 0; i < pesNumberArray.length; i++) {
             final long ram = HOST_RAM[i];
-            list.add(createHost(pesNumberArray[i], ram));
+            hostList.add(createHost(pesNumberArray[i], ram));
         }
 
-        return list;
+        return hostList;
     }
 
     public Host createHost(final int pesNumber, final long ram) {
         final var peList = createPeList(pesNumber);
         final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, peList);
-        host.setId(createdHosts++);
-        host.setVmScheduler(new VmSchedulerTimeShared());
-        host.enableStateHistory();
+        host.setId(createdHosts++)
+            .setVmScheduler(new VmSchedulerTimeShared())
+            .enableStateHistory();
         return host;
     }
 

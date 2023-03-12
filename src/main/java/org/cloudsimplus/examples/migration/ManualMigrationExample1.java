@@ -159,11 +159,11 @@ public final class ManualMigrationExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedList = broker.getCloudletFinishedList();
-        finishedList.sort(
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        cloudletFinishedList.sort(
             Comparator.comparingLong((Cloudlet c) -> c.getVm().getHost().getId())
                       .thenComparingLong(c -> c.getVm().getId()));
-        new CloudletsTableBuilder(finishedList).build();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.printf("%nHosts CPU usage History (when the allocated MIPS is lower than the requested, it is due to VM migration overhead)%n");
 
         hostList.forEach(this::printHostHistory);
@@ -181,8 +181,8 @@ public final class ManualMigrationExample1 {
      */
     private void clockTickListener(EventInfo info) {
         if(!migrationRequested && info.getTime() >= 10){
-            Vm sourceVm = vmList.get(0);
-            Host targetHost = hostList.get(hostList.size() - 1);
+            final var sourceVm = vmList.get(0);
+            final var targetHost = hostList.get(hostList.size() - 1);
             System.out.printf("%n# Requesting the migration of %s to %s%n%n", sourceVm, targetHost);
             datacenter0.requestVmMigration(sourceVm, targetHost);
             this.migrationRequested = true;
@@ -210,12 +210,12 @@ public final class ManualMigrationExample1 {
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {
-        final List<Cloudlet> list = new ArrayList<>(VMS);
-        for(Vm vm: vmList){
-            list.add(createCloudlet(vm, broker));
+        final var newCloudletList = new ArrayList<Cloudlet>(VMS);
+        for(final var vm: vmList){
+            newCloudletList.add(createCloudlet(vm, broker));
         }
 
-        broker.submitCloudletList(list);
+        broker.submitCloudletList(newCloudletList);
     }
 
     /**
@@ -226,7 +226,7 @@ public final class ManualMigrationExample1 {
      * @return the created Cloudlets
      */
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
-        final Cloudlet cloudlet =
+        final var cloudlet =
             new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getNumberOfPes())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
@@ -237,13 +237,13 @@ public final class ManualMigrationExample1 {
     }
 
     public void createAndSubmitVms(DatacenterBroker broker) {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for(int i = 0; i < VMS; i++){
-            list.add(createVm(VM_PES));
+            newVmList.add(createVm(VM_PES));
         }
 
-        vmList.addAll(list);
-        broker.submitVmList(list);
+        vmList.addAll(newVmList);
+        broker.submitVmList(newVmList);
 
         vmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
     }
@@ -287,26 +287,25 @@ public final class ManualMigrationExample1 {
         }
         System.out.println();
 
-        Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        final var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     public Host createHost(int numberOfPes, long mipsByPe) {
-            List<Pe> peList = createPeList(numberOfPes, mipsByPe);
-            Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
-            host.setVmScheduler(new VmSchedulerTimeShared());
-            host.enableStateHistory();
-            return host;
+        final var peList = createPeList(numberOfPes, mipsByPe);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        host.setVmScheduler(new VmSchedulerTimeShared())
+            .enableStateHistory();
+        return host;
     }
 
     public List<Pe> createPeList(int numberOfPEs, long mips) {
-        final List<Pe> list = new ArrayList<>(numberOfPEs);
+        final var peList = new ArrayList<Pe>(numberOfPEs);
         for(int i = 0; i < numberOfPEs; i++) {
-            list.add(new PeSimple(mips));
+            peList.add(new PeSimple(mips));
         }
 
-        return list;
+        return peList;
     }
-
 }
