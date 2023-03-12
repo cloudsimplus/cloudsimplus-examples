@@ -27,7 +27,6 @@ import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
@@ -43,8 +42,6 @@ import org.cloudsimplus.builders.tables.MarkdownTableColumn;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * A variation of BasicFirstExample.java which runs two kinds of cloudlets
@@ -78,7 +75,7 @@ public class CloudletsTableBuilderFormattingExample {
     private static final int CLOUDLET_LENGTH_LONG = 984_174_395;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -105,35 +102,35 @@ public class CloudletsTableBuilderFormattingExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
 
-        demonstrateCloudletTableFormattingOptions(finishedCloudlets);
+        demonstrateCloudletTableFormattingOptions(cloudletFinishedList);
         
     }
     
     /**
      * Displays a list of cloudlets as a table while demonstrating several formatting/display options.
-     * @param finishedCloudlets The list of cloudlets to use for the demonstration.
+     * @param cloudletFinishedList The list of cloudlets to use for the demonstration.
      */
-    private void demonstrateCloudletTableFormattingOptions(List<Cloudlet> finishedCloudlets) {
+    private void demonstrateCloudletTableFormattingOptions(List<Cloudlet> cloudletFinishedList) {
     	
     	/**
     	 * Prints the results with default settings.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.build();
     	
     	/**
     	 * Prints the results with a custom title.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTitle("This is a custom title")
     		.build();
     	
     	/**
     	 * Prints the results with 3 instead of one decimal point for time columns.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTimeFormat("%.3f")
     		.setTitle("3 decimal points in time columns")
     		.build();
@@ -141,7 +138,7 @@ public class CloudletsTableBuilderFormattingExample {
     	/**
     	 * Prints the results with additional separators in the length columns to increase readability.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setLengthFormat("%,d")
     		.setTitle("Separators in length columns")
     		.build();
@@ -149,7 +146,7 @@ public class CloudletsTableBuilderFormattingExample {
     	/**
     	 * Adds an entire additional column for displaying the submission delay of a cloudlet.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTitle("Additional column for submission delay")
     		.addColumn( new MarkdownTableColumn("SubmissionDelay") , Cloudlet::getSubmissionDelay)
     		.build();

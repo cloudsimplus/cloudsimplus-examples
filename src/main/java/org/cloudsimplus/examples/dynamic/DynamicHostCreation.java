@@ -24,7 +24,6 @@
 package org.cloudsimplus.examples.dynamic;
 
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -34,15 +33,10 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -116,7 +110,7 @@ public class DynamicHostCreation {
     private static final int CLOUDLET_LENGTH = 10000;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -145,8 +139,8 @@ public class DynamicHostCreation {
         simulation.addOnClockTickListener(this::clockTickListener);
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -159,17 +153,17 @@ public class DynamicHostCreation {
         /* Checks if the time specified in the scheduling interval has passed.
          * This way, creates a new PM just once at that time. */
         if(time == SCHEDULING_INTERVAL) {
-            Host host = createHost();
+            final var host = createHost();
             datacenter0.addHost(host);
             System.out.printf("%n %.2f: # Physically expanding the %s by adding the new %s to it.", info.getTime(), datacenter0, host);
 
             //Creates and submits a new VM
-            Vm vm = createVm(vmList.size());
+            final var vm = createVm(vmList.size());
             System.out.printf("%.2f: # Created %s%n", info.getTime(), vm);
             broker0.submitVm(vm);
 
             //Creates and submits 2 Cloudlets, binding them to the new VM
-            List<Cloudlet> newCloudletList = createCloudlets(2);
+            final var newCloudletList = createCloudlets(2);
             broker0.submitCloudletList(newCloudletList, vm);
             System.out.printf("%.2f: # Created %d Cloudlets for %s%n", info.getTime(), newCloudletList.size(), vm);
 
@@ -183,35 +177,30 @@ public class DynamicHostCreation {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        ResourceProvisioner ramProvisioner = new ResourceProvisionerSimple();
-        ResourceProvisioner bwProvisioner = new ResourceProvisionerSimple();
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
-        Host host = new HostSimple(ram, bw, storage, peList);
-        host
-            .setRamProvisioner(ramProvisioner)
-            .setBwProvisioner(bwProvisioner)
-            .setVmScheduler(vmScheduler);
+        final var vmScheduler = new VmSchedulerTimeShared();
+        final var host = new HostSimple(ram, bw, storage, peList);
+        host.setVmScheduler(vmScheduler);
         return host;
     }
 
@@ -219,12 +208,12 @@ public class DynamicHostCreation {
      * Creates a list of VMs.
      */
     private List<Vm> createVms(final int count) {
-        final List<Vm> list = new ArrayList<>(count);
+        final var newVmList = new ArrayList<Vm>(count);
         for (int i = 0; i < count; i++) {
-            list.add(createVm(i));
+            newVmList.add(createVm(i));
         }
 
-        return list;
+        return newVmList;
     }
 
     private Vm createVm(final int id) {
@@ -234,18 +223,18 @@ public class DynamicHostCreation {
     }
 
     private List<Cloudlet> createCloudlets(final int count) {
-        final List<Cloudlet> list = new ArrayList<>(count);
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var newCloudletList = new ArrayList<Cloudlet>(count);
+        final var utilization = new UtilizationModelFull();
         for (int i = 0; i < count; i++) {
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())
                     .setUtilizationModelRam(new UtilizationModelDynamic(0.2));
-            list.add(cloudlet);
+            newCloudletList.add(cloudlet);
         }
 
-        return list;
+        return newCloudletList;
     }
 }

@@ -82,7 +82,7 @@ public class UtilizationModelFullPerformance {
     private static final VmAllocationPolicy VM_ALLOCATION_POLICY = new VmAllocationPolicyFirstFit();
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -141,7 +141,7 @@ public class UtilizationModelFullPerformance {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList =
+        final var hostList =
                 IntStream.range(0, HOSTS)
                          .mapToObj(i -> createHost())
                          .collect(toCollection(() -> new ArrayList<>(HOSTS)));
@@ -162,23 +162,23 @@ public class UtilizationModelFullPerformance {
     }
 
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             final Vm vm = new VmSimple(1000, VM_PES);
-            list.add(vm);
+            newVmList.add(vm);
         }
 
-        return list;
+        return newVmList;
     }
 
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> cloudlets = new ArrayList<>(CLOUDLETS);
+        final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
             cloudlet.setUtilizationModelCpu(um).setSizes(1024);
-            cloudlets.add(cloudlet);
+            newCloudletList.add(cloudlet);
         }
 
-        return cloudlets;
+        return newCloudletList;
     }
 }

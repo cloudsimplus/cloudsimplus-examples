@@ -123,8 +123,8 @@ public class LargeScaleExample {
         simulation.start();
 
         final long submittedCloudlets = broker0.getCloudletSubmittedList().size();
-        final long finishedCloudlets = broker0.getCloudletFinishedList().size();
-        System.out.printf("Submitted Cloudlets: %d Finished Cloudlets: %d%n", submittedCloudlets, finishedCloudlets);
+        final long cloudletFinishedList = broker0.getCloudletFinishedList().size();
+        System.out.printf("Submitted Cloudlets: %d Finished Cloudlets: %d%n", submittedCloudlets, cloudletFinishedList);
 
         System.out.printf(
             "Simulated time: %s Actual Execution Time: %s%n", simulatedTime(), actualElapsedTime());

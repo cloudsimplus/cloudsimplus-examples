@@ -23,8 +23,6 @@
  */
 package org.cloudsimplus.examples.schedulers;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
@@ -33,8 +31,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
@@ -81,16 +77,13 @@ public class TwoCloudletsAndOneSpaceSharedVmExample {
 
         System.out.println("Starting " + getClass().getSimpleName());
 
-        // First step: Initialize the CloudSim package.
         simulation = new CloudSim();
 
-        // Second step: Create Datacenters
         // Datacenters are the resource providers in CloudSim. We need at
         // list one of them to run a CloudSim simulation
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
-        // Third step: Create Broker
-        DatacenterBroker broker = new DatacenterBrokerSimple(simulation);
+        final var broker = new DatacenterBrokerSimple(simulation);
 
         // Fourth step: Create one virtual machine
         vmlist = new ArrayList<>();
@@ -103,7 +96,7 @@ public class TwoCloudletsAndOneSpaceSharedVmExample {
         long bw = 1000;
         int pesNumber = 1; // number of cpus
 
-        Vm vm = new VmSimple(vmid, mips, pesNumber)
+        final var vm = new VmSimple(vmid, mips, pesNumber)
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
         vmlist.add(vm);
@@ -138,12 +131,10 @@ public class TwoCloudletsAndOneSpaceSharedVmExample {
         // submit cloudlet list to the broker
         broker.submitCloudletList(cloudletList);
 
-        // Sixth step: Starts the simulation
         simulation.start();
 
-        //Final step: Print results when simulation is over
-        List<Cloudlet> newList = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(newList).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
     /**
@@ -152,33 +143,21 @@ public class TwoCloudletsAndOneSpaceSharedVmExample {
      * @return the Datacenter
      */
     private Datacenter createDatacenter() {
-        // Here are the steps needed to create a DatacenterSimple:
-        // 1. We need to create a list to store
-        // our machine
-        List<Host> hostList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
+        final var peList = new ArrayList<Pe>();
 
-        // 2. A Machine contains one or more PEs or CPUs/Cores.
-        // In this example, it will have only one core.
-        List<Pe> peList = new ArrayList<>();
+        final long mips = 1000;
 
-        long mips = 1000;
+        peList.add(new PeSimple(mips));
 
-        // 3. Create PEs and add these into a list.
-        peList.add(new PeSimple(mips, new PeProvisionerSimple())); // need to store Pe id and MIPS Rating
-
-        // 4. Create HostSimple with its id and list of PEs and add them to the list of machines
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        Host host = new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
+        final var host = new HostSimple(ram, bw, storage, peList)
             .setVmScheduler(new VmSchedulerTimeShared());
 
         hostList.add(host);
 
-        // 6. Finally, we need to create a DatacenterSimple object.
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
-
 }

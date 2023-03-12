@@ -48,6 +48,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Map.Entry;
+
 /**
  * An example showing how to use the {@link DatacenterBrokerSimple}
  * to select the {@link Datacenter} closest to every submitted {@link Vm},
@@ -94,7 +96,7 @@ public class DatacenterSelectionByTimeZoneExample {
     private static final int CLOUDLET_LENGTH = 10000;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private List<Datacenter> datacenterList;
@@ -124,10 +126,10 @@ public class DatacenterSelectionByTimeZoneExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingDouble(cl -> cl.getVm().getTimeZone()));
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingDouble(cl -> cl.getVm().getTimeZone()));
 
-        new CloudletsTableBuilder(finishedCloudlets)
+        new CloudletsTableBuilder(cloudletFinishedList)
                 .addColumn(new TextTableColumn("   DC   ", "TimeZone"), this::getDatacenterTimeZone, 3)
                 .addColumn(new TextTableColumn("VM Expected", " TimeZone "), this::getVmTimeZone, 8)
                 .build();
@@ -148,8 +150,8 @@ public class DatacenterSelectionByTimeZoneExample {
      */
     private List<Datacenter> createDatacenters(){
         final var dcList = new ArrayList<Datacenter>(DATACENTERS_TIMEZONES.size());
-        for (Map.Entry<String, Double> entry : DATACENTERS_TIMEZONES.entrySet()) {
-            final Datacenter dc = createDatacenter(entry.getValue());
+        for (Entry<String, Double> entry : DATACENTERS_TIMEZONES.entrySet()) {
+            final var dc = createDatacenter(entry.getValue());
             dcList.add(dc);
             System.out.printf("Created Datacenter %2d in %15s | %s%n", dc.getId(), entry.getKey(), TimeZoned.format(entry.getValue()));
         }
@@ -165,7 +167,7 @@ public class DatacenterSelectionByTimeZoneExample {
     private Datacenter createDatacenter(final double timeZone) {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -220,10 +222,10 @@ public class DatacenterSelectionByTimeZoneExample {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 
         //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
             cloudlet.setSizes(1024);
             cloudletList.add(cloudlet);
         }

@@ -22,7 +22,6 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.resources.SanStorage;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -77,8 +76,8 @@ public class NetworkExample1 {
 
         simulation.start();
 
-        List<Cloudlet> newList = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(newList).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
@@ -102,9 +101,9 @@ public class NetworkExample1 {
         final long fileSize = 300;
         final long outputSize = 300;
         //The RAM, CPU and Bandwidth UtilizationModel.
-        final UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
-        Cloudlet cloudlet1 =
+        final var cloudlet1 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
@@ -131,8 +130,8 @@ public class NetworkExample1 {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
-        final List<Pe> peList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
+        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
         peList.add(new PeSimple(mips));
@@ -141,7 +140,7 @@ public class NetworkExample1 {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        Host host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, peList);
         hostList.add(host);
 
         return new DatacenterSimple(simulation, hostList);

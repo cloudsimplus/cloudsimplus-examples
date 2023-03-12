@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -142,7 +141,7 @@ public final class HostFaultInjectionExample1 {
         System.out.println("Starting " + getClass().getSimpleName());
         simulation = new CloudSim();
 
-        final Datacenter datacenter = createDatacenter();
+        final var datacenter = createDatacenter();
 
         brokerList = IntStream.range(0, BROKERS).mapToObj(i -> new DatacenterBrokerSimple(simulation)).toList();
         createVmsAndCloudlets();
@@ -173,14 +172,14 @@ public final class HostFaultInjectionExample1 {
     }
 
     private void createVmsAndCloudlets() {
-        for (final var broker : brokerList) {
+        for (final DatacenterBroker broker : brokerList) {
             createAndSubmitVms(broker);
             createAndSubmitCloudlets(broker);
         }
     }
 
     public void createAndSubmitVms(final DatacenterBroker broker) {
-        final List<Vm> list = new ArrayList<>(VMS_BY_BROKER);
+        final var list = new ArrayList<Vm>(VMS_BY_BROKER);
 
         for (int i = 0; i < VMS_BY_BROKER; i++) {
             list.add(createVm());
@@ -227,7 +226,7 @@ public final class HostFaultInjectionExample1 {
         }
         System.out.println();
 
-        final var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS);
         return dc;
     }
@@ -248,12 +247,12 @@ public final class HostFaultInjectionExample1 {
     }
 
     public List<Pe> createPeList(final int pesNumber, final long mips) {
-        final List<Pe> list = new ArrayList<>(pesNumber);
+        final var peList = new ArrayList<Pe>(pesNumber);
         for (int i = 0; i < pesNumber; i++) {
-            list.add(new PeSimple(mips));
+            peList.add(new PeSimple(mips));
         }
 
-        return list;
+        return peList;
     }
 
     /**
@@ -271,7 +270,7 @@ public final class HostFaultInjectionExample1 {
         final var fault = new HostFaultInjection(datacenter, poisson);
         fault.setMaxTimeToFailInHours(MAX_TIME_TO_FAIL_IN_HOURS);
 
-        for (final var broker : brokerList) {
+        for (final DatacenterBroker broker : brokerList) {
             fault.addVmCloner(broker, new VmClonerSimple(this::cloneVm, this::cloneCloudlets));
         }
 
@@ -342,7 +341,7 @@ public final class HostFaultInjectionExample1 {
      * @return the cloned (new) cloudlet
      */
     private Cloudlet cloneCloudlet(Cloudlet source) {
-        Cloudlet clone = new CloudletSimple(source.getLength(), source.getNumberOfPes());
+        final var clone = new CloudletSimple(source.getLength(), source.getNumberOfPes());
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the cloudlet to its clone,

@@ -33,17 +33,12 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.File;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.resources.SanStorage;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -91,7 +86,7 @@ import java.util.List;
     private static int SAN_COUNT = FILE_SIZES_MATRIX_MB.length;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -130,8 +125,8 @@ import java.util.List;
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -140,16 +135,16 @@ import java.util.List;
      * @see <a href="https://en.wikipedia.org/wiki/Disk_array">Disk Array</a>
      */
     private List<SanStorage> createSanArray() {
-        final List<SanStorage> sanList = new ArrayList<>(SAN_COUNT);
+        final var sanStorageList = new ArrayList<SanStorage>(SAN_COUNT);
         int initialFileNumber = 0;
         for (int i = 0; i < SAN_COUNT; i++) {
             SanStorage san = new SanStorage("san"+i, SAN_CAPACITY_MB, SAN_BANDWIDTH_Mbps, NETWORK_LATENCY_SEC);
             addFilesToSanStorage(san, FILE_SIZES_MATRIX_MB[i], initialFileNumber);
             initialFileNumber = san.getNumStoredFile();
-            sanList.add(san);
+            sanStorageList.add(san);
         }
 
-        return sanList;
+        return sanStorageList;
     }
 
     /**
@@ -183,9 +178,9 @@ import java.util.List;
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -193,23 +188,18 @@ import java.util.List;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        ResourceProvisioner ramProvisioner = new ResourceProvisionerSimple();
-        ResourceProvisioner bwProvisioner = new ResourceProvisionerSimple();
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
-        Host host = new HostSimple(ram, bw, storage, peList);
-        host
-            .setRamProvisioner(ramProvisioner)
-            .setBwProvisioner(bwProvisioner)
-            .setVmScheduler(vmScheduler);
+        final var vmScheduler = new VmSchedulerTimeShared();
+        final var host = new HostSimple(ram, bw, storage, peList);
+        host.setVmScheduler(vmScheduler);
         return host;
     }
 
@@ -217,7 +207,7 @@ import java.util.List;
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             Vm vm =
                 new VmSimple(i, 1000, VM_PES)
@@ -236,10 +226,10 @@ import java.util.List;
      * is equal to {@link #VMS number of VMs}.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
+        final var utilization = new UtilizationModelFull();
         for (int i = 0; i < CLOUDLETS; i++) {
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)

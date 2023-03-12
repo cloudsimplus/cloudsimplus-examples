@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples.listeners;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -33,8 +32,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
@@ -54,8 +51,8 @@ import java.util.List;
  * A simple example showing how to create a data center with 1 host and run
  * cloudlets on it, and receive notifications when each cloudlet finishes executing.
  *
- * The example uses the new Cloudlet listeners to get these
- * notifications while the simulation is running.
+ * <p>The example uses the new Cloudlet listeners to get these
+ * notifications while the simulation is running.</p>
  *
  * @see Cloudlet#addOnFinishListener(EventListener)
  * @see EventListener
@@ -148,8 +145,8 @@ public class CloudletListenersExample1 {
     private void runSimulationAndPrintResults() {
         simulation.start();
 
-        List<Cloudlet> finishedCloudlets = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -163,7 +160,7 @@ public class CloudletListenersExample1 {
         long length = 10000;
         for(int i = 0; i < NUMBER_OF_CLOUDLETS; i++){
             cloudletId = vm.getId() + i;
-            Cloudlet cloudlet = createCloudlet(cloudletId, vm, length*(i+1));
+            final var cloudlet = createCloudlet(cloudletId, vm, length*(i+1));
             this.cloudletList.add(cloudlet);
         }
 
@@ -174,7 +171,7 @@ public class CloudletListenersExample1 {
      * Creates VMs and submit them to the broker.
      */
     private void createAndSubmitVms() {
-        Vm vm0 = createVm(0);
+        final var vm0 = createVm(0);
         this.vmList.add(vm0);
         this.broker.submitVmList(vmList);
     }
@@ -186,11 +183,12 @@ public class CloudletListenersExample1 {
      * @return the created VM
      */
     private Vm createVm(int id) {
-        int mips = 1000;
-        long size = 10000; // image size (Megabyte)
-        int ram = 512; // vm memory (Megabyte)
-        long bw = 1000;
-        Vm vm = new VmSimple(id, mips, VM_PES_NUMBER)
+        final int mips = 1000;
+        final long size = 10000; // image size (Megabyte)
+        final int ram = 512; // vm memory (Megabyte)
+        final long bw = 1000;
+
+        final var vm = new VmSimple(id, mips, VM_PES_NUMBER)
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
 
@@ -229,10 +227,9 @@ public class CloudletListenersExample1 {
      * @return the created Datacenter
      */
     private Datacenter createDatacenter() {
-        Host host = createHost(0);
+        final var host = createHost(0);
         hostList.add(host);
-
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     /**
@@ -242,19 +239,16 @@ public class CloudletListenersExample1 {
      * @return the created host
      */
     private Host createHost(int id) {
-        List<Pe> peList = new ArrayList<>();
-        long mips = 1000;
+        final var peList = new ArrayList<Pe>();
+        final long mips = 1000;
         for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
-        long ram = 2048; // host memory (Megabyte)
-        long storage = 1000000; // host storage (Megabyte)
-        long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        final long ram = 2048; // host memory (Megabyte)
+        final long storage = 1000000; // host storage (Megabyte)
+        final long bw = 10000; //Megabits/s
 
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 }

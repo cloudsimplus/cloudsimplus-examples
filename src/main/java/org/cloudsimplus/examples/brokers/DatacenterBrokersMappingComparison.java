@@ -33,19 +33,16 @@ import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
 import org.cloudbus.cloudsim.distributions.UniformDistr;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -60,7 +57,8 @@ import org.cloudsimplus.util.Log;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+
+import static java.util.Map.Entry;
 
 /**
  * An example that uses a
@@ -112,21 +110,21 @@ public class DatacenterBrokersMappingComparison {
         final boolean verbose = false;
 
         // Heuristic
-        final CloudSim simulation0 = new CloudSim();
-        final UniformDistr random0 = new UniformDistr(0, 1, seed);
-        final DatacenterBrokerHeuristic broker0 = createHeuristicBroker(simulation0, random0);
+        final var simulation0 = new CloudSim();
+        final var random0 = new UniformDistr(0, 1, seed);
+        final var broker0 = createDatacenterBrokerHeuristic(simulation0, random0);
         new DatacenterBrokersMappingComparison(broker0, random0, verbose);
 
         // BestFit
-        final CloudSim simulation1 = new CloudSim();
-        final UniformDistr random1 = new UniformDistr(0, 1, seed);
-        final DatacenterBroker broker1 = new DatacenterBrokerBestFit(simulation1);
+        final var simulation1 = new CloudSim();
+        final var random1 = new UniformDistr(0, 1, seed);
+        final var broker1 = new DatacenterBrokerBestFit(simulation1);
         new DatacenterBrokersMappingComparison(broker1, random1, verbose);
 
         // Simple - RoundRobin
-        final CloudSim simulation2 = new CloudSim();
-        final UniformDistr random2 = new UniformDistr(0, 1, seed);
-        final DatacenterBroker broker2 = new DatacenterBrokerSimple(simulation2);
+        final var simulation2 = new CloudSim();
+        final var random2 = new UniformDistr(0, 1, seed);
+        final var broker2 = new DatacenterBrokerSimple(simulation2);
         new DatacenterBrokersMappingComparison(broker2, random2, verbose);
 
         System.out.println("Comparison finished!");
@@ -140,7 +138,7 @@ public class DatacenterBrokersMappingComparison {
         this.simulation = broker.getSimulation();
         this.random = random;
 
-        final Datacenter datacenter = createDatacenter(simulation);
+        final var datacenter = createDatacenter(simulation);
 
         vmList = createVms(random);
         cloudletList = createCloudlets(random);
@@ -151,46 +149,45 @@ public class DatacenterBrokersMappingComparison {
 
         // print simulation results
         if (verbose) {
-            final List<Cloudlet> finishedCloudlets = broker.getCloudletFinishedList();
-            finishedCloudlets.sort(Comparator.comparingLong(Cloudlet::getId));
-            new CloudletsTableBuilder(finishedCloudlets).build();
+            final var cloudletFinishedList = broker.getCloudletFinishedList();
+            cloudletFinishedList.sort(Comparator.comparingLong(Cloudlet::getId));
+            new CloudletsTableBuilder(cloudletFinishedList).build();
         }
 
         print(verbose);
     }
 
-    private static DatacenterBrokerHeuristic createHeuristicBroker(final CloudSim sim, final ContinuousDistribution rand) {
-        CloudletToVmMappingSimulatedAnnealing heuristic = createSimulatedAnnealingHeuristic(rand);
-        final DatacenterBrokerHeuristic broker = new DatacenterBrokerHeuristic(sim);
+    private static DatacenterBrokerHeuristic createDatacenterBrokerHeuristic(final CloudSim sim, final ContinuousDistribution rand) {
+        final var heuristic = createSimulatedAnnealingHeuristic(rand);
+        final var broker = new DatacenterBrokerHeuristic(sim);
         broker.setHeuristic(heuristic);
         return broker;
     }
 
     private static CloudletToVmMappingSimulatedAnnealing createSimulatedAnnealingHeuristic(final ContinuousDistribution rand) {
-        CloudletToVmMappingSimulatedAnnealing heuristic =
-            new CloudletToVmMappingSimulatedAnnealing(SA_INITIAL_TEMPERATURE, rand);
-        heuristic.setColdTemperature(SA_COLD_TEMPERATURE);
-        heuristic.setCoolingRate(SA_COOLING_RATE);
-        heuristic.setSearchesByIteration(SA_NUMBER_OF_NEIGHBORHOOD_SEARCHES);
+        final var heuristic = new CloudletToVmMappingSimulatedAnnealing(SA_INITIAL_TEMPERATURE, rand);
+        heuristic.setColdTemperature(SA_COLD_TEMPERATURE)
+                 .setCoolingRate(SA_COOLING_RATE)
+                 .setSearchesByIteration(SA_NUMBER_OF_NEIGHBORHOOD_SEARCHES);
         return heuristic;
     }
 
     private List<Cloudlet> createCloudlets(final ContinuousDistribution rand) {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS_TO_CREATE);
+        final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS_TO_CREATE);
         for (int i = 0; i < CLOUDLETS_TO_CREATE; i++) {
-            list.add(createCloudlet(i, getRandomPesNumber(4, rand)));
+            cloudletList.add(createCloudlet(i, getRandomPesNumber(4, rand)));
         }
 
-        return list;
+        return cloudletList;
     }
 
     private List<Vm> createVms(final ContinuousDistribution random) {
-        final List<Vm> list = new ArrayList<>(VMS_TO_CREATE);
+        final var vmList = new ArrayList<Vm>(VMS_TO_CREATE);
         for (int i = 0; i < VMS_TO_CREATE; i++) {
-            list.add(createVm(i, getRandomPesNumber(4, random)));
+            vmList.add(createVm(i, getRandomPesNumber(4, random)));
         }
 
-        return list;
+        return vmList;
     }
 
     private void print(final boolean verbose) {
@@ -215,7 +212,7 @@ public class DatacenterBrokersMappingComparison {
     }
 
     private DatacenterSimple createDatacenter(final Simulation sim) {
-        final List<Host> hostList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
         for (int i = 0; i < HOSTS_TO_CREATE; i++) {
             hostList.add(createHost());
         }
@@ -229,11 +226,11 @@ public class DatacenterBrokersMappingComparison {
         final long storage = 1000000; // host storage
         final long bw = 10000;
 
-        final List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
         for (int i = 0; i < 8; i++)
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
 
         return new HostSimple(ram, bw, storage, peList)
             .setRamProvisioner(new ResourceProvisionerSimple())
@@ -258,7 +255,7 @@ public class DatacenterBrokersMappingComparison {
         final long outputSize = 300; //Size (in bytes) after execution
 
         //Defines how RAM and Bandwidth resources are used
-        final UtilizationModel ramAndBwUtilizationModel = new UtilizationModelDynamic(0.1);
+        final var ramAndBwUtilizationModel = new UtilizationModelDynamic(0.1);
 
         return new CloudletSimple(id, length, numberOfPes)
             .setFileSize(fileSize)
@@ -269,11 +266,8 @@ public class DatacenterBrokersMappingComparison {
     }
 
     private double computeBrokersMappingCost(final boolean doPrint) {
-        CloudletToVmMappingSimulatedAnnealing heuristic =
-            new CloudletToVmMappingSimulatedAnnealing(SA_INITIAL_TEMPERATURE, random);
-
-        final CloudletToVmMappingSolution mappingSolution = new CloudletToVmMappingSolution(heuristic);
-        int i = 0;
+        final var heuristic = new CloudletToVmMappingSimulatedAnnealing(SA_INITIAL_TEMPERATURE, random);
+        final var mappingSolution = new CloudletToVmMappingSolution(heuristic);
         for (Cloudlet c : cloudletList) {
             if (c.isBoundToVm()) {
                 mappingSolution.bindCloudletToVm(c, c.getVm());
@@ -291,13 +285,16 @@ public class DatacenterBrokersMappingComparison {
     private void printSolution(
         final String title,
         final CloudletToVmMappingSolution solution,
-        final boolean showIndividualCloudletFitness) {
-        System.out.printf("%s (cost %.2f fitness %.6f)%n",
-            title, solution.getCost(), solution.getFitness());
+        final boolean showIndividualCloudletFitness)
+    {
+        System.out.printf(
+                "%s (cost %.2f fitness %.6f)%n",
+                title, solution.getCost(), solution.getFitness());
+
         if (!showIndividualCloudletFitness)
             return;
 
-        for (Map.Entry<Cloudlet, Vm> e : solution.getResult().entrySet()) {
+        for (Entry<Cloudlet, Vm> e : solution.getResult().entrySet()) {
             System.out.printf(
                 "Cloudlet %3d (%d PEs, %6d MI) mapped to Vm %3d (%d PEs, %6.0f MIPS)%n",
                 e.getKey().getId(),
@@ -308,5 +305,4 @@ public class DatacenterBrokersMappingComparison {
 
         System.out.println();
     }
-
 }

@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -33,7 +32,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
@@ -112,19 +110,18 @@ public class CreateCloudletAfterLastFinishedOne {
 
     private void runSimulationAndPrintResults() {
         simulation.start();
-        List<Cloudlet> cloudlets = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(cloudlets).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     private List<Vm> createAndSubmitVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            list.add(createVm());
+            newVmList.add(createVm());
         }
 
-        broker.submitVmList(list);
-
-        return list;
+        broker.submitVmList(newVmList);
+        return newVmList;
     }
 
     /**
@@ -152,7 +149,7 @@ public class CreateCloudletAfterLastFinishedOne {
         final int id = cloudletList.size();
         final long length = 10000; //in number of Million Instructions (MI)
         final int pesNumber = 1;
-        Cloudlet cloudlet = new CloudletSimple(id, length, pesNumber)
+        final var cloudlet = new CloudletSimple(id, length, pesNumber)
             .setFileSize(300)
             .setOutputSize(300)
             .setUtilizationModel(new UtilizationModelFull());
@@ -183,7 +180,7 @@ public class CreateCloudletAfterLastFinishedOne {
             hostList.add(createHost(i));
         }
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     /**
@@ -193,19 +190,18 @@ public class CreateCloudletAfterLastFinishedOne {
      * @return the created host
      */
     private Host createHost(int id) {
-        List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         long mips = 1000;
         for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
         long ram = 2048; // host memory (Megabyte)
         long storage = 1000000; // host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
        return new HostSimple(ram, bw, storage, peList)
-           .setRamProvisioner(new ResourceProvisionerSimple())
-           .setBwProvisioner(new ResourceProvisionerSimple())
+            .setRamProvisioner(new ResourceProvisionerSimple())
+            .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerSpaceShared());
-
     }
 }

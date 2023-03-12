@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples.autoscaling;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -34,7 +33,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
@@ -109,7 +107,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private static final int VM_PES = 14;
     private static final int VM_RAM = 1200;
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Host> hostList;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -168,12 +166,12 @@ public class VerticalVmCpuScalingDynamicThreshold {
     }
 
     private void printSimulationResults() {
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
         final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
-        finishedCloudlets.sort(sortByVmId.thenComparing(sortByStartTime));
+        cloudletFinishedList.sort(sortByVmId.thenComparing(sortByStartTime));
 
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -184,14 +182,14 @@ public class VerticalVmCpuScalingDynamicThreshold {
             hostList.add(createHost());
         }
 
-        Datacenter dc0 = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        Datacenter dc0 = new DatacenterSimple(simulation, hostList);
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 20000; //in Megabytes
@@ -215,7 +213,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private List<Vm> createListOfScalableVms(final int numberOfVms) {
         List<Vm> newList = new ArrayList<>(numberOfVms);
         for (int i = 0; i < numberOfVms; i++) {
-            Vm vm = createVm();
+            final var vm = createVm();
             vm.setPeVerticalScaling(createVerticalPeScaling());
             newList.add(vm);
         }
@@ -382,13 +380,13 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private Cloudlet createCloudlet(final long length, final int numberOfPes, final double delay) {
         /*
         Since a VM PE isn't used by two Cloudlets at the same time,
-        the Cloudlet can used 100% of that CPU capacity at the time
+        the Cloudlet can use 100% of that CPU capacity at the time
         it is running. Even if a CloudletSchedulerTimeShared is used
         to share the same VM PE among multiple Cloudlets,
         just one Cloudlet uses the PE at a time.
         Then it is preempted to enable other Cloudlets to use such a VM PE.
          */
-        final UtilizationModel utilizationCpu = new UtilizationModelFull();
+        final var utilizationCpu = new UtilizationModelFull();
 
         /**
          * Since BW e RAM are shared resources that don't enable preemption,
@@ -402,8 +400,8 @@ public class VerticalVmCpuScalingDynamicThreshold {
          * use a {@link UtilizationModelStochastic} to define resource usage randomly,
          * or use any other {@link UtilizationModel} implementation.
         */
-        final UtilizationModel utilizationModelDynamic = new UtilizationModelDynamic(1.0/CLOUDLETS);
-        Cloudlet cl = new CloudletSimple(length, numberOfPes);
+        final var utilizationModelDynamic = new UtilizationModelDynamic(1.0/CLOUDLETS);
+        final var cl = new CloudletSimple(length, numberOfPes);
         cl.setFileSize(1024)
           .setOutputSize(1024)
           .setUtilizationModelBw(utilizationModelDynamic)

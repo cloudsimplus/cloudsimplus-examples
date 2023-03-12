@@ -57,8 +57,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
@@ -150,18 +148,18 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         simulation = new CloudSim();
 
         @SuppressWarnings("unused")
-        Datacenter datacenter0 = createDatacenter();
-        DatacenterBroker broker = new DatacenterBrokerSimple(simulation);
+        final var datacenter0 = createDatacenter();
+        final var broker = new DatacenterBrokerSimple(simulation);
         createAndSubmitVms(broker);
         createAndSubmitCloudlets(broker);
 
         simulation.start();
 
-        final List<Cloudlet> finishedList = broker.getCloudletFinishedList();
-        finishedList.sort(
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        cloudletFinishedList.sort(
             Comparator.comparingLong((Cloudlet c) -> c.getVm().getHost().getId())
                       .thenComparingLong(c -> c.getVm().getId()));
-        new CloudletsTableBuilder(finishedList).build();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
@@ -185,12 +183,12 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {
-        final List<Cloudlet> list = new ArrayList<>(VMS);
-        for(Vm vm: vmList){
-            list.add(createCloudlet(vm, broker));
+        final var newCloudletList = new ArrayList<Cloudlet>(VMS);
+        for(final var vm: vmList){
+            newCloudletList.add(createCloudlet(vm, broker));
         }
 
-        broker.submitCloudletList(list);
+        broker.submitCloudletList(newCloudletList);
     }
 
     /**
@@ -201,7 +199,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
      * @return the created Cloudlets
      */
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
-        final Cloudlet cloudlet =
+        final var cloudlet =
             new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getNumberOfPes())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
@@ -211,32 +209,23 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     }
 
     public void createAndSubmitVms(DatacenterBroker broker) {
-        List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for(int i = 0; i < VMS; i++){
-            Vm vm = createVm(VM_PES);
-            list.add(vm);
+            final var vm = createVm(VM_PES);
+            newVmList.add(vm);
         }
 
-        vmList.addAll(list);
-        broker.submitVmList(list);
+        vmList.addAll(newVmList);
+        broker.submitVmList(newVmList);
     }
 
     public Vm createVm(int pes) {
-        Vm vm = new VmSimple(VM_MIPS, pes);
+        final var vm = new VmSimple(VM_MIPS, pes);
         vm
           .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
           .setCloudletScheduler(new CloudletSchedulerTimeShared());
         return vm;
     }
-
-    /*
-    pm vm free
-    4
-    5
-    6
-    7
-    8  2  6
-    */
 
     /**
      * Creates a Datacenter with number of Hosts defined by {@link #HOSTS},
@@ -248,15 +237,15 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         this.hostList = new ArrayList<>();
         for(int i = 0; i < HOSTS; i++){
             final int pes = HOST_INITIAL_PES + i;
-            Host host = createHost(pes, HOST_MIPS);
+            final var host = createHost(pes, HOST_MIPS);
             hostList.add(host);
         }
         System.out.println();
 
         /*Creates a VmAllocationPolicy and changes, at runtime, the policy used to select a Host for a VM.*/
-        final VmAllocationPolicySimple allocationPolicy = new VmAllocationPolicySimple(this::bestFitHostSelectionPolicy);
+        final var allocationPolicy = new VmAllocationPolicySimple(this::bestFitHostSelectionPolicy);
 
-        DatacenterSimple dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
 
         hostList.forEach(host -> System.out.printf("#Created %s with %d PEs%n", host, host.getNumberOfPes()));
         System.out.println();
@@ -266,21 +255,17 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     }
 
     public Host createHost(int numberOfPes, long mipsByPe) {
-            List<Pe> peList = createPeList(numberOfPes, mipsByPe);
-            Host host =
-                new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
-            host
-                .setRamProvisioner(new ResourceProvisionerSimple())
-                .setBwProvisioner(new ResourceProvisionerSimple())
-                .setVmScheduler(new VmSchedulerTimeShared());
-            return host;
+        final var peList = createPeList(numberOfPes, mipsByPe);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        host.setVmScheduler(new VmSchedulerTimeShared());
+        return host;
     }
 
     public List<Pe> createPeList(int numberOfPEs, long mips) {
-        List<Pe> list = new ArrayList<>(numberOfPEs);
+        final var peList = new ArrayList<Pe>(numberOfPEs);
         for(int i = 0; i < numberOfPEs; i++) {
-            list.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
-        return list;
+        return peList;
     }
 }

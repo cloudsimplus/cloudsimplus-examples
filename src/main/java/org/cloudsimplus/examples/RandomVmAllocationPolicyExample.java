@@ -36,14 +36,12 @@ import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
 import org.cloudbus.cloudsim.distributions.UniformDistr;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -82,7 +80,7 @@ public class RandomVmAllocationPolicyExample {
     private static final int CLOUDLET_LENGTH = 10000;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -117,9 +115,9 @@ public class RandomVmAllocationPolicyExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingLong(cloudlet -> cloudlet.getVm().getId()));
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingLong(cloudlet -> cloudlet.getVm().getId()));
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println("Execution time: " + TimeUtil.secondsToStr(TimeUtil.elapsedSeconds(startSecs)));
     }
 
@@ -129,13 +127,13 @@ public class RandomVmAllocationPolicyExample {
      * to place submitted VMs.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        VmAllocationPolicySimple vmAllocationPolicy = new VmAllocationPolicySimple();
+        final var vmAllocationPolicy = new VmAllocationPolicySimple();
 
         //Replaces the default method that allocates Hosts to VMs by our own implementation
         vmAllocationPolicy.setFindHostForVmFunction(this::findRandomSuitableHostForVm);
@@ -154,7 +152,7 @@ public class RandomVmAllocationPolicyExample {
      *         {@link Optional} if not suitable Host was found.
      */
     private Optional<Host> findRandomSuitableHostForVm(final VmAllocationPolicy vmAllocationPolicy, final Vm vm) {
-        final List<Host> hostList = vmAllocationPolicy.getHostList();
+        final var hostList = vmAllocationPolicy.getHostList();
         /* Despite the loop is bound to the number of Hosts inside the List,
         *  the index "i" is not used to get a Host at that position,
         *  but just to define that the maximum number of tries to find a
@@ -171,16 +169,16 @@ public class RandomVmAllocationPolicyExample {
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        Host host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, peList);
         host
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
@@ -192,7 +190,7 @@ public class RandomVmAllocationPolicyExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             Vm vm =
                 new VmSimple(i, 1000, VM_PES)
@@ -209,10 +207,10 @@ public class RandomVmAllocationPolicyExample {
      * Creates a list of Cloudlets.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
-        UtilizationModel utilization = new UtilizationModelDynamic(0.2);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
+        final var utilization = new UtilizationModelDynamic(0.2);
         for (int i = 0; i < CLOUDLETS; i++) {
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)

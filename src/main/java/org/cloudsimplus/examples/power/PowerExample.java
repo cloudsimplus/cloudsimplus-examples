@@ -129,7 +129,7 @@ public class PowerExample {
     private static final int MAX_POWER = 50;
 
     private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -158,11 +158,11 @@ public class PowerExample {
         simulation.start();
 
         System.out.println("------------------------------- SIMULATION FOR SCHEDULING INTERVAL = " + SCHEDULING_INTERVAL+" -------------------------------");
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> hostComparator = comparingLong(cl -> cl.getVm().getHost().getId());
-        finishedCloudlets.sort(hostComparator.thenComparing(cl -> cl.getVm().getId()));
+        cloudletFinishedList.sort(hostComparator.thenComparing(cl -> cl.getVm().getId()));
 
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         printHostsCpuUtilizationAndPowerConsumption();
         printVmsCpuUtilizationAndPowerConsumption();
     }
@@ -190,8 +190,9 @@ public class PowerExample {
      * This adds up to 70 W. If the two VMs are equal and using the same amount of CPU,
      * their power consumption would be the half of the total Host's power consumption.
      * This would be 60 W, not 70.
+     * </p>
      *
-     * This way, we have to compute VM power consumption by sharing a supposed Host static power
+     * <p>This way, we have to compute VM power consumption by sharing a supposed Host static power
      * consumption with each VM, as it's being shown here.
      * Not all {@link PowerModel} have this static power consumption.
      * However, the way the VM power consumption
@@ -274,8 +275,9 @@ public class PowerExample {
                   .setStartupPower(HOST_START_UP_POWER)
                   .setShutDownPower(HOST_SHUT_DOWN_POWER);
 
-        host.setVmScheduler(vmScheduler).setPowerModel(powerModel);
-        host.setId(id);
+        host.setId(id)
+            .setVmScheduler(vmScheduler)
+            .setPowerModel(powerModel);
         host.enableUtilizationStats();
 
         return host;

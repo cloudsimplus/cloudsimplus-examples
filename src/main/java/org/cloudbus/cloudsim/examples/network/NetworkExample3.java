@@ -18,10 +18,8 @@ import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.network.topologies.BriteNetworkTopology;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -81,7 +79,7 @@ public class NetworkExample3 {
 
         simulation.start();
 
-        for (DatacenterBroker broker : brokerList) {
+        for (var broker : brokerList) {
             printFinishedCloudletList(broker);
         }
         System.out.println(getClass().getSimpleName() + " finished!");
@@ -97,15 +95,15 @@ public class NetworkExample3 {
         final long length = 40000;
         final long fileSize = 300;
         final long outputSize = 300;
-        final UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
-        final Cloudlet cloudlet1 =
+        final var cloudlet1 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
 
-        final Cloudlet cloudlet2 =
+        final var cloudlet2 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
@@ -164,11 +162,11 @@ public class NetworkExample3 {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
-        final List<Pe> peList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
+        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
-        peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+        peList.add(new PeSimple(mips));
 
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes

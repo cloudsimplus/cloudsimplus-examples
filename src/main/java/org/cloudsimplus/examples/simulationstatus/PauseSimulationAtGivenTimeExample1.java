@@ -23,7 +23,6 @@
  */
 package org.cloudsimplus.examples.simulationstatus;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
@@ -32,8 +31,6 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
@@ -114,7 +111,7 @@ public class PauseSimulationAtGivenTimeExample1 {
 
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         /*
         Creates a Broker accountable for submission of VMs and Cloudlets
@@ -122,12 +119,12 @@ public class PauseSimulationAtGivenTimeExample1 {
         */
         this.broker = new DatacenterBrokerSimple(simulation);
 
-        Vm vm0 = createVm();
+        final var vm0 = createVm();
         this.vmList.add(vm0);
         this.broker.submitVmList(vmList);
 
         for(int i = 0; i < 4; i++) {
-            Cloudlet cloudlet = createCloudlet(vm0);
+            final var cloudlet = createCloudlet(vm0);
             this.cloudletList.add(cloudlet);
         }
 
@@ -157,18 +154,18 @@ public class PauseSimulationAtGivenTimeExample1 {
 
         /*Prints results when the simulation is over
         (you can use your own code here to print what you want from this cloudlet list)*/
-        printsListOfFinishedCloudlets("Finished cloudlets after simulation is complete");
+        printsListOfcloudletFinishedList("Finished cloudlets after simulation is complete");
 
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
     private void printCloudletsFinishedSoFarAndResumeSimulation(EventInfo pauseInfo) {
         System.out.printf("%n# Simulation paused at %.2f second%n", pauseInfo.getTime());
-        printsListOfFinishedCloudlets("Cloudlets Finished So Far");
+        printsListOfcloudletFinishedList("Cloudlets Finished So Far");
         this.simulation.resume();
     }
 
-    private void printsListOfFinishedCloudlets(String title) {
+    private void printsListOfcloudletFinishedList(String title) {
         //Gets the list of cloudlets finished so far a prints
         new CloudletsTableBuilder(broker.getCloudletFinishedList())
             .setTitle(title)
@@ -176,11 +173,11 @@ public class PauseSimulationAtGivenTimeExample1 {
     }
 
     private DatacenterSimple createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
-        Host host0 = createHost();
+        final var hostList = new ArrayList<Host>();
+        final var host0 = createHost();
         hostList.add(host0);
 
-        DatacenterSimple dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -191,16 +188,13 @@ public class PauseSimulationAtGivenTimeExample1 {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //in Megabits/s
 
-        final List<Pe> peList = new ArrayList<>(); //List of CPU cores
+        final var peList = new ArrayList<Pe>(); //List of CPU cores
 
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+        peList.add(new PeSimple(mips));
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm() {
@@ -218,5 +212,4 @@ public class PauseSimulationAtGivenTimeExample1 {
                 .setUtilizationModel(new UtilizationModelFull())
                 .setVm(vm);
     }
-
 }
