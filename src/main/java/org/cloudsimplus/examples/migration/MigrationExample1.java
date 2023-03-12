@@ -114,7 +114,7 @@ import static java.util.Comparator.comparingLong;
  * to run correctly.</p>
  *
  * <p>Realize that Host State History is just collected
- * if you enable that by calling {@link Host#enableStateHistory()}.</p>
+ * if you enable that by calling {@link Host#setStateHistoryEnabled(boolean)}.</p>
  *
  * @author Manoel Campos da Silva Filho
  */
@@ -462,7 +462,7 @@ public final class MigrationExample1 {
         final var peList = createPeList(pesNumber);
         final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, peList);
         host.setVmScheduler(new VmSchedulerTimeShared())
-            .enableStateHistory();
+            .setStateHistoryEnabled(true);
         return host;
     }
 
