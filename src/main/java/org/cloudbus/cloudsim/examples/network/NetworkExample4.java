@@ -14,6 +14,7 @@ import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristicsSimple;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
@@ -141,12 +142,7 @@ public class NetworkExample4 {
         hostList.add(host);
 
         final Datacenter dc = new DatacenterSimple(simulation, hostList);
-        dc.getCharacteristics()
-            .setCostPerSecond(3.0)
-            .setCostPerMem(0.05)
-            .setCostPerStorage(0.1)
-            .setCostPerBw(0.1);
-
+        dc.setCharacteristics(new DatacenterCharacteristicsSimple(3.0, 0.05, 0.1, 0.1));
         return dc;
     }
 }

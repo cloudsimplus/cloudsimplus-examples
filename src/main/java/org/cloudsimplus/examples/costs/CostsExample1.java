@@ -29,6 +29,7 @@ import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristicsSimple;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
@@ -138,11 +139,7 @@ public class CostsExample1 {
         final Datacenter dc = new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
 
         // Those are monetary values. Consider any currency you want (such as Dollar)
-        dc.getCharacteristics()
-          .setCostPerSecond(0.01)
-          .setCostPerMem(0.02)
-          .setCostPerStorage(0.001)
-          .setCostPerBw(0.005);
+        dc.setCharacteristics(new DatacenterCharacteristicsSimple(0.01, 0.02, 0.001, 0.005));
         return dc;
     }
 
