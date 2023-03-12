@@ -112,7 +112,7 @@ import static java.util.stream.Collectors.joining;
  * to run correctly.</p>
  *
  * <p>Realize that Host State History is just collected
- * if you enable that by calling {@link Host#enableStateHistory()}.</p>
+ * if you enable that by calling {@link Host#setStateHistoryEnabled(boolean)}.</p>
  *
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 7.2.0
@@ -472,7 +472,7 @@ public final class InterDatacenterMigration1 {
         final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, peList);
         host.setId(createdHosts++)
             .setVmScheduler(new VmSchedulerTimeShared())
-            .enableStateHistory();
+            .setStateHistoryEnabled(true);
         return host;
     }
 

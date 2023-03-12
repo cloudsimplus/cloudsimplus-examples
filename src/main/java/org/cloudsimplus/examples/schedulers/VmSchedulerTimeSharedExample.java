@@ -146,7 +146,7 @@ public class VmSchedulerTimeSharedExample {
     /**
      * Prints the {@link Host#getStateHistory() state history} for a given Host.
      * Realize that the state history is just collected if that is enabled before
-     * starting the simulation by calling {@link Host#enableStateHistory()}.
+     * starting the simulation by calling {@link Host#setStateHistoryEnabled(boolean)}.
      *
      * @param host
      */
@@ -194,8 +194,8 @@ public class VmSchedulerTimeSharedExample {
         }
 
         final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
-        host.setVmScheduler(new VmSchedulerTimeShared());
-        host.enableStateHistory();
+        host.setStateHistoryEnabled(true)
+            .setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
 

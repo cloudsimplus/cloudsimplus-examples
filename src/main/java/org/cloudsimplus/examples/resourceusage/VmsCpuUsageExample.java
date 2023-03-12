@@ -194,10 +194,10 @@ public class VmsCpuUsageExample {
 
         final var host = new HostSimple(ram, bw, storage, peList)
                 .setId(id)
+                .setStateHistoryEnabled(true)
                 .setRamProvisioner(new ResourceProvisionerSimple())
                 .setBwProvisioner(new ResourceProvisionerSimple())
                 .setVmScheduler(new VmSchedulerTimeShared());
-        host.enableStateHistory();
         return host;
     }
 }

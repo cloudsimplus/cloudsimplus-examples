@@ -193,7 +193,7 @@ public final class ManualMigrationExample1 {
      * Prints the state of a Host along the simulation time.
      * <p>Realize that the Host State History is just collected
      * if {@link Host#isStateHistoryEnabled() history is enabled}
-     * by calling {@link Host#enableStateHistory()}.</p>
+     * by calling {@link Host#setStateHistoryEnabled(boolean)}.</p>
      *
      * @param host
      */
@@ -296,7 +296,7 @@ public final class ManualMigrationExample1 {
         final var peList = createPeList(numberOfPes, mipsByPe);
         final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
         host.setVmScheduler(new VmSchedulerTimeShared())
-            .enableStateHistory();
+            .setStateHistoryEnabled(true);
         return host;
     }
 
