@@ -1,25 +1,25 @@
-package org.cloudbus.cloudsim.examples.network.applications;
+package org.cloudsimplus.examples.network.applications;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.network.CloudletExecutionTask;
-import org.cloudbus.cloudsim.cloudlets.network.CloudletReceiveTask;
-import org.cloudbus.cloudsim.cloudlets.network.CloudletSendTask;
-import org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.network.NetworkDatacenter;
-import org.cloudbus.cloudsim.distributions.UniformDistr;
-import org.cloudbus.cloudsim.hosts.network.NetworkHost;
-import org.cloudbus.cloudsim.network.switches.AggregateSwitch;
-import org.cloudbus.cloudsim.network.switches.EdgeSwitch;
-import org.cloudbus.cloudsim.network.switches.RootSwitch;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.vms.network.NetworkVm;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.network.CloudletExecutionTask;
+import org.cloudsimplus.cloudlets.network.CloudletReceiveTask;
+import org.cloudsimplus.cloudlets.network.CloudletSendTask;
+import org.cloudsimplus.cloudlets.network.NetworkCloudlet;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.network.NetworkDatacenter;
+import org.cloudsimplus.distributions.UniformDistr;
+import org.cloudsimplus.hosts.network.NetworkHost;
+import org.cloudsimplus.network.switches.AggregateSwitch;
+import org.cloudsimplus.network.switches.EdgeSwitch;
+import org.cloudsimplus.network.switches.RootSwitch;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.vms.network.NetworkVm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,7 +74,7 @@ abstract class NetworkVmExampleAbstract {
     private static final long PACKETS_TO_SEND = 100;
     private static final int SCHEDULING_INTERVAL = 5;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     private final List<NetworkVm> vmList;
     private final NetworkDatacenter datacenter;
@@ -96,7 +96,7 @@ abstract class NetworkVmExampleAbstract {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         this.datacenter = createDatacenter();
         this.brokerList = createBrokerForEachApp();

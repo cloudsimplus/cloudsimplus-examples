@@ -24,30 +24,30 @@
 package org.cloudsimplus.examples.brokers;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerHeuristic;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.distributions.UniformDistr;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerHeuristic;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.distributions.UniformDistr;
 import org.cloudsimplus.heuristics.CloudletToVmMappingHeuristic;
 import org.cloudsimplus.heuristics.CloudletToVmMappingSimulatedAnnealing;
 import org.cloudsimplus.heuristics.CloudletToVmMappingSolution;
 import org.cloudsimplus.heuristics.HeuristicSolution;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +84,7 @@ public class DatacenterBrokerHeuristicExample {
     public static final double SA_COOLING_RATE = 0.003;
     public static final int    SA_NUMBER_OF_NEIGHBORHOOD_SEARCHES = 50;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final List<Cloudlet> cloudletList;
     private List<Vm> vmList;
     private CloudletToVmMappingSimulatedAnnealing heuristic;
@@ -117,7 +117,7 @@ public class DatacenterBrokerHeuristicExample {
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         final var datacenter0 = createDatacenter();
         final var broker0 = createDatacenterBrokerHeuristic();
@@ -228,7 +228,7 @@ public class DatacenterBrokerHeuristicExample {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    private Cloudlet createCloudlet(final DatacenterBroker broker, final int numberOfPes) {
+    private Cloudlet createCloudlet(final DatacenterBroker broker, final int pesNumber) {
         final long length = 400000; //in Million Instructions (MI)
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
@@ -236,7 +236,7 @@ public class DatacenterBrokerHeuristicExample {
         final var utilizationFull = new UtilizationModelFull();
         final var utilizationDynamic = new UtilizationModelDynamic(0.1);
 
-        return new CloudletSimple(createdCloudlets++, length, numberOfPes)
+        return new CloudletSimple(createdCloudlets++, length, pesNumber)
                     .setFileSize(fileSize)
                     .setOutputSize(outputSize)
                     .setUtilizationModelCpu(utilizationFull)
@@ -273,9 +273,9 @@ public class DatacenterBrokerHeuristicExample {
             System.out.printf(
                 "Cloudlet %3d (%d PEs, %6d MI) mapped to Vm %3d (%d PEs, %6.0f MIPS)%n",
                 e.getKey().getId(),
-                e.getKey().getNumberOfPes(), e.getKey().getLength(),
+                e.getKey().getPesNumber(), e.getKey().getLength(),
                 e.getValue().getId(),
-                e.getValue().getNumberOfPes(), e.getValue().getMips());
+                e.getValue().getPesNumber(), e.getValue().getMips());
         }
 
         System.out.println();

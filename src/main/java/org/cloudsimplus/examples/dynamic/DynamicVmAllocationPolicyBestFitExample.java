@@ -46,25 +46,25 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -132,7 +132,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
      */
     private final List<Vm> vmList = new ArrayList<>();
 
-    private CloudSim simulation;
+    private CloudSimPlus simulation;
     private List<Host> hostList;
 
     public static void main(String[] args) {
@@ -145,7 +145,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         @SuppressWarnings("unused")
         final var datacenter0 = createDatacenter();
@@ -200,7 +200,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
      */
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
         final var cloudlet =
-            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getNumberOfPes())
+            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getPesNumber())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModel(new UtilizationModelFull());
@@ -247,15 +247,15 @@ public final class DynamicVmAllocationPolicyBestFitExample {
 
         final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
 
-        hostList.forEach(host -> System.out.printf("#Created %s with %d PEs%n", host, host.getNumberOfPes()));
+        hostList.forEach(host -> System.out.printf("#Created %s with %d PEs%n", host, host.getPesNumber()));
         System.out.println();
 
         dc.setSchedulingInterval(SCHEDULE_INTERVAL);
         return dc;
     }
 
-    public Host createHost(int numberOfPes, long mipsByPe) {
-        final var peList = createPeList(numberOfPes, mipsByPe);
+    public Host createHost(int pesNumber, long mipsByPe) {
+        final var peList = createPeList(pesNumber, mipsByPe);
         final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;

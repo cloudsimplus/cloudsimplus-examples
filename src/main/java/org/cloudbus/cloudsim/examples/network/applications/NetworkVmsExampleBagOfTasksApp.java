@@ -1,9 +1,9 @@
-package org.cloudbus.cloudsim.examples.network.applications;
+package org.cloudsimplus.examples.network.applications;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.network.NetworkVm;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.cloudlets.network.NetworkCloudlet;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.network.NetworkVm;
 
 import java.util.ArrayList;
 import java.util.List;
