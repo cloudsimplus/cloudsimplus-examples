@@ -23,24 +23,24 @@
  */
 package org.cloudsimplus.examples.resourceusage;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class HostsCpuUsageExample {
     private List<Vm> vmlist;
     private List<Host> hostList;
     private DatacenterBroker broker;
-    private CloudSim simulation;
+    private CloudSimPlus simulation;
 
     private static final int NUMBER_OF_VMS = 2;
     private static final int NUMBER_OF_HOSTS = 2;
@@ -78,7 +78,7 @@ public class HostsCpuUsageExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         @SuppressWarnings("unused")
         final var datacenter0 = createDatacenter();
@@ -155,11 +155,11 @@ public class HostsCpuUsageExample {
      */
     private void printCpuUtilizationForAllHosts() {
         for (final var host : hostList) {
-            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getNumberOfPes();
+            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getPesNumber();
             final double cpuUsageMean = host.getCpuUtilizationStats().getMean()*100;
             System.out.printf(
                 "\tHost %d: PEs number: %2d MIPS by PE: %.0f CPU Utilization mean: %6.2f%%%n",
-                host.getId(), host.getNumberOfPes(), mipsByPe, cpuUsageMean);
+                host.getId(), host.getPesNumber(), mipsByPe, cpuUsageMean);
         }
     }
 

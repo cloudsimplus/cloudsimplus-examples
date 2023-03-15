@@ -23,24 +23,24 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ import java.util.List;
  * @see EventListener
  */
 public class DynamicCreationOfVmsAndCloudletsExample {
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBrokerSimple broker0;
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;
@@ -84,7 +84,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        this.simulation = new CloudSim();
+        this.simulation = new CloudSimPlus();
 
         final var datacenter0 = createDatacenter();
 
@@ -165,9 +165,9 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //in Megabits/s
 
-        final int numberOfPes = 8;
-        final var peList = new ArrayList<Pe>(numberOfPes); //List of CPU cores
-        for (int i = 0; i < numberOfPes; i++) {
+        final int pesNumber = 8;
+        final var peList = new ArrayList<Pe>(pesNumber); //List of CPU cores
+        for (int i = 0; i < pesNumber; i++) {
             peList.add(new PeSimple(mips));
         }
 
@@ -192,7 +192,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final long length = 10000; //in Million Instructions (MI)
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
-        final long numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
+        final long numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
 
         //Defines how CPU, RAM and Bandwidth resources are used
         //Sets the same utilization model for all these resources.

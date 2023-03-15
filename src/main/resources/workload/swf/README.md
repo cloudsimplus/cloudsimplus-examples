@@ -12,4 +12,4 @@ The swf format includes detailed information about job execution in real datacen
 - number of allocated processors;
 - used memory.
 
-These files are read using the [SwfWorkloadFileReader](../../../../../../cloudsimplus/src/main/java/org/cloudbus/cloudsim/util/SwfWorkloadFileReader.java) class. However, just some of these file fields are read by the class. 
+These files are read using the [SwfWorkloadFileReader](../../../../../../cloudsimplus/src/main/java/org/cloudsimplus/util/SwfWorkloadFileReader.java) class. However, just some of these file fields are read by the class. 

@@ -23,29 +23,29 @@
  */
 package org.cloudsimplus.examples.traces.google;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.util.TraceReaderAbstract;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.HostEventInfo;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.traces.google.GoogleMachineEventsTraceReader;
 import org.cloudsimplus.traces.google.MachineEvent;
 import org.cloudsimplus.traces.google.MachineEventType;
+import org.cloudsimplus.util.TraceReaderAbstract;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class GoogleMachineEventsExample1 {
     private static final int CLOUDLET_LENGTH = 100000;
     private static final int DATACENTERS_NUMBER = 2;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private List<Datacenter> datacenters;
 
@@ -99,7 +99,7 @@ public class GoogleMachineEventsExample1 {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         createDatacenters();
 
         //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
@@ -221,7 +221,7 @@ public class GoogleMachineEventsExample1 {
      * @return
      */
     private Vm createVm(final Host host) {
-        return new VmSimple(1000, host.getNumberOfPes())
+        return new VmSimple(1000, host.getPesNumber())
             .setRam(host.getRam().getCapacity()).setBw(HOST_BW).setSize(HOST_STORAGE)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
     }
@@ -241,7 +241,7 @@ public class GoogleMachineEventsExample1 {
 
     private Cloudlet createCloudlet(Vm vm) {
         final var utilization = new UtilizationModelFull();
-        return new CloudletSimple(CLOUDLET_LENGTH, vm.getNumberOfPes())
+        return new CloudletSimple(CLOUDLET_LENGTH, vm.getPesNumber())
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModel(utilization)

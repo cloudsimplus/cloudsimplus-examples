@@ -23,15 +23,15 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.List;
 
@@ -59,8 +59,8 @@ class ReducedExample {
         //Enables just some level of log messages
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        //Creates a CloudSim object to initialize the simulation.
-        final var simulation = new CloudSim();
+        //Creates a CloudSimPlus object to initialize the simulation.
+        final var simulation = new CloudSimPlus();
 
         //Creates a Broker that will act on behalf of a cloud user (customer).
         final var broker0 = new DatacenterBrokerSimple(simulation);

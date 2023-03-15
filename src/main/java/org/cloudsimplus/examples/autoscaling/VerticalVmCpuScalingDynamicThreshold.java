@@ -23,37 +23,37 @@
  */
 package org.cloudsimplus.examples.autoscaling;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.resources.Processor;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelStochastic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.autoscaling.HorizontalVmScaling;
 import org.cloudsimplus.autoscaling.VerticalVmScaling;
 import org.cloudsimplus.autoscaling.VerticalVmScalingSimple;
 import org.cloudsimplus.autoscaling.resources.ResourceScaling;
 import org.cloudsimplus.autoscaling.resources.ResourceScalingGradual;
 import org.cloudsimplus.autoscaling.resources.ResourceScalingInstantaneous;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Simulation;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.Processor;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.utilizationmodels.UtilizationModelStochastic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -106,7 +106,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private static final int VMS = 1;
     private static final int VM_PES = 14;
     private static final int VM_RAM = 1200;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private List<Host> hostList;
     private List<Vm> vmList;
@@ -133,7 +133,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
         vmList = new ArrayList<>(VMS);
         cloudletList = new ArrayList<>(CLOUDLETS);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         simulation.addOnClockTickListener(this::onClockTickListener);
 
         createDatacenter();
@@ -159,7 +159,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
             System.out.printf(
                 "\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%02d) Upper Threshold: %.2f%n",
                 evt.getTime(), vm.getId(), vm.getCpuPercentUtilization()*100.0,
-                vm.getNumberOfPes(),
+                vm.getPesNumber(),
                 vm.getCloudletScheduler().getCloudletExecList().size(),
                 vm.getPeVerticalScaling().getUpperThresholdFunction().apply(vm));
         });
@@ -362,22 +362,22 @@ public class VerticalVmCpuScalingDynamicThreshold {
      * be zero (exactly when the simulation starts).
      *
      * @param length the Cloudlet length
-     * @param numberOfPes the number of PEs the Cloudlets requires
+     * @param pesNumber the number of PEs the Cloudlets requires
      * @return the created Cloudlet
      */
-    private Cloudlet createCloudlet(final long length, final int numberOfPes) {
-        return createCloudlet(length, numberOfPes, 0);
+    private Cloudlet createCloudlet(final long length, final int pesNumber) {
+        return createCloudlet(length, pesNumber, 0);
     }
 
     /**
      * Creates a single Cloudlet.
      *
      * @param length the length of the cloudlet to create.
-     * @param numberOfPes the number of PEs the Cloudlets requires.
+     * @param pesNumber the number of PEs the Cloudlets requires.
      * @param delay the delay that defines the arrival time of the Cloudlet at the Cloud infrastructure.
      * @return the created Cloudlet
      */
-    private Cloudlet createCloudlet(final long length, final int numberOfPes, final double delay) {
+    private Cloudlet createCloudlet(final long length, final int pesNumber, final double delay) {
         /*
         Since a VM PE isn't used by two Cloudlets at the same time,
         the Cloudlet can use 100% of that CPU capacity at the time
@@ -401,7 +401,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
          * or use any other {@link UtilizationModel} implementation.
         */
         final var utilizationModelDynamic = new UtilizationModelDynamic(1.0/CLOUDLETS);
-        final var cl = new CloudletSimple(length, numberOfPes);
+        final var cl = new CloudletSimple(length, pesNumber);
         cl.setFileSize(1024)
           .setOutputSize(1024)
           .setUtilizationModelBw(utilizationModelDynamic)

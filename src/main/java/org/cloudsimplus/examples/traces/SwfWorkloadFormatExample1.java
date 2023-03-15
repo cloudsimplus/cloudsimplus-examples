@@ -23,27 +23,27 @@
  */
 package org.cloudsimplus.examples.traces;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyFirstFit;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.util.SwfWorkloadFileReader;
-import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.util.TraceReaderAbstract;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.DatacenterBrokerEventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.util.SwfWorkloadFileReader;
+import org.cloudsimplus.util.TimeUtil;
+import org.cloudsimplus.util.TraceReaderAbstract;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class SwfWorkloadFormatExample1 {
      */
     private static final String WORKLOAD_FILENAME = "workload/swf/NASA-iPSC-1993-3.1-cln.swf.gz";
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     /**
      * Defines the maximum number of cloudlets to be created
@@ -129,7 +129,7 @@ public class SwfWorkloadFormatExample1 {
         final double startSecs = TimeUtil.currentTimeSecs();
         System.out.printf("Simulation started at %s%n%n", LocalTime.now());
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         try {
             broker = new DatacenterBrokerSimple(simulation);
 
@@ -180,7 +180,7 @@ public class SwfWorkloadFormatExample1 {
      * in order to try accommodating all Cloudlets into those VMs.
      */
     private void createVms() {
-        final double totalCloudletPes = cloudletList.stream().mapToDouble(Cloudlet::getNumberOfPes).sum();
+        final double totalCloudletPes = cloudletList.stream().mapToDouble(Cloudlet::getPesNumber).sum();
         /* The number to multiple the VM_PES was chosen at random.
         * It's used to reduce the number of VMs to create. */
         final int totalVms = (int)Math.ceil(totalCloudletPes / (VM_PES*6));

@@ -24,22 +24,22 @@
 package org.cloudsimplus.examples.synchronous;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -47,19 +47,19 @@ import java.util.List;
 
 /**
  * An example showing how to run the simulation synchronously,
- * (by calling {@link CloudSim#startSync()}).
+ * (by calling {@link CloudSimPlus#startSync()}).
  * This way, the researcher can interact with the simulation,
  * for instance to collect data.
  *
  * <p>A synchronous simulation is similar to setting a {@link Datacenter#setSchedulingInterval(double) scheduling interval}:
  * the simulation clock will be increased at the pace of the given interval.
- * However, using the {@link CloudSim#startSync()} we can collect
+ * However, using the {@link CloudSimPlus#startSync()} we can collect
  * simulation data inside a loop,
  * without requiring to use {@link org.cloudsimplus.listeners.EventListener}s for that.
  * </p>
  *
  * <p>In this example, we are collecting VMs' CPU utilization inside a loop,
- * after each call of the {@link CloudSim#runFor(double)} method.</p>
+ * after each call of the {@link CloudSimPlus#runFor(double)} method.</p>
  *
  * @author Pawel Koperek
  * @author Manoel Campos da Silva Filho
@@ -81,7 +81,7 @@ public class SynchronousSimulationExample1 {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -95,7 +95,7 @@ public class SynchronousSimulationExample1 {
     private SynchronousSimulationExample1() {
         Log.setLevel(Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
         //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets

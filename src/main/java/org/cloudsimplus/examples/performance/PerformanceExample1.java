@@ -23,28 +23,28 @@
  */
 package org.cloudsimplus.examples.performance;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyFirstFit;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletScheduler;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.util.TimeUtil;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toCollection;
-import static org.cloudbus.cloudsim.util.TimeUtil.secondsToStr;
+import static org.cloudsimplus.util.TimeUtil.secondsToStr;
 
 /**
  * An example that enables you to play with different parameters to
@@ -97,7 +97,7 @@ public class PerformanceExample1 {
 
     private final VmAllocationPolicyFirstFit vmAllocationPolicy = new VmAllocationPolicyFirstFit();
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private final List<Vm> vmList;
     private final List<Cloudlet> cloudletList;
@@ -111,7 +111,7 @@ public class PerformanceExample1 {
         System.out.printf("Start time: %s%n", LocalTime.now());
         Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         createDatacenter();
         broker0 = new DatacenterBrokerSimple(simulation);
         cloudletList = new ArrayList<>(VMS);
@@ -119,7 +119,7 @@ public class PerformanceExample1 {
         final String scheduling = SCHEDULING_INTERVAL > 0 ? TimeUtil.secondsToStr(SCHEDULING_INTERVAL) : String.valueOf(SCHEDULING_INTERVAL);
         System.out.printf(
             "%s -> Hosts: %,d VMs: %,d Cloudlets: %,d Cloudlet Length (MI): %,d Scheduling Interval: %s%n",
-            CloudSim.VERSION, HOSTS, VMS, cloudletList.size(),
+            CloudSimPlus.VERSION, HOSTS, VMS, cloudletList.size(),
             CLOUDLET_LENGTH, scheduling);
         broker0.submitVmList(vmList);
         broker0.submitCloudletList(cloudletList);
