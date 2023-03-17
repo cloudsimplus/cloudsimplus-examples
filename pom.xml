@@ -139,7 +139,7 @@
     <dependencies>
         <dependency>
             <groupId>org.cloudsimplus</groupId>
-            <artifactId>cloudsim-plus</artifactId>
+            <artifactId>cloudsimplus</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
