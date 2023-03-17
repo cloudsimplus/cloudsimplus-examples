@@ -55,7 +55,7 @@ import java.util.List;
  */
 class ReducedExample {
     public static void main(String[] args) {
-        //tag::cloudsim-plus-reduced-example[]
+        //tag::cloudsimplus-reduced-example[]
         //Enables just some level of log messages
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
@@ -105,6 +105,6 @@ class ReducedExample {
         /*Prints the results when the simulation is over (one can use his/her own code
         here to print what he/she wants from this cloudlet list). */
         new CloudletsTableBuilder(broker0.getCloudletFinishedList()).build();
-        //end::cloudsim-plus-reduced-example[]
+        //end::cloudsimplus-reduced-example[]
     }
 }

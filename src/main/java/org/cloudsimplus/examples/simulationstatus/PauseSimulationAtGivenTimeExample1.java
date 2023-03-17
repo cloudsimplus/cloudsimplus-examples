@@ -55,7 +55,7 @@ import java.util.List;
  *
  * <p>This example uses CloudSim Plus Listener features to intercept when
  * the simulation was paused, allowing to collect the desired data.
- * This example uses the Java 8 Lambda Functions features
+ * This example uses the Java 8+ Lambda Functions features
  * to pass a listener to a {@link CloudSimPlus} instance, by means of the
  * {@link CloudSimPlus#addOnSimulationPauseListener(EventListener)} method.
  * However, the same feature can be used for Java 7 passing an anonymous class

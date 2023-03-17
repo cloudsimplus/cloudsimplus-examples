@@ -75,7 +75,7 @@ import java.util.function.Function;
 /**
  * An example showing how to create 1 Datacenter with 5 hosts,
  * 1 VM by host and 1 cloudlet by VM and perform VM allocation by
- * using Java 8 Functional Programming to change, at runtime, the
+ * using Java 8+ Functional Programming to change, at runtime, the
  * policy used by a {@link VmAllocationPolicy}.
  *
  * <p>VMs are allocated based on a <b>Best Fit allocation policy</b>, which
@@ -166,7 +166,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     /**
      * A method that defines a Best Fit policy to select a suitable Host with the least
      * available PEs to place a VM.
-     * Using Java 8 Functional Programming, this method is given as parameter
+     * Using Java 8+ Functional Programming, this method is given as parameter
      * to the constructor of a {@link VmAllocationPolicySimple}
      *
      * @param allocationPolicy the {@link VmAllocationPolicy} that is trying to allocate a Host for the requesting VM

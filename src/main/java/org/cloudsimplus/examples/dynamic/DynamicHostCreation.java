@@ -82,13 +82,13 @@ import java.util.List;
  * when the simulation clock advances.
  * </p>
  *
- * <p>In fact, this {@link EventListener} is a Java 8 {@link FunctionalInterface}
+ * <p>In fact, this {@link EventListener} is a Java 8+ {@link FunctionalInterface}
  * that enables using Lambda Expression
  * or method references in order to provide a {@link FunctionalInterface}.
  * This example uses a reference to the {@link #clockTickListener(EventInfo)} method
  * as being the {@link EventListener} required by the {@link CloudSimPlus#addOnClockTickListener(EventListener)}.</p>
  *
- * <p><b>Lambda Expressions, method references and Functional Interfaces are Java 8 features.</b>
+ * <p><b>Lambda Expressions, method references and Functional Interfaces are Java 8+ features.</b>
  * If you don't know what these features are, I suggest checking out this
  * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">tutorial</a></p>
  *

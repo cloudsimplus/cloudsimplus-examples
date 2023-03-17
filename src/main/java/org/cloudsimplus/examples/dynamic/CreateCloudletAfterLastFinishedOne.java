@@ -53,7 +53,7 @@ import java.util.List;
  *
  * <p>This example uses CloudSim Plus Listener features to intercept when
  * the a Cloudlet finishes its execution to then request
- * the creation of a new Cloudlet. It uses the Java 8 Lambda Functions features
+ * the creation of a new Cloudlet. It uses the Java 8+ Lambda Functions features
  * to pass a listener to the mentioned Cloudlet, by means of the
  * {@link Cloudlet#addOnFinishListener(EventListener)} method.</p>
  *

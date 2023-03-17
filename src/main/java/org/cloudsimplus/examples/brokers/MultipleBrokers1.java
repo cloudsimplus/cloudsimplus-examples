@@ -147,7 +147,7 @@ public class MultipleBrokers1 {
      * an idle VM, according to a given
      * {@link DatacenterBroker#setVmDestructionDelayFunction(Function) VM Destruction Delay Function}.
      *
-     * <p>See <a href="https://github.com/manoelcampos/cloudsim-plus/issues/99">Issue #99</a> for more details.</p>
+     * <p>See <a href="https://github.com/cloudsimplus/cloudsimplus/issues/99">Issue #99</a> for more details.</p>
      *
      * @see DatacenterBroker#setVmDestructionDelayFunction(Function)
      * @return the List of created brokers

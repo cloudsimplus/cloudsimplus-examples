@@ -78,7 +78,7 @@ import static java.util.stream.Collectors.toCollection;
  *
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 4.3.6
- * @see <a href="https://github.com/manoelcampos/cloudsim-plus/issues/197">Issue #197 for more details</a>
+ * @see <a href="https://github.com/cloudsimplus/cloudsimplus/issues/197">Issue #197 for more details</a>
  */
 public class UtilizationModelStochasticPerformance {
     private static final int HOSTS = 20_000;

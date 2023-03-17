@@ -54,7 +54,7 @@ import java.util.List;
  *
  * <p>This example uses CloudSim Plus Listener features to intercept when
  * the second Cloudlet reaches 50% of its execution to then request
- * the simulation termination. This example uses the Java 8 Lambda Functions features
+ * the simulation termination. This example uses the Java 8+ Lambda Functions features
  * to pass a listener to the mentioned Cloudlet, by means of the
  * {@link Cloudlet#addOnUpdateProcessingListener(EventListener)} method.
  * However, the same feature can be used for Java 7 passing an anonymous class

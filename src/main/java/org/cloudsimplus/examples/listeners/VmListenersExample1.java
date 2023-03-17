@@ -142,21 +142,21 @@ public class VmListenersExample1 {
         final var vm0 = createVm(0);
 
         /* Sets the Listener to intercept allocation of a Host to the Vm.
-         * The Listener is created using Java 8 Lambda Expressions.
+         * The Listener is created using Java 8+ Lambda Expressions.
         */
         vm0.addOnHostAllocationListener(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Host %d allocated to Vm %d at time %.2f%n",
                 eventInfo.getHost().getId(), eventInfo.getVm().getId(), eventInfo.getTime()));
 
         /* Sets the listener to intercept deallocation of a Host for the Vm.
-         * The Listener is created using Java 8 Lambda Expressions.
+         * The Listener is created using Java 8+ Lambda Expressions.
         */
         vm0.addOnHostDeallocationListener(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Vm %d moved/removed from Host %d at time %.2f%n",
                 eventInfo.getVm().getId(), eventInfo.getHost().getId(), eventInfo.getTime()));
 
         /* This VM will not be place due to lack of a suitable host.
-         * The Listener is created using Java 8 Lambda Expressions.
+         * The Listener is created using Java 8+ Lambda Expressions.
          */
         final var vm1 = createVm(1);
         vm1.addOnCreationFailureListener(eventInfo -> System.out.printf(

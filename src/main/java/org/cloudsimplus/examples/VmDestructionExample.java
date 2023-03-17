@@ -61,7 +61,7 @@ import java.util.function.Function;
  * <p>It shows Host CPU utilization every second, so that when the overloaded VM
  * is destroyed, we can check the Host CPU utilization reduces.</p>
  *
- * <p><b>Lambda Expressions and Functional Interfaces are Java 8 features.</b>
+ * <p><b>Lambda Expressions and Functional Interfaces are Java 8+ features.</b>
  * If you don't know what these features are, I suggest checking out this
  * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">tutorial</a></p>
  *

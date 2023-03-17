@@ -159,7 +159,7 @@ public class VmListenersExample2 {
         /*
         Creates the listener object that will be notified when a host is allocated to a VM.
         All VMs will use this same listener.
-        The Listener is created using Java 8 Lambda Expressions.
+        The Listener is created using Java 8+ Lambda Expressions.
         */
         this.onHostAllocationListener = eventInfo -> System.out.printf(
                 "\t#EventListener: Host %d allocated to Vm %d at time %.2f%n",
@@ -168,7 +168,7 @@ public class VmListenersExample2 {
         /*
         Creates the listener object that will be notified when a host is deallocated for a VM.
         All VMs will use this same listener.
-        The Listener is created using Java 8 Lambda Expressions.
+        The Listener is created using Java 8+ Lambda Expressions.
         */
         this.onHostDeallocationListener = evt -> System.out.printf(
                 "\t#EventListener: Vm %d moved/removed from Host %d at time %.2f%n",

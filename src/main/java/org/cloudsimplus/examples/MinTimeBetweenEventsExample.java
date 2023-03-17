@@ -64,7 +64,7 @@ import java.util.List;
  * Therefore, you may need to fine tune such attribute according to your simulation.</p>
  *
  * <p>This example reproduces the configuration
- * <a href="https://github.com/manoelcampos/cloudsim-plus/issues/163">Issue #163</a>.
+ * <a href="https://github.com/cloudsimplus/cloudsimplus/issues/163">Issue #163</a>.
  * The documentation of the {@link #MIN_TIME_BETWEEN_EVENTS} constant below shows how
  * to configure the attribute to make CloudSim Plus process all events
  * accurately in this scenario and then all submitted Cloudlets be finished.
