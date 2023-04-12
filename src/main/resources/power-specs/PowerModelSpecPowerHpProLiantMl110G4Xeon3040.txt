@@ -1,0 +1,11 @@
+86 89.4 92.6 96 99.5 102 106 108 112 114 117
+
+*
+* Title:        CloudSim Toolkit
+* Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds
+* Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
+*
+* Copyright (c) 2009-2012, The University of Melbourne, Australia
+*
+* The power model of an HP ProLiant ML110 G4 (1 x [Xeon 3040 1860 MHz, 2 cores], 4GB).
+* https://www.spec.org/power_ssj2008/results/res2011q1/power_ssj2008-20110127-00342.html
