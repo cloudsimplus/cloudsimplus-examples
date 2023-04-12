@@ -31,11 +31,9 @@ import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
-import org.cloudsimplus.examples.resourceusage.VmsRamAndBwUsageExample;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.power.models.PowerModel;
-import org.cloudsimplus.power.models.PowerModelHostSimple;
+import org.cloudsimplus.power.models.PowerModelHostSpec;
 import org.cloudsimplus.resources.Pe;
 import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -43,55 +41,30 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.HostResourceStats;
 import org.cloudsimplus.vms.Vm;
-import org.cloudsimplus.vms.VmResourceStats;
 import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Comparator.comparingLong;
 
 /**
- * An example to show power consumption of Hosts and VMs.
- * Realize that for this goal, you define a {@link PowerModel}
+ * An example to show power consumption of Hosts
+ * using the specifications from a file created based on
+ * <a href="https://www.specs.org">www.specs.org</a> website public data.
+ * Realize that for this goal, you define a {@link PowerModelHostSpec}
  * for each Host by calling {@code host.setPowerModel(powerModel)}.
  *
- * <p>It creates the number of cloudlets defined in
- * {@link #CLOUDLETS}. All cloudlets will require 100% of PEs they are using all the time.
- * Half of these cloudlets are created with the length defined by {@link #CLOUDLET_LENGTH}
- * and the other half will have the double of this length.
- * This way, it's possible to see that for the last half of the
- * simulation time, a Host doesn't use the entire CPU capacity,
- * and therefore doesn't consume the maximum power.</p>
- *
- * <p>However, you may notice in this case that the power usage isn't
- * half of the maximum consumption, because there is a static minimum
- * amount of power to use, even if the Host is idle,
- * which is defined by {@link #STATIC_POWER}.
- * Check {@link PowerModelHostSimple#PowerModelHostSimple(double, double)}.
- * </p>
- *
- * <p>Realize that the Host CPU Utilization History is only stored
- * if VMs utilization history is enabled by calling
- * {@code vm.getUtilizationHistory().enable()}</p>
- *
- * <p>Each line in the table with CPU utilization and power consumption shows
- * the data from the time specified in the line, up to the time before the value in the next line.
- * For instance, consider the scheduling interval is 10, the time in the first line is 1 and
- * it shows 100% CPU utilization and 100 W of power consumption.
- * Then, the next line contains data for time 10.
- * It means that for any point between time 1 to time 10,
- * the CPU utilization and power consumption is the one provided in that first line.</p>
- *
  * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.2.4
+ * @since CloudSim Plus 8.1.0
  *
- * @see PowerSpecFileExample
- * @see VmsRamAndBwUsageExample
- * @see org.cloudsimplus.examples.resourceusage.VmsCpuUsageExample
+ * @see #POWER_SPEC_FILE
+ * @see #createPowerHost(int)
+ * @see PowerExample
  */
-public class PowerExample {
+public class PowerSpecFileExample {
     /**
      * Defines, between other things, the time intervals
      * to keep Hosts CPU utilization history records.
@@ -120,14 +93,9 @@ public class PowerExample {
     private static final int CLOUDLET_LENGTH = 50000;
 
     /**
-     * Defines the power a Host uses, even if it's idle (in Watts).
+     * The path to the file containing host power utilization specs.
      */
-    private static final double STATIC_POWER = 35;
-
-    /**
-     * The max power a Host uses (in Watts).
-     */
-    private static final int MAX_POWER = 50;
+    private static final String POWER_SPEC_FILE = "power-specs/PowerModelSpecPowerHpProLiantMl110G3PentiumD930.txt";
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
@@ -136,11 +104,19 @@ public class PowerExample {
     private Datacenter datacenter0;
     private final List<Host> hostList;
 
+    /**
+     * Indicates how hosts consume power according to CPU utilization percentage
+     * (based on data from a power spec file).
+     * This attribute is used just to ensure the same data will be read just once
+     * and used for all created Hosts.
+     */
+    private final PowerModelHostSpec DEF_POWER_MODEL = PowerModelHostSpec.getInstance(POWER_SPEC_FILE);
+
     public static void main(String[] args) {
-        new PowerExample();
+        new PowerSpecFileExample();
     }
 
-    private PowerExample() {
+    private PowerSpecFileExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
@@ -165,56 +141,6 @@ public class PowerExample {
 
         new CloudletsTableBuilder(cloudletFinishedList).build();
         printHostsCpuUtilizationAndPowerConsumption();
-        printVmsCpuUtilizationAndPowerConsumption();
-    }
-
-    /**
-     * Prints the following information from VM's utilization stats:
-     * <ul>
-     *   <li>VM's mean CPU utilization relative to the total Host's CPU utilization.
-     *       For instance, if the CPU utilization mean of two equal VMs is 100% of their CPU, the utilization
-     *       of each one corresponds to 50% of the Host's CPU utilization.</li>
-     *   <li>VM's power consumption relative to the total Host's power consumption.</li>
-     * </ul>
-     *
-     * <p>A Host, even if idle, may consume a static amount of power.
-     * Lets say it consumes 20 W in idle state and that for each 1% of CPU use it consumes 1 W more.
-     * For the 2 VMs of the example above, each one using 50% of CPU will consume 50 W.
-     * That is 100 W for the 2 VMs, plus the 20 W that is static.
-     * Therefore we have a total Host power consumption of 120 W.
-     * </p>
-     *
-     * <p>
-     * If we computer the power consumption for a single VM by
-     * calling {@code vm.getHost().getPowerModel().getPower(hostCpuUsage)},
-     * we get the 50 W consumed by the VM, plus the 20 W of static power.
-     * This adds up to 70 W. If the two VMs are equal and using the same amount of CPU,
-     * their power consumption would be the half of the total Host's power consumption.
-     * This would be 60 W, not 70.
-     * </p>
-     *
-     * <p>This way, we have to compute VM power consumption by sharing a supposed Host static power
-     * consumption with each VM, as it's being shown here.
-     * Not all {@link PowerModel} have this static power consumption.
-     * However, the way the VM power consumption
-     * is computed here, that detail is abstracted.
-     * </p>
-     */
-    private void printVmsCpuUtilizationAndPowerConsumption() {
-        vmList.sort(comparingLong(vm -> vm.getHost().getId()));
-        for (Vm vm : vmList) {
-            final var powerModel = vm.getHost().getPowerModel();
-            final double hostStaticPower = powerModel instanceof PowerModelHostSimple powerModelHost ? powerModelHost.getStaticPower() : 0;
-            final double hostStaticPowerByVm = hostStaticPower / vm.getHost().getVmCreatedList().size();
-
-            //VM CPU utilization relative to the host capacity
-            final double vmRelativeCpuUtilization = vm.getCpuUtilizationStats().getMean() / vm.getHost().getVmCreatedList().size();
-            final double vmPower = powerModel.getPower(vmRelativeCpuUtilization) - hostStaticPower + hostStaticPowerByVm; // W
-            final VmResourceStats cpuStats = vm.getCpuUtilizationStats();
-            System.out.printf(
-                "Vm   %2d CPU Usage Mean: %6.1f%% | Power Consumption Mean: %8.0f W%n",
-                vm.getId(), cpuStats.getMean() *100, vmPower);
-        }
     }
 
     /**
@@ -245,7 +171,6 @@ public class PowerExample {
      * Creates a {@link Datacenter} and its {@link Host}s.
      */
     private Datacenter createDatacenter() {
-
         for(int i = 0; i < HOSTS; i++) {
             final var host = createPowerHost(i);
             hostList.add(host);
@@ -270,11 +195,12 @@ public class PowerExample {
 
         final var host = new HostSimple(ram, bw, storage, peList);
 
-        final var powerModel = new PowerModelHostSimple(MAX_POWER, STATIC_POWER);
+        final var powerModel = new PowerModelHostSpec(DEF_POWER_MODEL.getPowerSpecs());
         powerModel.setStartupDelay(HOST_START_UP_DELAY)
                   .setShutDownDelay(HOST_SHUT_DOWN_DELAY)
                   .setStartupPower(HOST_START_UP_POWER)
                   .setShutDownPower(HOST_SHUT_DOWN_POWER);
+        System.out.println(Arrays.toString(powerModel.getPowerSpecs()));
 
         host.setId(id)
             .setVmScheduler(vmScheduler)
@@ -291,7 +217,7 @@ public class PowerExample {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             final var vm = new VmSimple(i, 1000, VM_PES);
-            vm.setRam(512).setBw(1000).setSize(10000).enableUtilizationStats();
+            vm.setRam(512).setBw(1000).setSize(10000);
             list.add(vm);
         }
 

@@ -63,7 +63,7 @@ import java.util.List;
  * at the developer machine and can <b>spend a long time to finish</b>,
  * the example allow to limit the maximum number of cloudlets to be submitted
  * to the DatacenterBroker.
- * See the {@link #maximumNumberOfCloudletsToCreateFromTheWorkloadFile} attribute for more details.
+ * See the {@link #maxCloudletsToCreateFromWorkloadFile} attribute for more details.
  * </p>
  *
  * <p>
@@ -91,10 +91,10 @@ public class SwfWorkloadFormatExample1 {
     /**
      * Defines the maximum number of cloudlets to be created
      * from the given workload file.
-     * The value -1 indicates that every job inside the workload file
+     * {@link Integer#MAX_VALUE} indicates that every job inside the workload file
      * will be created as one cloudlet.
      */
-    private int maximumNumberOfCloudletsToCreateFromTheWorkloadFile = -1;
+    private int maxCloudletsToCreateFromWorkloadFile = Integer.MAX_VALUE;
 
     private final int HOST_PES = 12;
 
@@ -150,7 +150,6 @@ public class SwfWorkloadFormatExample1 {
             final var cloudletFinishedList = broker.getCloudletFinishedList();
             new CloudletsTableBuilder(cloudletFinishedList).build();
 
-            System.out.println(getClass().getSimpleName() + " finished!");
             System.out.printf("Simulation finished at %s. Execution time: %.2f seconds%n", LocalTime.now(), TimeUtil.elapsedSeconds(startSecs));
         } catch (Exception e) {
             System.out.printf("Error during simulation execution: %s%n", e.getMessage());
@@ -181,7 +180,7 @@ public class SwfWorkloadFormatExample1 {
      */
     private void createVms() {
         final double totalCloudletPes = cloudletList.stream().mapToDouble(Cloudlet::getPesNumber).sum();
-        /* The number to multiple the VM_PES was chosen at random.
+        /* The number to multiply the VM_PES was chosen at random.
         * It's used to reduce the number of VMs to create. */
         final int totalVms = (int)Math.ceil(totalCloudletPes / (VM_PES*6));
 
@@ -198,7 +197,7 @@ public class SwfWorkloadFormatExample1 {
 
     private void createCloudletsFromWorkloadFile() {
         final var reader = SwfWorkloadFileReader.getInstance(WORKLOAD_FILENAME, VM_MIPS);
-        reader.setMaxLinesToRead(maximumNumberOfCloudletsToCreateFromTheWorkloadFile);
+        reader.setMaxLinesToRead(maxCloudletsToCreateFromWorkloadFile);
         this.cloudletList = reader.generateWorkload();
 
         System.out.printf("# Created %12d Cloudlets for %s%n", this.cloudletList.size(), broker);
