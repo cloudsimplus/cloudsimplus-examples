@@ -38,10 +38,10 @@ import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.resources.Pe;
 import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.traces.SwfWorkloadFileReader;
+import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.util.Log;
-import org.cloudsimplus.util.SwfWorkloadFileReader;
 import org.cloudsimplus.util.TimeUtil;
-import org.cloudsimplus.util.TraceReaderAbstract;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
 
