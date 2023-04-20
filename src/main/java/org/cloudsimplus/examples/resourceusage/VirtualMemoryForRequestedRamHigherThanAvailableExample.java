@@ -170,7 +170,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
               .getCloudletFinishedList()
               .stream()
               .filter(CloudletExecution::hasOverSubscription)
-              .forEach(cle -> System.out.printf(format, cle, cle.getCloudlet().getActualCpuTime(), cle.getOverSubscriptionDelay(), cle.getExpectedFinishTime()));
+              .forEach(cle -> System.out.printf(format, cle, cle.getCloudlet().getTotalExecutionTime(), cle.getOverSubscriptionDelay(), cle.getExpectedFinishTime()));
         }
     }
 

@@ -128,9 +128,9 @@ public class DynamicCloudletsArrival1 {
         simulation.start();
         final var cloudletFinishedList = broker.getCloudletFinishedList();
         new CloudletsTableBuilder(cloudletFinishedList)
-            .addColumn(new TextTableColumn("VM Arrived", "Time"), cl -> cl.getVm().getArrivedTime(), 7)
+            .addColumn(new TextTableColumn("VM Arrived", "Time"), cl -> cl.getVm().getBrokerArrivalTime(), 7)
             .addColumn(new TextTableColumn("VM Creation", "Time"), cl -> cl.getVm().getCreationTime(), 8)
-            .addColumn(new TextTableColumn("VM Wait", "Time"), cl -> cl.getVm().getWaitTime(), 9)
+            .addColumn(new TextTableColumn("VM Wait", "Time"), cl -> cl.getVm().getCreationWaitTime(), 9)
             .build();
     }
 

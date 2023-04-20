@@ -111,8 +111,9 @@ public class MultipleBrokers3 {
 
         System.out.println();
         for (Vm vm : vmList) {
-            System.out.printf("%s -> Start Time: %.0f Stop Time: %.0f Total Execution Time: %.0f%n",
-                vm, vm.getStartTime(), vm.getStopTime(), vm.getTotalExecutionTime());
+            System.out.printf(
+                "%s -> Start Time: %.0f Finish Time: %.0f Total Execution Time: %.0f%n",
+                vm, vm.getStartTime(), vm.getFinishTime(), vm.getTotalExecutionTime());
         }
         System.out.println();
     }

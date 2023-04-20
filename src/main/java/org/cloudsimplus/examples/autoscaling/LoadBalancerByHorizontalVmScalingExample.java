@@ -182,7 +182,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
     private void printSimulationResults() {
         final var cloudletFinishedList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
-        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
+        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getStartTime);
         cloudletFinishedList.sort(sortByVmId.thenComparing(sortByStartTime));
 
         new CloudletsTableBuilder(cloudletFinishedList).build();

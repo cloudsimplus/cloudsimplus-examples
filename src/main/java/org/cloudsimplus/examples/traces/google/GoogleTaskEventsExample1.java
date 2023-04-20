@@ -298,7 +298,7 @@ public class GoogleTaskEventsExample1 {
             .addColumn(new TextTableColumn("Job", "ID"), Cloudlet::getJobId, 0)
             .addColumn(new TextTableColumn("VM Size", "MB"), this::getVmSize, 7)
             .addColumn(new TextTableColumn("Cloudlet Size", "MB"), this::getCloudletSizeInMB, 8)
-            .addColumn(new TextTableColumn("Waiting Time", "Seconds").setFormat("%.0f"), Cloudlet::getWaitingTime, 10)
+            .addColumn(new TextTableColumn("Waiting Time", "Seconds").setFormat("%.0f"), Cloudlet::getCreationWaitTime, 10)
             .setTitle("Simulation results for Broker " + broker.getId() + " representing the username " + username)
             .build();
     }

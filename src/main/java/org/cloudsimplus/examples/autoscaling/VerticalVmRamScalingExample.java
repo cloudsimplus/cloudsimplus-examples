@@ -181,7 +181,7 @@ public class VerticalVmRamScalingExample {
     private void printSimulationResults() {
         final var cloudletFinishedListList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
-        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
+        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getStartTime);
         cloudletFinishedListList.sort(sortByVmId.thenComparing(sortByStartTime));
 
         new CloudletsTableBuilder(cloudletFinishedListList).build();

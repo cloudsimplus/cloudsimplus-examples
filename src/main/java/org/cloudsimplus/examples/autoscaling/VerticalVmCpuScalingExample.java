@@ -164,7 +164,7 @@ public class VerticalVmCpuScalingExample {
     private void printSimulationResults() {
         final var finishedCloudletList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
-        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
+        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getStartTime);
         finishedCloudletList.sort(sortByVmId.thenComparing(sortByStartTime));
 
         new CloudletsTableBuilder(finishedCloudletList).build();

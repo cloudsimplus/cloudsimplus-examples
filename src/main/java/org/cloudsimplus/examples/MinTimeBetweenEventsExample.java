@@ -216,7 +216,7 @@ public class MinTimeBetweenEventsExample {
     private void runSimulationAndPrintResults() {
         simulation.start();
 
-        broker.getCloudletSubmittedList().sort(Comparator.comparingDouble(Cloudlet::getExecStartTime));
+        broker.getCloudletSubmittedList().sort(Comparator.comparingDouble(Cloudlet::getStartTime));
         final var builder = new CloudletsTableBuilder(broker.getCloudletSubmittedList());
         builder
             .column(9,  this::formatColumn)

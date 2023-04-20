@@ -150,8 +150,8 @@ public class CloudletLifeTimeExample {
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet =
-                new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_PES)
+            final var cloudlet = new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_PES);
+            cloudlet
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())
