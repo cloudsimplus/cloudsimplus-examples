@@ -29,6 +29,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Lifetimed;
 import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
@@ -55,6 +56,7 @@ import java.util.stream.IntStream;
  * @author Sun Lingyu
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 7.2.1
+ * @see CloudletAndVmLifeTimeExample
  */
 public class CloudletLifeTimeExample {
     private static final int HOSTS = 3;
@@ -68,12 +70,16 @@ public class CloudletLifeTimeExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10_000;
 
-    /** @see Datacenter#getSchedulingInterval() */
+    /**
+     * If the scheduling interval is not multiple of the VM/Cloudlet lifetime,
+     * Cloudlets may execute more than you desire.
+     * @see Datacenter#getSchedulingInterval()
+     */
     private static final int SCHEDULING_INTERVAL = 2;
 
     /**
      * Maximum time (in seconds) Cloudlets are allowed to execute.
-     * Set -1 to disable lifeTime and execute the Cloudlet entirely.
+     * @see Lifetimed#setLifeTime(double)
      */
     private static final double CLOUDLET_LIFE_TIME = 5;
 
@@ -97,7 +103,7 @@ public class CloudletLifeTimeExample {
         simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();

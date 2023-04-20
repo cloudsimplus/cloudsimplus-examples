@@ -115,7 +115,7 @@ public class CostsExample1 {
     }
 
     /**
-     * Creates a broker which is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets.
+     * Creates a broker which is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets.
      * It disables VMs creation retry, this way, failed VMs will be just added to the {@link DatacenterBroker#getVmFailedList()}.
      */
     private DatacenterBroker createBroker() {

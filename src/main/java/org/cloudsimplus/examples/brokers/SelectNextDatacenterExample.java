@@ -85,7 +85,7 @@ public class SelectNextDatacenterExample {
         simulation = new CloudSimPlus();
         datacenterList = createDatacenters();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
