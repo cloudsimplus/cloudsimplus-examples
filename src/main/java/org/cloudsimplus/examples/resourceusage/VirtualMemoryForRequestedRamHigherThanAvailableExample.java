@@ -23,30 +23,29 @@
  */
 package org.cloudsimplus.examples.resourceusage;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.HarddriveStorage;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerAbstract;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletExecution;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.HarddriveStorage;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerAbstract;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,8 +124,8 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
     public static final int VM_RAM = 1000;
 
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -140,10 +139,10 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -154,10 +153,10 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> comparator = Comparator.comparingLong(cl -> cl.getVm().getId());
-        finishedCloudlets.sort(comparator.thenComparing(Cloudlet::getId));
-        new CloudletsTableBuilder(finishedCloudlets)
+        cloudletFinishedList.sort(comparator.thenComparing(Cloudlet::getId));
+        new CloudletsTableBuilder(cloudletFinishedList)
             .addColumn(new TextTableColumn("VM RAM", "MB"), cl -> cl.getVm().getRam().getCapacity(), 7)
             .build();
 
@@ -166,12 +165,12 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
 
     private void printOverSubscriptionDelay() {
         final String format = "%s exec time: %6.2f | RAM/BW over-subscription delay: %6.2f secs | Expected finish time (if no over-subscription): %6.2f secs%n";
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             vm.getCloudletScheduler()
               .getCloudletFinishedList()
               .stream()
               .filter(CloudletExecution::hasOverSubscription)
-              .forEach(cle -> System.out.printf(format, cle, cle.getCloudlet().getActualCpuTime(), cle.getOverSubscriptionDelay(), cle.getExpectedFinishTime()));
+              .forEach(cle -> System.out.printf(format, cle, cle.getCloudlet().getTotalExecutionTime(), cle.getOverSubscriptionDelay(), cle.getExpectedFinishTime()));
         }
     }
 
@@ -182,7 +181,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
          * there will be no additional delay due to a reduced allocation of BW for Cloudlets.
          */
         final List<UtilizationModel> utilizationModelBwList =
-            Arrays.asList(
+            List.of(
                 new UtilizationModelDynamic(0.2),
                 new UtilizationModelDynamic(1.0));
 
@@ -191,9 +190,9 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
 
         /* UtilizationModelDynamic defining that Cloudlets require 60% of the RAM capacity each one all the time.
          * This adds up to 120%, virtual memory will be used for the second cloudlet. */
-        final UtilizationModel utilizationModelRam = new UtilizationModelDynamic(0.6);
-        final List<Cloudlet> newList = createCloudlets(vmList.get(1), utilizationModelRam, utilizationModelBwList);
-        cloudletList.addAll(newList);
+        final var utilizationModelRam = new UtilizationModelDynamic(0.6);
+        final var newCloudletList = createCloudlets(vmList.get(1), utilizationModelRam, utilizationModelBwList);
+        cloudletList.addAll(newCloudletList);
 
         cloudletList.add(createCloudlet(vmList.get(2), new UtilizationModelFull()));
     }
@@ -202,14 +201,14 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
         //Uses a VmAllocationPolicySimple by default to allocate VMs
-        final Datacenter dc = new DatacenterSimple(simulation, hostList);
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -221,7 +220,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * @return
      */
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -231,7 +230,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storageSize = 1000000; //in Megabytes
-        final HarddriveStorage hardDrive = new HarddriveStorage(storageSize);
+        final var hardDrive = new HarddriveStorage(storageSize);
         hardDrive.setAvgSeekTime(0).setLatency(0).setMaxTransferRate(HOSTS_MAX_TRANSFER_RATE);
 
         /*
@@ -245,15 +244,15 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(1000, VM_PES);
             vm.setRam(VM_RAM).setBw(1000).setSize(10000);
-            list.add(vm);
+            newVmList.add(vm);
         }
 
-        return list;
+        return newVmList;
     }
 
     /**
@@ -264,10 +263,10 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      */
     private List<Cloudlet> createCloudlets(final Vm vm, final int cloudlets, final UtilizationModel utilizationModelRamBw) {
         //Creates a List with the same UtilizationModel BW for all cloudlets
-        final List<UtilizationModel> utilizationModelBwList = IntStream
-                                                                  .range(0, cloudlets)
-                                                                  .mapToObj(i -> utilizationModelRamBw)
-                                                                  .collect(Collectors.toList());
+        final var utilizationModelBwList = IntStream
+                                              .range(0, cloudlets)
+                                              .mapToObj(i -> utilizationModelRamBw)
+                                              .collect(Collectors.toList());
 
         return createCloudlets(vm, utilizationModelRamBw, utilizationModelBwList);
     }
@@ -285,13 +284,13 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final List<UtilizationModel> utilizationModelBwList)
     {
         final int cloudlets = utilizationModelBwList.size();
-        final List<Cloudlet> list = new ArrayList<>(cloudlets);
+        final var newListCloudletList = new ArrayList<Cloudlet>(cloudlets);
 
-        for (UtilizationModel utilizationModelBw : utilizationModelBwList) {
-            list.add(createCloudlet(vm, utilizationModelRam, utilizationModelBw));
+        for (var utilizationModelBw : utilizationModelBwList) {
+            newListCloudletList.add(createCloudlet(vm, utilizationModelRam, utilizationModelBw));
         }
 
-        return list;
+        return newListCloudletList;
     }
 
     private Cloudlet createCloudlet(final Vm vm, final UtilizationModel utilizationModelRamBw) {
@@ -302,11 +301,12 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final Vm vm, final UtilizationModel utilizationModelRam,
         final UtilizationModel utilizationModelBw)
     {
-        final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
         cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelRam(utilizationModelRam)
-                .setUtilizationModelBw(utilizationModelBw);
-        cloudlet.setSizes(1024).setVm(vm);
+                .setUtilizationModelBw(utilizationModelBw)
+                .setSizes(1024)
+                .setVm(vm);
         return cloudlet;
     }
 }

@@ -24,30 +24,26 @@
 package org.cloudsimplus.examples.power;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.HostResourceStats;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.power.models.PowerModelHostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.HostResourceStats;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,8 +88,8 @@ public class PowerExampleSchedulingInterval {
 
     private final int schedulingInterval;
 
-    private CloudSim simulation;
-    private DatacenterBroker broker0;
+    private CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -113,7 +109,7 @@ public class PowerExampleSchedulingInterval {
      *
      */
     private PowerExampleSchedulingInterval(final int schedulingInterval) {
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         hostList = new ArrayList<>(HOSTS);
         this.schedulingInterval = schedulingInterval;
         datacenter0 = createDatacenterSimple();
@@ -152,56 +148,54 @@ public class PowerExampleSchedulingInterval {
 
     private Datacenter createDatacenterSimple() {
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createPowerHost(i);
+            final var host = createPowerHost(i);
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(schedulingInterval);
         return dc;
     }
 
     private Host createPowerHost(final int id) {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
 
-        final Host host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, peList);
         host
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
+            .setId(id)
             .setVmScheduler(new VmSchedulerTimeShared())
             .setPowerModel(new PowerModelHostSimple(MAX_POWER, STATIC_POWER));
-        host.setId(id);
         host.enableUtilizationStats();
         return host;
     }
 
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final Vm vm = new VmSimple(i, 1000, VM_PES);
-            vm.setRam(512).setBw(1000).setSize(10000);
-            vm.setCloudletScheduler(new CloudletSchedulerTimeShared());
-            vm.enableUtilizationStats();
-            list.add(vm);
+            final var vm = new VmSimple(i, 1000, VM_PES);
+            vm.setRam(512).setBw(1000).setSize(10000)
+              .setCloudletScheduler(new CloudletSchedulerTimeShared())
+              .enableUtilizationStats();
+            newVmList.add(vm);
         }
 
-        return list;
+        return newVmList;
     }
 
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
-        final UtilizationModel utilization = new UtilizationModelDynamic(0.2);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
+        final var utilization = new UtilizationModelDynamic(0.2);
         for (int i = 0; i < CLOUDLETS; i++) {
             //Sets half of the cloudlets with the defined length and the other half with the double of it
             final long length = i < CLOUDLETS/2 ? CLOUDLET_LENGTH : CLOUDLET_LENGTH*2;
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(i, length, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)

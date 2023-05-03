@@ -23,29 +23,24 @@
  */
 package org.cloudsimplus.examples.brokers;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +87,7 @@ public class MultipleBrokers1 {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private List<DatacenterBroker> brokers;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -107,7 +102,7 @@ public class MultipleBrokers1 {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
         brokers = createBrokers();
 
@@ -124,14 +119,14 @@ public class MultipleBrokers1 {
      */
     private void createVmsAndCloudlets() {
         int i = 0;
-        for (DatacenterBroker broker : brokers) {
+        for (var broker : brokers) {
             vmList.addAll(createAndSubmitVms(broker));
             cloudletList.addAll(createAndSubmitCloudlets(broker, CLOUDLET_LENGTH*CLOUDLETS*i++));
         }
     }
 
     private void printResults() {
-        for (DatacenterBroker broker : brokers) {
+        for (var broker : brokers) {
             new CloudletsTableBuilder(broker.getCloudletFinishedList())
                 .setTitle(broker.getName())
                 .build();
@@ -139,9 +134,9 @@ public class MultipleBrokers1 {
 
         System.out.println();
         for (Vm vm : vmList) {
-            System.out.printf("Vm %d Broker %d -> Start Time: %.0f Stop Time: %.0f Total Execution Time: %.0f%n",
+            System.out.printf("Vm %d Broker %d -> Start Time: %.0f Finish Time: %.0f Total Execution Time: %.0f%n",
                 vm.getId(), vm.getBroker().getId(),
-                vm.getStartTime(), vm.getStopTime(), vm.getTotalExecutionTime());
+                vm.getStartTime(), vm.getFinishTime(), vm.getTotalExecutionTime());
         }
         System.out.println();
     }
@@ -152,15 +147,15 @@ public class MultipleBrokers1 {
      * an idle VM, according to a given
      * {@link DatacenterBroker#setVmDestructionDelayFunction(Function) VM Destruction Delay Function}.
      *
-     * <p>See <a href="https://github.com/manoelcampos/cloudsim-plus/issues/99">Issue #99</a> for more details.</p>
+     * <p>See <a href="https://github.com/cloudsimplus/cloudsimplus/issues/99">Issue #99</a> for more details.</p>
      *
      * @see DatacenterBroker#setVmDestructionDelayFunction(Function)
      * @return the List of created brokers
      */
     private List<DatacenterBroker> createBrokers() {
-        final List<DatacenterBroker> list = new ArrayList<>(BROKERS);
+        final var brokerList = new ArrayList<DatacenterBroker>(BROKERS);
         for(int i = 0; i < BROKERS; i++) {
-            final DatacenterBroker broker = new DatacenterBrokerSimple(simulation);
+            final var broker = new DatacenterBrokerSimple(simulation);
             /*
              * You can use one of these two instructions below
              * to set a specific delay or
@@ -168,41 +163,41 @@ public class MultipleBrokers1 {
              */
             //broker.setVmDestructionDelayFunction(vm -> 0.0);
             broker.setVmDestructionDelayFunction(vm -> 4.0);
-            list.add(broker);
+            brokerList.add(broker);
         }
 
-        return list;
+        return brokerList;
     }
 
     /**
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        ResourceProvisioner ramProvisioner = new ResourceProvisionerSimple();
-        ResourceProvisioner bwProvisioner = new ResourceProvisionerSimple();
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
-        Host host = new HostSimple(ram, bw, storage, peList);
+        final var ramProvisioner = new ResourceProvisionerSimple();
+        final var bwProvisioner = new ResourceProvisionerSimple();
+        final var vmScheduler = new VmSchedulerTimeShared();
+        final var host = new HostSimple(ram, bw, storage, peList);
         host
             .setRamProvisioner(ramProvisioner)
             .setBwProvisioner(bwProvisioner)
@@ -214,40 +209,39 @@ public class MultipleBrokers1 {
      * Creates a list of VMs.
      */
     private List<Vm> createAndSubmitVms(DatacenterBroker broker) {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            Vm vm =
-                new VmSimple(vmList.size()+i, 1000, VM_PES)
+            final Vm vm =
+                new VmSimple(this.vmList.size()+i, 1000, VM_PES)
                     .setRam(512).setBw(1000).setSize(10000)
                     .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
-            list.add(vm);
+            vmList.add(vm);
         }
 
-        broker.submitVmList(list);
-
-        return list;
+        broker.submitVmList(vmList);
+        return vmList;
     }
 
     /**
      * Creates a list of Cloudlets.
      */
     private List<Cloudlet> createAndSubmitCloudlets(DatacenterBroker broker, final int initialLength) {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 1; i <= CLOUDLETS; i++) {
             int length = initialLength + CLOUDLET_LENGTH * i;
-            Cloudlet cloudlet = createCloudlet(cloudletList.size() + i - 1, length);
-            list.add(cloudlet);
+            final var cloudlet = createCloudlet(this.cloudletList.size() + i - 1, length);
+            cloudletList.add(cloudlet);
         }
 
-        broker.submitCloudletList(list);
+        broker.submitCloudletList(cloudletList);
 
-        return list;
+        return cloudletList;
     }
 
     private Cloudlet createCloudlet(final int id, final int length) {
-        UtilizationModel utilization = new UtilizationModelFull();
-        final Cloudlet cloudlet = new CloudletSimple(id, length, CLOUDLET_PES);
+        final var utilization = new UtilizationModelFull();
+        final var cloudlet = new CloudletSimple(id, length, CLOUDLET_PES);
         cloudlet
             .setFileSize(1024)
             .setOutputSize(1024)

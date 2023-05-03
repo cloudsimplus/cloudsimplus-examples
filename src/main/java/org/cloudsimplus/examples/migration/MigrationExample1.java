@@ -24,34 +24,34 @@
 package org.cloudsimplus.examples.migration;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationBestFitStaticThreshold;
-import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationStaticThreshold;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.MipsShare;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.selectionpolicies.VmSelectionPolicyMinimumUtilization;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationBestFitStaticThreshold;
+import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationStaticThreshold;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.HostHistoryTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.DatacenterBrokerEventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.MipsShare;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.selectionpolicies.VmSelectionPolicyMinimumUtilization;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -114,7 +114,7 @@ import static java.util.Comparator.comparingLong;
  * to run correctly.</p>
  *
  * <p>Realize that Host State History is just collected
- * if you enable that by calling {@link Host#enableStateHistory()}.</p>
+ * if you enable that by calling {@link Host#setStateHistoryEnabled(boolean)}.</p>
  *
  * @author Manoel Campos da Silva Filho
  */
@@ -199,7 +199,7 @@ public final class MigrationExample1 {
     private final List<Vm> vmList = new ArrayList<>();
     private final DatacenterBrokerSimple broker;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private VmAllocationPolicyMigrationStaticThreshold allocationPolicy;
     private List<Host> hostList;
     private int migrationsNumber = 0;
@@ -216,10 +216,10 @@ public final class MigrationExample1 {
         }
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         @SuppressWarnings("unused")
-        final Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
         broker = new DatacenterBrokerSimple(simulation);
         createAndSubmitVms(broker);
         createAndSubmitCloudlets(broker);
@@ -228,12 +228,12 @@ public final class MigrationExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedList = broker.getCloudletFinishedList();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
         final Comparator<Cloudlet> cloudletComparator =
             comparingLong((Cloudlet c) -> c.getVm().getHost().getId())
                 .thenComparingLong(c -> c.getVm().getId());
-        finishedList.sort(cloudletComparator);
-        new CloudletsTableBuilder(finishedList).build();
+        cloudletFinishedList.sort(cloudletComparator);
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.printf("%nHosts CPU usage History (when the allocated MIPS is lower than the requested, it is due to VM migration overhead)%n");
 
         hostList.stream().filter(h -> h.getId() <= 2).forEach(this::printHostStateHistory);
@@ -288,7 +288,7 @@ public final class MigrationExample1 {
      * @see Vm#addOnMigrationStartListener(EventListener)
      */
     private void finishMigration(final VmHostEventInfo info) {
-        final Host host = info.getHost();
+        final var host = info.getHost();
         System.out.printf(
             "# %.2f: %s finished migrating to %s (you can perform any operation you want here)%n",
             info.getTime(), info.getVm(), host);
@@ -309,18 +309,18 @@ public final class MigrationExample1 {
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {
-        final List<Cloudlet> list = new ArrayList<>(VM_PES.length);
-        Cloudlet cloudlet = Cloudlet.NULL;
+        final var newCloudletList = new ArrayList<Cloudlet>(VM_PES.length);
+        var cloudlet = Cloudlet.NULL;
         UtilizationModelDynamic um = createCpuUtilizationModel(CLOUDLET_INITIAL_CPU_PERCENTAGE, 1);
-        for(Vm vm: vmList){
+        for(final var vm: vmList){
             cloudlet = createCloudlet(vm, broker, um);
-            list.add(cloudlet);
+            newCloudletList.add(cloudlet);
         }
 
         //Changes the CPU usage of the last cloudlet to start at a lower value and increase dynamically up to 100%
         cloudlet.setUtilizationModelCpu(createCpuUtilizationModel(0.2, 1));
 
-        broker.submitCloudletList(list);
+        broker.submitCloudletList(newCloudletList);
     }
 
     /**
@@ -332,10 +332,10 @@ public final class MigrationExample1 {
      * @return the created Cloudlets
      */
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker, UtilizationModel cpuUtilizationModel) {
-        final UtilizationModel utilizationModelFull = new UtilizationModelFull();
+        final var utilizationModelFull = new UtilizationModelFull();
 
-        final Cloudlet cloudlet =
-            new CloudletSimple(CLOUDLET_LENGTH, (int)vm.getNumberOfPes())
+        final var cloudlet =
+            new CloudletSimple(CLOUDLET_LENGTH, (int)vm.getPesNumber())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModelRam(utilizationModelFull)
@@ -347,20 +347,20 @@ public final class MigrationExample1 {
     }
 
     public void createAndSubmitVms(DatacenterBroker broker) {
-        final List<Vm> list = new ArrayList<>(VM_PES.length);
+        final var newVmList = new ArrayList<Vm>(VM_PES.length);
         for (final int pes : VM_PES) {
-            list.add(createVm(pes));
+            newVmList.add(createVm(pes));
         }
 
-        vmList.addAll(list);
-        broker.submitVmList(list);
+        vmList.addAll(newVmList);
+        broker.submitVmList(newVmList);
 
-        list.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
-        list.forEach(vm -> vm.addOnMigrationFinishListener(this::finishMigration));
+        newVmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
+        newVmList.forEach(vm -> vm.addOnMigrationFinishListener(this::finishMigration));
     }
 
     public Vm createVm(final int pes) {
-        Vm vm = new VmSimple(VM_MIPS, pes);
+        final var vm = new VmSimple(VM_MIPS, pes);
         vm
             .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -436,11 +436,11 @@ public final class MigrationExample1 {
                 HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION + 0.2);
         this.allocationPolicy.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
         for (Host host : hostList) {
             System.out.printf(
                 "# Created %s with %.0f MIPS x %d PEs (%.0f total MIPS)%n",
-                host, host.getMips(), host.getNumberOfPes(), host.getTotalMipsCapacity());
+                host, host.getMips(), host.getPesNumber(), host.getTotalMipsCapacity());
         }
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY);
@@ -448,31 +448,31 @@ public final class MigrationExample1 {
     }
 
     private List<Host> createHosts() {
-        final List<Host> list = new ArrayList<>(HOST_PES.length);
+        final var hostList = new ArrayList<Host>(HOST_PES.length);
         for (int i = 0; i < HOST_PES.length; i++) {
             final int pes = HOST_PES[i];
             final long ram = HOST_RAM[i];
-            list.add(createHost(pes, ram));
+            hostList.add(createHost(pes, ram));
         }
 
-        return list;
+        return hostList;
     }
 
     public Host createHost(final int pesNumber, final long ram) {
-        final List<Pe> peList = createPeList(pesNumber);
-        final Host host = new HostSimple(ram, HOST_BW, HOST_STORAGE, peList);
-        host.setVmScheduler(new VmSchedulerTimeShared());
-        host.enableStateHistory();
+        final var peList = createPeList(pesNumber);
+        final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, peList);
+        host.setVmScheduler(new VmSchedulerTimeShared())
+            .setStateHistoryEnabled(true);
         return host;
     }
 
     public List<Pe> createPeList(final int pesNumber) {
-        final List<Pe> list = new ArrayList<>(pesNumber);
+        final var peList = new ArrayList<Pe>(pesNumber);
         for(int i = 0; i < pesNumber; i++) {
-            list.add(new PeSimple(HOST_MIPS));
+            peList.add(new PeSimple(HOST_MIPS));
         }
 
-        return list;
+        return peList;
     }
 
     /**
@@ -480,8 +480,8 @@ public final class MigrationExample1 {
      * setting the allocation policy to the default value
      * so that some Hosts will be overloaded with the placed VMs and migration will be fired.
      *
-     * The listener is removed after finishing, so that it's called just once,
-     * even if new VMs are submitted and created latter on.
+     * <p>The listener is removed after finishing, so that it's called just once,
+     * even if new VMs are submitted and created latter on.</p>
      */
     private void onVmsCreatedListener(final DatacenterBrokerEventInfo info) {
         System.out.printf("# All %d VMs submitted to the broker have been created.%n", broker.getVmCreatedList().size());

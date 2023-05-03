@@ -24,29 +24,29 @@
 package org.cloudsimplus.examples;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyFirstFit;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.cloudbus.cloudsim.util.TimeUtil.elapsedSeconds;
-import static org.cloudbus.cloudsim.util.TimeUtil.secondsToStr;
+import static org.cloudsimplus.util.TimeUtil.elapsedSeconds;
+import static org.cloudsimplus.util.TimeUtil.secondsToStr;
 
 /**
  * An example creating a huge number of Hosts, VMs and Cloudlets
@@ -90,7 +90,7 @@ public class LargeScaleExample {
      */
     private static final double SCHEDULING_INTERVAL = -1;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private final List<Vm> vmList;
     private final List<Cloudlet> cloudletList;
@@ -109,10 +109,10 @@ public class LargeScaleExample {
         System.out.println("Creating simulation scenario at " + LocalDateTime.now());
         System.out.printf("Creating 1 Datacenter -> Hosts: %,d VMs: %,d Cloudlets: %,d%n", HOSTS, VMS, CLOUDLETS);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -123,8 +123,8 @@ public class LargeScaleExample {
         simulation.start();
 
         final long submittedCloudlets = broker0.getCloudletSubmittedList().size();
-        final long finishedCloudlets = broker0.getCloudletFinishedList().size();
-        System.out.printf("Submitted Cloudlets: %d Finished Cloudlets: %d%n", submittedCloudlets, finishedCloudlets);
+        final long cloudletFinishedList = broker0.getCloudletFinishedList().size();
+        System.out.printf("Submitted Cloudlets: %d Finished Cloudlets: %d%n", submittedCloudlets, cloudletFinishedList);
 
         System.out.printf(
             "Simulated time: %s Actual Execution Time: %s%n", simulatedTime(), actualElapsedTime());

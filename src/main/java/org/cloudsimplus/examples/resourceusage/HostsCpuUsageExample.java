@@ -23,27 +23,24 @@
  */
 package org.cloudsimplus.examples.resourceusage;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +63,7 @@ public class HostsCpuUsageExample {
     private List<Vm> vmlist;
     private List<Host> hostList;
     private DatacenterBroker broker;
-    private CloudSim simulation;
+    private CloudSimPlus simulation;
 
     private static final int NUMBER_OF_VMS = 2;
     private static final int NUMBER_OF_HOSTS = 2;
@@ -81,10 +78,10 @@ public class HostsCpuUsageExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         @SuppressWarnings("unused")
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         broker = new DatacenterBrokerSimple(simulation);
 
@@ -94,10 +91,10 @@ public class HostsCpuUsageExample {
         final int pesNumber = 1; //number of cpus
         final int mips = 1000;
         for (int i = 1; i <= NUMBER_OF_VMS; i++) {
-            Vm vm = createVm(pesNumber, mips);
+            final var vm = createVm(pesNumber, mips);
             vmlist.add(vm);
 
-            Cloudlet cloudlet = createCloudlet(pesNumber);
+            final var cloudlet = createCloudlet(pesNumber);
             cloudletList.add(cloudlet);
         }
 
@@ -111,8 +108,8 @@ public class HostsCpuUsageExample {
 
         simulation.start();
 
-        List<Cloudlet> newList = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(newList)
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList)
             .addColumn(new TextTableColumn("Host  ", "MIPS  "), cloudlet -> cloudlet.getVm().getHost().getMips(), 5)
             .addColumn(new TextTableColumn("VM MIPS"), cloudlet -> cloudlet.getVm().getMips(), 7)
             .build();
@@ -146,7 +143,7 @@ public class HostsCpuUsageExample {
         final long size = 10000; //image size (Megabyte)
         final int ram = 2048; //vm memory (Megabyte)
         final long bw = 1000;
-        Vm vm = new VmSimple(mips, pesNumber)
+        final var vm = new VmSimple(mips, pesNumber)
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
         vm.enableUtilizationStats();
@@ -157,18 +154,18 @@ public class HostsCpuUsageExample {
      * Shows CPU utilization mean of all hosts into a given Datacenter.
      */
     private void printCpuUtilizationForAllHosts() {
-        for (Host host : hostList) {
-            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getNumberOfPes();
+        for (final var host : hostList) {
+            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getPesNumber();
             final double cpuUsageMean = host.getCpuUtilizationStats().getMean()*100;
             System.out.printf(
                 "\tHost %d: PEs number: %2d MIPS by PE: %.0f CPU Utilization mean: %6.2f%%%n",
-                host.getId(), host.getNumberOfPes(), mipsByPe, cpuUsageMean);
+                host.getId(), host.getPesNumber(), mipsByPe, cpuUsageMean);
         }
     }
 
     private void printCpuUtilizationForAllVms() {
         System.out.printf("%nVMs CPU utilization mean%n");
-        for (Vm vm : vmlist) {
+        for (final var vm : vmlist) {
             final double vmCpuUsageMean = vm.getCpuUtilizationStats().getMean()*100;
             System.out.printf("\tVM %d CPU Utilization mean: %6.2f%%%n", vm.getId(), vmCpuUsageMean);
         }
@@ -186,31 +183,28 @@ public class HostsCpuUsageExample {
         final int pesNumber = 1;
         final int mips = 2000;
         for (int i = 1; i <= 2; i++) {
-            Host host = createHost(i, pesNumber, mips*i);
+            final var host = createHost(i, pesNumber, mips*i);
             hostList.add(host);
         }
 
-        DatacenterSimple dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(2);
         return dc;
     }
 
     private Host createHost(final int id, final int pesNumber, final long mips) {
-        List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
 
         final long ram = 2048; //host memory (Megabyte)
         final long storage = 1000000; //host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        Host host = new HostSimple(ram, bw, storage, peList);
-        host
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
+        final var host = new HostSimple(ram, bw, storage, peList);
+        host.setId(id)
             .setVmScheduler(new VmSchedulerTimeShared());
-        host.setId(id);
         host.enableUtilizationStats();
         return host;
     }

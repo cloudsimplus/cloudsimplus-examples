@@ -24,33 +24,33 @@
 package org.cloudsimplus.examples.traces.google;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.CloudSimTag;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.util.BytesConversion;
-import org.cloudbus.cloudsim.util.Conversion;
-import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.util.TraceReaderAbstract;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.CloudSimTag;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.traces.google.BrokerManager;
 import org.cloudsimplus.traces.google.GoogleTaskEventsTraceReader;
 import org.cloudsimplus.traces.google.GoogleTaskUsageTraceReader;
 import org.cloudsimplus.traces.google.TaskEvent;
+import org.cloudsimplus.util.BytesConversion;
+import org.cloudsimplus.util.Conversion;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.util.TimeUtil;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -60,8 +60,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static org.cloudbus.cloudsim.util.BytesConversion.megaBytesToBytes;
-import static org.cloudbus.cloudsim.util.MathUtil.positive;
+import static org.cloudsimplus.util.BytesConversion.megaBytesToBytes;
+import static org.cloudsimplus.util.MathUtil.positive;
 
 /**
  * An example showing how to use <a href="https://github.com/google/cluster-data">Google Cluster Data</a> trace files.
@@ -122,7 +122,7 @@ public class GoogleTaskEventsExample1 {
     private static final long VM_BW = 100; //in Megabits/s
     private static final long VM_SIZE_MB = 1000; //in Megabytes
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private List<DatacenterBroker> brokers;
     private Datacenter datacenter;
     private Collection<Cloudlet> cloudlets;
@@ -137,7 +137,7 @@ public class GoogleTaskEventsExample1 {
         System.out.printf("Simulation started at %s%n%n", LocalTime.now());
         Log.setLevel(Level.TRACE);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter = createDatacenter();
 
         createCloudletsAndBrokersFromTraceFile();
@@ -298,7 +298,7 @@ public class GoogleTaskEventsExample1 {
             .addColumn(new TextTableColumn("Job", "ID"), Cloudlet::getJobId, 0)
             .addColumn(new TextTableColumn("VM Size", "MB"), this::getVmSize, 7)
             .addColumn(new TextTableColumn("Cloudlet Size", "MB"), this::getCloudletSizeInMB, 8)
-            .addColumn(new TextTableColumn("Waiting Time", "Seconds").setFormat("%.0f"), Cloudlet::getWaitingTime, 10)
+            .addColumn(new TextTableColumn("Waiting Time", "Seconds").setFormat("%.0f"), Cloudlet::getCreationWaitTime, 10)
             .setTitle("Simulation results for Broker " + broker.getId() + " representing the username " + username)
             .build();
     }

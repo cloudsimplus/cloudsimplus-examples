@@ -23,38 +23,38 @@
  */
 package org.cloudsimplus.examples.autoscaling;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.resources.Ram;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.autoscaling.HorizontalVmScaling;
 import org.cloudsimplus.autoscaling.VerticalVmScaling;
 import org.cloudsimplus.autoscaling.VerticalVmScalingSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Simulation;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.Ram;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Comparator.comparingDouble;
-import static org.cloudbus.cloudsim.utilizationmodels.UtilizationModel.Unit;
+import static org.cloudsimplus.utilizationmodels.UtilizationModel.Unit;
 
 /**
  * An example that scales VM RAM up or down, according to resource requests from running Cloudlets.
@@ -113,7 +113,7 @@ public class VerticalVmRamScalingExample {
     private static final int VM_RAM = 1000;
     private static final int VM_PES = 5;
     private static final int VM_MIPS = 1000;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private final List<Host> hostList;
     private final List<Vm> vmList;
@@ -148,7 +148,7 @@ public class VerticalVmRamScalingExample {
         vmList = new ArrayList<>(VMS);
         cloudletList = new ArrayList<>(CLOUDLET_LENGTHS.length);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         simulation.addOnClockTickListener(this::onClockTickListener);
 
         createDatacenter();
@@ -166,7 +166,7 @@ public class VerticalVmRamScalingExample {
     }
 
     private void onClockTickListener(EventInfo event) {
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             System.out.printf("\t\tTime %6.1f: Vm %d Ram Usage: %6.2f%% (%4d of %4d MB)",
                 event.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
                 vm.getRam().getAllocatedResource(), vm.getRam().getCapacity());
@@ -179,12 +179,12 @@ public class VerticalVmRamScalingExample {
     }
 
     private void printSimulationResults() {
-        final var finishedCloudletsList = broker0.getCloudletFinishedList();
+        final var cloudletFinishedListList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> sortByVmId = comparingDouble(c -> c.getVm().getId());
-        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getExecStartTime);
-        finishedCloudletsList.sort(sortByVmId.thenComparing(sortByStartTime));
+        final Comparator<Cloudlet> sortByStartTime = comparingDouble(Cloudlet::getStartTime);
+        cloudletFinishedListList.sort(sortByVmId.thenComparing(sortByStartTime));
 
-        new CloudletsTableBuilder(finishedCloudletsList).build();
+        new CloudletsTableBuilder(cloudletFinishedListList).build();
     }
 
     private void createDatacenter() {
@@ -218,7 +218,7 @@ public class VerticalVmRamScalingExample {
     private List<Vm> createListOfScalableVms(final int vmsNumber) {
         final var newVmList = new ArrayList<Vm>(vmsNumber);
         for (int i = 0; i < vmsNumber; i++) {
-            Vm vm = createVm();
+            final var vm = createVm();
             createVerticalRamScalingForVm(vm);
             newVmList.add(vm);
         }
@@ -248,8 +248,8 @@ public class VerticalVmRamScalingExample {
          * move the VM from the over or under-load condition.
         */
         //verticalRamScaling.setResourceScaling(new ResourceScalingInstantaneous());
-        verticalRamScaling.setLowerThresholdFunction(this::lowerRamUtilizationThreshold);
-        verticalRamScaling.setUpperThresholdFunction(this::upperRamUtilizationThreshold);
+        verticalRamScaling.setLowerThresholdFunction(this::lowerRamUtilizationThreshold)
+                          .setUpperThresholdFunction(this::upperRamUtilizationThreshold);
         vm.setRamVerticalScaling(verticalRamScaling);
     }
 

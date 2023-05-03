@@ -23,21 +23,21 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ import java.util.List;
 public class BasicFirstExample {
     private static final int  HOSTS = 1;
     private static final int  HOST_PES = 8;
-    private static final int  HOST_MIPS = 1000;
+    private static final int  HOST_MIPS = 1000; // Milion Instructions per Second (MIPS)
     private static final int  HOST_RAM = 2048; //in Megabytes
     private static final long HOST_BW = 10_000; //in Megabits/s
     private static final long HOST_STORAGE = 1_000_000; //in Megabytes
@@ -66,10 +66,10 @@ public class BasicFirstExample {
 
     private static final int CLOUDLETS = 4;
     private static final int CLOUDLET_PES = 2;
-    private static final int CLOUDLET_LENGTH = 10_000;
+    private static final int CLOUDLET_LENGTH = 10_000; // Milion Instructions (MI)
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -83,10 +83,10 @@ public class BasicFirstExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -96,8 +96,8 @@ public class BasicFirstExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**

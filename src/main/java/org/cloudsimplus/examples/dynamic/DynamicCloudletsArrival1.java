@@ -23,29 +23,25 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +79,7 @@ public class DynamicCloudletsArrival1 {
     private final List<Cloudlet> cloudletList;
     private final DatacenterBroker broker;
     private final Datacenter datacenter;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     /**
      * Starts the example execution, calling the class constructor\
@@ -104,7 +100,7 @@ public class DynamicCloudletsArrival1 {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         this.hostList = new ArrayList<>();
         this.vmList = new ArrayList<>();
@@ -116,13 +112,13 @@ public class DynamicCloudletsArrival1 {
 
         /*Defines a delay of 5 seconds and creates another group of cloudlets
         that will start executing inside a VM only after this delay expires.*/
-        Vm vm = createVm();
-        Cloudlet cl = createCloudlet(vm);
+        final var vm = createVm();
+        final var cloudlet = createCloudlet(vm);
         vm.setSubmissionDelay(5);
-        cl.setSubmissionDelay(5);
+        cloudlet.setSubmissionDelay(5);
 
         broker.submitVm(vm);
-        broker.submitCloudlet(cl);
+        broker.submitCloudlet(cloudlet);
 
         runSimulationAndPrintResults();
         System.out.println(getClass().getSimpleName() + " finished!");
@@ -130,11 +126,11 @@ public class DynamicCloudletsArrival1 {
 
     private void runSimulationAndPrintResults() {
         simulation.start();
-        List<Cloudlet> cloudlets = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(cloudlets)
-            .addColumn(new TextTableColumn("VM Arrived", "Time"), cl -> cl.getVm().getArrivedTime(), 7)
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList)
+            .addColumn(new TextTableColumn("VM Arrived", "Time"), cl -> cl.getVm().getBrokerArrivalTime(), 7)
             .addColumn(new TextTableColumn("VM Creation", "Time"), cl -> cl.getVm().getCreationTime(), 8)
-            .addColumn(new TextTableColumn("VM Wait", "Time"), cl -> cl.getVm().getWaitTime(), 9)
+            .addColumn(new TextTableColumn("VM Wait", "Time"), cl -> cl.getVm().getCreationWaitTime(), 9)
             .build();
     }
 
@@ -148,15 +144,14 @@ public class DynamicCloudletsArrival1 {
      * @see #createCloudlet(Vm)
      */
     private void createAndSubmitCloudlets(Vm vm, double submissionDelay) {
-        int cloudletId = cloudletList.size();
-        List<Cloudlet> list = new ArrayList<>(NUMBER_OF_CLOUDLETS);
+        final var newCloudletList = new ArrayList<Cloudlet>(NUMBER_OF_CLOUDLETS);
         for(int i = 0; i < NUMBER_OF_CLOUDLETS; i++){
-            Cloudlet cloudlet = createCloudlet(vm);
-            list.add(cloudlet);
+            final var cloudlet = createCloudlet(vm);
+            newCloudletList.add(cloudlet);
         }
 
-        broker.submitCloudletList(list, submissionDelay);
-        cloudletList.addAll(list);
+        broker.submitCloudletList(newCloudletList, submissionDelay);
+        cloudletList.addAll(newCloudletList);
     }
 
     /**
@@ -165,22 +160,22 @@ public class DynamicCloudletsArrival1 {
      * @see #createVm()
      */
     private void createAndSubmitVmAndCloudlets(final double submissionDelay) {
-        List<Vm> list = new ArrayList<>();
-        Vm vm = createVm();
-        list.add(vm);
+        final var newVmList = new ArrayList<Vm>();
+        final var vm = createVm();
+        newVmList.add(vm);
 
-        broker.submitVmList(list, submissionDelay);
-        this.vmList.addAll(list);
+        broker.submitVmList(newVmList, submissionDelay);
+        this.vmList.addAll(newVmList);
 
         //Submit cloudlets without delay
         createAndSubmitCloudlets(vm, submissionDelay);
     }
 
     private Vm createVm() {
-        int mips = 1000;
-        long size = 10000; // image size (Megabyte)
-        int ram = 512; // vm memory (Megabyte)
-        long bw = 1000;
+        final int mips = 1000;
+        final long size = 10000; // image size (Megabyte)
+        final int ram = 512; // vm memory (Megabyte)
+        final long bw = 1000;
 
         return new VmSimple(mips, VM_PES_NUMBER)
             .setRam(ram).setBw(bw).setSize(size)
@@ -194,13 +189,14 @@ public class DynamicCloudletsArrival1 {
      * @return the created cloudlet
      */
     private Cloudlet createCloudlet(Vm vm) {
-        long fileSize = 300;
-        long outputSize = 300;
-        long length = 10000; //in number of Million Instructions (MI)
-        int pesNumber = 1;
-        UtilizationModel utilizationModel = new UtilizationModelFull();
-        UtilizationModel utilizationModelDynamic = new UtilizationModelDynamic(0.05);
-        Cloudlet cloudlet = new CloudletSimple(length, pesNumber)
+        final long fileSize = 300;
+        final long outputSize = 300;
+        final long length = 10000; //in number of Million Instructions (MI)
+        final int pesNumber = 1;
+
+        final var utilizationModel = new UtilizationModelFull();
+        final var utilizationModelDynamic = new UtilizationModelDynamic(0.05);
+        final var cloudlet = new CloudletSimple(length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilizationModel)
@@ -217,9 +213,9 @@ public class DynamicCloudletsArrival1 {
      * @return the created Datacenter
      */
     private Datacenter createDatacenter() {
-        Host host = createHost(0);
+        final var host = createHost(0);
         hostList.add(host);
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     /**
@@ -229,19 +225,16 @@ public class DynamicCloudletsArrival1 {
      * @return the created host
      */
     private Host createHost(int id) {
-        List<Pe> peList = new ArrayList<>();
-        long mips = 1000;
+        final var peList = new ArrayList<Pe>();
+        final long mips = 1000;
         for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
-        long ram = 2048; // host memory (Megabyte)
-        long storage = 1000000; // host storage (Megabyte)
-        long bw = 10000; //Megabits/s
 
-       return new HostSimple(ram, bw, storage, peList)
-           .setRamProvisioner(new ResourceProvisionerSimple())
-           .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerSpaceShared());
+        final long ram = 2048; // host memory (Megabyte)
+        final long storage = 1000000; // host storage (Megabyte)
+        final long bw = 10000; //Megabits/s
 
+       return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerSpaceShared());
     }
 }

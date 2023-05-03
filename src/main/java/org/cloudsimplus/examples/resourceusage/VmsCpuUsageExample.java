@@ -23,28 +23,25 @@
  */
 package org.cloudsimplus.examples.resourceusage;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,10 +80,10 @@ public class VmsCpuUsageExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        CloudSim simulation = new CloudSim();
+        final var simulation = new CloudSimPlus();
 
         @SuppressWarnings("unused")
-        Datacenter datacenter0 = createDatacenter(simulation);
+        final var datacenter0 = createDatacenter(simulation);
 
         broker = new DatacenterBrokerSimple(simulation);
 
@@ -96,9 +93,9 @@ public class VmsCpuUsageExample {
         final int mips = 1000;
         final int pesNumber = 2;
         for (int i = 1; i <= VMS; i++) {
-            Vm vm = createVm(pesNumber*2, mips * i, i - 1);
+            final var vm = createVm(pesNumber*2, mips * i, i - 1);
             vmlist.add(vm);
-            Cloudlet cloudlet = createCloudlet(pesNumber);
+            final var cloudlet = createCloudlet(pesNumber);
             cloudletList.add(cloudlet);
             cloudlet.setVm(vm);
         }
@@ -122,10 +119,10 @@ public class VmsCpuUsageExample {
         final long length = 10000;
         final long fileSize = 300;
         final long outputSize = 300;
-        UtilizationModel utilizationModelDynamic = new UtilizationModelDynamic(0.25);
-        UtilizationModel utilizationModelCpu = new UtilizationModelDynamic(0.5);
+        final var utilizationModelDynamic = new UtilizationModelDynamic(0.25);
+        final var utilizationModelCpu = new UtilizationModelDynamic(0.5);
 
-        Cloudlet cloudlet = new CloudletSimple(length, pesNumber);
+        final var cloudlet = new CloudletSimple(length, pesNumber);
         cloudlet.setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilizationModelCpu)
@@ -147,7 +144,7 @@ public class VmsCpuUsageExample {
         final long bw = 1000;
 
         //create two VMs
-        Vm vm = new VmSimple(id, mips, pesNumber);
+        final var vm = new VmSimple(id, mips, pesNumber);
         vm.setRam(ram).setBw(bw)
             .setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -157,7 +154,7 @@ public class VmsCpuUsageExample {
 
     private void printCpuUtilizationForAllVms() {
         System.out.printf("%nVMs CPU utilization mean%n");
-        for (Vm vm : vmlist) {
+        for (final var vm : vmlist) {
             final double vmCpuUsageMean = vm.getCpuUtilizationStats().getMean()*100;
             System.out.printf("\tVM %d CPU Utilization mean: %6.2f%%%n", vm.getId(), vmCpuUsageMean);
         }
@@ -171,36 +168,36 @@ public class VmsCpuUsageExample {
      * @param simulation
      * @return
      */
-    private static Datacenter createDatacenter(CloudSim simulation) {
-        List<Host> hostList = new ArrayList<>(HOSTS);
+    private static Datacenter createDatacenter(CloudSimPlus simulation) {
+        final var hostList = new ArrayList<Host>(HOSTS);
         final int pesNumber = 4;
         final int mips = 1000;
         for (int i = 1; i <= HOSTS; i++) {
-            Host host = createHost(i, pesNumber, mips*i);
+            final var host = createHost(i, pesNumber, mips*i);
             hostList.add(host);
         }
 
-        DatacenterSimple dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(2);
         return dc;
     }
 
     private static Host createHost(final int id, final int pesNumber, final long mips) {
-        List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
 
         final int ram = 2048; //host memory (Megabyte)
         final long storage = 1000000; //host storage
         final int bw = 10000;
 
-        final Host host = new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
-        host.setId(id);
-        host.enableStateHistory();
+        final var host = new HostSimple(ram, bw, storage, peList)
+                .setId(id)
+                .setStateHistoryEnabled(true)
+                .setRamProvisioner(new ResourceProvisionerSimple())
+                .setBwProvisioner(new ResourceProvisionerSimple())
+                .setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
 }

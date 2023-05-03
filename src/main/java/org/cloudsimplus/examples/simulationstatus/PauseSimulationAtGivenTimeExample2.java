@@ -23,29 +23,26 @@
  */
 package org.cloudsimplus.examples.simulationstatus;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.core.events.SimEvent;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Simulation;
+import org.cloudsimplus.core.events.SimEvent;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,17 +58,17 @@ import java.util.List;
  *
  * <p>This example uses CloudSim Plus Listener features to intercept when
  * the simulation was paused, allowing to collect the desired data.
- * This example uses the Java 8 Lambda Functions features
- * to pass a listener to a {@link CloudSim} instance, by means of the
- * {@link CloudSim#addOnSimulationPauseListener(EventListener)} method.
+ * This example uses the Java 8+ Lambda Functions features
+ * to pass a listener to a {@link CloudSimPlus} instance, by means of the
+ * {@link CloudSimPlus#addOnSimulationPauseListener(EventListener)} method.
  * However, the same feature can be used for Java 7 passing an anonymous class
  * that implements {@code EventListener<EventInfo>}.</p>
  *
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 1.0
  *
- * @see CloudSim#pause(double)
- * @see CloudSim#addOnSimulationPauseListener(EventListener)
+ * @see CloudSimPlus#pause(double)
+ * @see CloudSimPlus#addOnSimulationPauseListener(EventListener)
  * @see EventListener
  */
 public class PauseSimulationAtGivenTimeExample2 {
@@ -100,7 +97,7 @@ public class PauseSimulationAtGivenTimeExample2 {
      */
     public static final int SCHEDULING_INTERVAL = 1;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBrokerSimple broker;
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;
@@ -118,12 +115,12 @@ public class PauseSimulationAtGivenTimeExample2 {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        this.simulation = new CloudSim();
+        this.simulation = new CloudSimPlus();
 
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
 
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         /*
         Creates a Broker accountable for submission of VMs and Cloudlets
@@ -131,12 +128,12 @@ public class PauseSimulationAtGivenTimeExample2 {
         */
         this.broker = new DatacenterBrokerSimple(simulation);
 
-        Vm vm0 = createVm();
+        final var vm0 = createVm();
         this.vmList.add(vm0);
         this.broker.submitVmList(vmList);
 
         for(int i = 0; i < 4; i++) {
-            Cloudlet cloudlet = createCloudlet(vm0);
+            final var cloudlet = createCloudlet(vm0);
             this.cloudletList.add(cloudlet);
         }
 
@@ -164,7 +161,7 @@ public class PauseSimulationAtGivenTimeExample2 {
 
         /*Prints results when the simulation is over
         (you can use your own code here to print what you want from this cloudlet list)*/
-        printsListOfFinishedCloudlets("Finished cloudlets after simulation is complete");
+        printsListOfcloudletFinishedList("Finished cloudlets after simulation is complete");
 
         System.out.println(getClass().getSimpleName() + " finished!");
     }
@@ -180,12 +177,12 @@ public class PauseSimulationAtGivenTimeExample2 {
 
     private void printCloudletsFinishedSoFarAndResumeSimulation(EventInfo pauseInfo) {
         System.out.printf("%n# Simulation paused at %.2f second%n", pauseInfo.getTime());
-        printsListOfFinishedCloudlets("Cloudlets Finished So Far");
+        printsListOfcloudletFinishedList("Cloudlets Finished So Far");
         System.out.println();
         this.simulation.resume();
     }
 
-    private void printsListOfFinishedCloudlets(String title) {
+    private void printsListOfcloudletFinishedList(String title) {
         //Gets the list of cloudlets finished so far a prints
         new CloudletsTableBuilder(broker.getCloudletFinishedList())
             .setTitle(title)
@@ -193,11 +190,11 @@ public class PauseSimulationAtGivenTimeExample2 {
     }
 
     private DatacenterSimple createDatacenter() {
-        List<Host> hostList = new ArrayList<>();
-        Host host0 = createHost();
+        final var hostList = new ArrayList<Host>();
+        final var host0 = createHost();
         hostList.add(host0);
 
-        DatacenterSimple dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -208,16 +205,13 @@ public class PauseSimulationAtGivenTimeExample2 {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //in Megabits/s
 
-        final List<Pe> peList = new ArrayList<>(); //List of CPU cores
+        final var peList = new ArrayList<Pe>(); //List of CPU cores
 
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+        peList.add(new PeSimple(mips));
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm() {
@@ -229,11 +223,10 @@ public class PauseSimulationAtGivenTimeExample2 {
     }
 
     private Cloudlet createCloudlet(Vm vm) {
-        return new CloudletSimple(10000, vm.getNumberOfPes())
+        return new CloudletSimple(10000, vm.getPesNumber())
                 .setFileSize(300)
                 .setOutputSize(300)
                 .setUtilizationModel(new UtilizationModelFull())
                 .setVm(vm);
     }
-
 }

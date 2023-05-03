@@ -23,26 +23,21 @@
  */
 package org.cloudsimplus.examples.simulationstatus;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +51,12 @@ import java.util.List;
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 1.0
  *
- * @see CloudSim#terminateAt(double)
+ * @see CloudSimPlus#terminateAt(double)
  */
 public class TerminateSimulationAtGivenTimeExample {
     private static final int TIME_TO_FINISH_SIMULATION = 21;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;
     private int numberOfCreatedCloudlets = 0;
@@ -80,23 +75,23 @@ public class TerminateSimulationAtGivenTimeExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        this.simulation = new CloudSim();
+        this.simulation = new CloudSimPlus();
 
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
 
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         /*Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer).*/
-        DatacenterBroker broker0 = new DatacenterBrokerSimple(simulation);
+        final var broker0 = new DatacenterBrokerSimple(simulation);
 
-        Vm vm0 = createVm(broker0);
+        final var vm0 = createVm(broker0);
         this.vmList.add(vm0);
         broker0.submitVmList(vmList);
 
         for(int i = 0; i < 4; i++) {
-            Cloudlet cloudlet = createCloudlet(broker0, vm0);
+            final var cloudlet = createCloudlet(broker0, vm0);
             this.cloudletList.add(cloudlet);
         }
         broker0.submitCloudletList(cloudletList);
@@ -112,17 +107,17 @@ public class TerminateSimulationAtGivenTimeExample {
 
         /*Prints results when the simulation is over
         (you can use your own code here to print what you want from this cloudlet list)*/
-        List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
     private DatacenterSimple createDatacenter() {
-        List<Host> hostList = new ArrayList<>();
-        Host host0 = createHost();
+        final var hostList = new ArrayList<Host>();
+        final var host0 = createHost();
         hostList.add(host0);
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
@@ -131,16 +126,13 @@ public class TerminateSimulationAtGivenTimeExample {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final List<Pe> peList = new ArrayList<>(); //List of CPU cores
+        final var peList = new ArrayList<Pe>(); //List of CPU cores
 
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+        peList.add(new PeSimple(mips));
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, peList);
     }
 
     private Vm createVm(DatacenterBroker broker) {
@@ -156,7 +148,7 @@ public class TerminateSimulationAtGivenTimeExample {
 
     private Cloudlet createCloudlet(DatacenterBroker broker, Vm vm) {
         final long length = 10000; //in Million Instructions (MI)
-        final long  numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
+        final long  numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
 
         return new CloudletSimple(
                 numberOfCreatedCloudlets++, length, numberOfCpuCores)

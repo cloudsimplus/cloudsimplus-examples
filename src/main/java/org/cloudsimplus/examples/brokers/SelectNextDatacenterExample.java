@@ -23,21 +23,21 @@
  */
 package org.cloudsimplus.examples.brokers;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +66,8 @@ public class SelectNextDatacenterExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private List<Datacenter> datacenterList;
@@ -82,10 +82,10 @@ public class SelectNextDatacenterExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenterList = createDatacenters();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -95,8 +95,8 @@ public class SelectNextDatacenterExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -105,12 +105,12 @@ public class SelectNextDatacenterExample {
      * @return
      */
     private List<Datacenter> createDatacenters(){
-        final List<Datacenter> list = new ArrayList<>(DATACENTERS);
+        final var datacenterList = new ArrayList<Datacenter>(DATACENTERS);
         for (int i = 1; i <= DATACENTERS; i++) {
-            list.add(createDatacenter(i));
+            datacenterList.add(createDatacenter(i));
         }
 
-        return list;
+        return datacenterList;
     }
 
     /**
@@ -118,9 +118,9 @@ public class SelectNextDatacenterExample {
      * @param hostsPes the number of PEs for the Hosts in the Datacenter created
      */
     private Datacenter createDatacenter(final int hostsPes) {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost(hostsPes);
+            final var host = createHost(hostsPes);
             hostList.add(host);
         }
 
@@ -129,7 +129,7 @@ public class SelectNextDatacenterExample {
     }
 
     private Host createHost(final int pes) {
-        final List<Pe> peList = new ArrayList<>(pes);
+        final var peList = new ArrayList<Pe>(pes);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < pes; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -144,7 +144,7 @@ public class SelectNextDatacenterExample {
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final Host host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, peList);
         host.setId(++lastHostId);
         return host;
     }
@@ -153,32 +153,32 @@ public class SelectNextDatacenterExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(1000, VM_PES);
             vm.setRam(512).setBw(1000).setSize(10000);
-            list.add(vm);
+            vmList.add(vm);
         }
 
-        return list;
+        return vmList;
     }
 
     /**
      * Creates a list of Cloudlets.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 
         //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
             cloudlet.setSizes(1024);
-            list.add(cloudlet);
+            cloudletList.add(cloudlet);
         }
 
-        return list;
+        return cloudletList;
     }
 }

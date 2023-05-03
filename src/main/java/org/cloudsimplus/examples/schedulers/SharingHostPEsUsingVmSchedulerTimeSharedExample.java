@@ -23,27 +23,22 @@
  */
 package org.cloudsimplus.examples.schedulers;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,16 +48,16 @@ import java.util.List;
  * {@link Pe Processor Element (CPU core)} of it,
  * using a VmSchedulerTimeShared policy at the Host.
  *
- * It number of VMs to be created will be the double of the Host PEs number.
+ * <p>The number of VMs to be created will be the double of the Host PEs number.
  * For each Host PE, two VMs requiring half the MIPS capacity of the PE will be
  * created. Each VM will have just one cloudlet that will use
- * all VM PEs and MIPS capacity.
+ * all VM PEs and MIPS capacity.</p>
  *
- * Thus, considering that each cloudlet has a length of 10000 MI and
+ * <p>Thus, considering that each cloudlet has a length of 10000 MI and
  * each VM has a PE of 1000 MIPS, the cloudlet will spend 10 seconds to finish.
  * However, as each Host PE will be shared between two VMs using a time shared
  * scheduler, the cloudlet will spend the double of the time to finish,
- * as can be seen in the simulation results after running the example.
+ * as can be seen in the simulation results after running the example.</p>
  *
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 1.0
@@ -93,7 +88,7 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
     private static final int NUMBER_OF_VMS = HOST_PES_NUM*2;
 
     private static final long VM_MIPS = HOST_TOTAL_MIPS_CAPACITY/NUMBER_OF_VMS;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;
@@ -114,16 +109,16 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
 
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         /*Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer).*/
-        DatacenterBroker broker0 = new DatacenterBrokerSimple(simulation);
+        final var broker0 = new DatacenterBrokerSimple(simulation);
 
         createAndSubmitVmsAndCloudlets(broker0);
 
@@ -132,18 +127,18 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
 
         /*Prints results when the simulation is over
         (you can use your own code here to print what you want from this cloudlet list)*/
-        List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    private void createAndSubmitVmsAndCloudlets(DatacenterBroker broker0) {
+    private void createAndSubmitVmsAndCloudlets(final DatacenterBroker broker0) {
         for(int i = 0; i < NUMBER_OF_VMS; i++){
-            Vm vm = createVm(broker0, VM_MIPS, 1);
+            final var vm = createVm(broker0, VM_MIPS, 1);
             this.vmList.add(vm);
 
             /*Creates a cloudlet that represents an application to be run inside a VM.*/
-            Cloudlet cloudlet = createCloudlet(broker0, vm);
+            final var cloudlet = createCloudlet(broker0, vm);
             this.cloudletList.add(cloudlet);
         }
 
@@ -152,36 +147,33 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
     }
 
     private DatacenterSimple createDatacenter() {
-        List<Host> hostList = new ArrayList<>();
-        Host host0 = createHost();
+        final var hostList = new ArrayList<Host>();
+        final var host0 = createHost();
         hostList.add(host0);
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
-        final long mips = 1000; // capacity of each CPU core (in Million Instructions per Second)
+        // capacity of each CPU core (in Million Instructions per Second)
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
         for(int i = 0; i < HOST_PES_NUM; i++){
-            peList.add(new PeSimple(HOST_MIPS, new PeProvisionerSimple()));
+            peList.add(new PeSimple(HOST_MIPS));
         }
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm(DatacenterBroker broker, long mips, int pesNumber) {
-        long storage = 10000; // vm image size (Megabyte)
-        int  ram = 512; // vm memory (Megabyte)
-        long bw = 1000; // vm bandwidth
+        final long storage = 10000; // vm image size (Megabyte)
+        final int  ram = 512; // vm memory (Megabyte)
+        final long bw = 1000; // vm bandwidth
 
         return new VmSimple(numberOfCreatedVms++, mips, pesNumber)
             .setRam(ram).setBw(bw).setSize(storage)
@@ -190,13 +182,13 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
     }
 
     private Cloudlet createCloudlet(DatacenterBroker broker, Vm vm) {
-        long fileSize = 300; //Size (in bytes) before execution
-        long outputSize = 300; //Size (in bytes) after execution
-        long  numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
+        final long fileSize = 300; //Size (in bytes) before execution
+        final long outputSize = 300; //Size (in bytes) after execution
+        final long  numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
 
         //Defines how CPU, RAM and Bandwidth resources are used
         //Sets the same utilization model for all these resources.
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var utilization = new UtilizationModelFull();
 
         return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LENGTH, numberOfCpuCores)
             .setFileSize(fileSize)
@@ -204,5 +196,4 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
             .setUtilizationModel(utilization)
             .setVm(vm);
     }
-
 }

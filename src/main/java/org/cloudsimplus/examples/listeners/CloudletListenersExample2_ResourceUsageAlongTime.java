@@ -23,30 +23,26 @@
  */
 package org.cloudsimplus.examples.listeners;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelStochastic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.examples.resourceusage.VmsRamAndBwUsageExample;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelStochastic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +86,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
     private final List<Cloudlet> cloudletList;
     private final DatacenterBroker broker;
     private final Datacenter datacenter;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     /**
      * Starts the example execution, calling the class constructor\
@@ -111,7 +107,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         this.hostList = new ArrayList<>();
         this.vmList = new ArrayList<>();
@@ -134,7 +130,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
      * @see #createCloudlet(long, Vm, long)
      */
     private void onUpdateCloudletProcessingListener(CloudletVmEventInfo eventInfo) {
-        Cloudlet c = eventInfo.getCloudlet();
+        final var c = eventInfo.getCloudlet();
         double cpuUsage = c.getUtilizationModelCpu().getUtilization(eventInfo.getTime())*100;
         double ramUsage = c.getUtilizationModelRam().getUtilization(eventInfo.getTime())*100;
         double bwUsage  = c.getUtilizationModelBw().getUtilization(eventInfo.getTime())*100;
@@ -149,8 +145,8 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
     private void runSimulationAndPrintResults() {
         simulation.start();
 
-        List<Cloudlet> finishedCloudlets = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -164,7 +160,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         long length = 10000;
         for(int i = 0; i < NUMBER_OF_CLOUDLETS; i++){
             cloudletId = vm.getId() + i;
-            Cloudlet cloudlet = createCloudlet(cloudletId, vm, length);
+            final var cloudlet = createCloudlet(cloudletId, vm, length);
             this.cloudletList.add(cloudlet);
         }
 
@@ -175,7 +171,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
      * Creates VMs and submit them to the broker.
      */
     private void createAndSubmitVms() {
-        Vm vm0 = createVm(0);
+        final var vm0 = createVm(0);
         this.vmList.add(vm0);
         this.broker.submitVmList(vmList);
     }
@@ -187,12 +183,12 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
      * @return the created VM
      */
     private Vm createVm(int id) {
-        int mips = 1000;
-        long size = 10000; // image size (Megabyte)
-        int ram = 512; // vm memory (Megabyte)
-        long bw = 1000;
+        final int mips = 1000;
+        final long size = 10000; // image size (Megabyte)
+        final int ram = 512; // vm memory (Megabyte)
+        final long bw = 1000;
 
-        Vm vm = new VmSimple(id, mips, VM_PES_NUMBER)
+        final var vm = new VmSimple(id, mips, VM_PES_NUMBER)
                 .setRam(ram).setBw(bw).setSize(size)
                 .setCloudletScheduler(new CloudletSchedulerSpaceShared());
         return vm;
@@ -207,16 +203,16 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
      * @return the created cloudlet
      */
     private Cloudlet createCloudlet(long id, Vm vm, long length) {
-        long fileSize = 300;
-        long outputSize = 300;
-        int pesNumber = 1;
+        final long fileSize = 300;
+        final long outputSize = 300;
+        final int pesNumber = 1;
 
         /*Define that the utilization of CPU, RAM and Bandwidth is random.*/
-        UtilizationModel cpuUtilizationModel = new UtilizationModelStochastic();
-        UtilizationModel ramUtilizationModel = new UtilizationModelStochastic();
-        UtilizationModel bwUtilizationModel  = new UtilizationModelStochastic();
+        final var cpuUtilizationModel = new UtilizationModelStochastic();
+        final var ramUtilizationModel = new UtilizationModelStochastic();
+        final var bwUtilizationModel  = new UtilizationModelStochastic();
 
-        Cloudlet cloudlet =
+        final var cloudlet =
             new CloudletSimple(id, length, pesNumber)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
@@ -235,10 +231,10 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
      * @return the created Datacenter
      */
     private Datacenter createDatacenter() {
-        Host host = createHost(0);
+        final var host = createHost(0);
         hostList.add(host);
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple())
+        return new DatacenterSimple(simulation, hostList)
                      .setSchedulingInterval(DATACENTER_SCHEDULING_INTERVAL);
     }
 
@@ -249,18 +245,16 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
      * @return the created host
      */
     private Host createHost(int id) {
-        List<Pe> peList = new ArrayList<>();
-        long mips = 1000;
+        final var peList = new ArrayList<Pe>();
+        final long mips = 1000;
         for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
-        long ram = 2048; // host memory (Megabyte)
-        long storage = 1000000; // host storage (Megabyte)
-        long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        final long ram = 2048; // host memory (Megabyte)
+        final long storage = 1000000; // host storage (Megabyte)
+        final long bw = 10000; //Megabits/s
+
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 }

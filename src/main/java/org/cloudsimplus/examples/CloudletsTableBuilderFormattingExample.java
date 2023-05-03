@@ -23,28 +23,25 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.MarkdownTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * A variation of BasicFirstExample.java which runs two kinds of cloudlets
@@ -77,8 +74,8 @@ public class CloudletsTableBuilderFormattingExample {
     private static final int CLOUDLET_LENGTH_SHORT = 124_963;
     private static final int CLOUDLET_LENGTH_LONG = 984_174_395;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -92,10 +89,10 @@ public class CloudletsTableBuilderFormattingExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -105,35 +102,35 @@ public class CloudletsTableBuilderFormattingExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
 
-        demonstrateCloudletTableFormattingOptions(finishedCloudlets);
+        demonstrateCloudletTableFormattingOptions(cloudletFinishedList);
         
     }
     
     /**
      * Displays a list of cloudlets as a table while demonstrating several formatting/display options.
-     * @param finishedCloudlets The list of cloudlets to use for the demonstration.
+     * @param cloudletFinishedList The list of cloudlets to use for the demonstration.
      */
-    private void demonstrateCloudletTableFormattingOptions(List<Cloudlet> finishedCloudlets) {
+    private void demonstrateCloudletTableFormattingOptions(List<Cloudlet> cloudletFinishedList) {
     	
     	/**
     	 * Prints the results with default settings.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.build();
     	
     	/**
     	 * Prints the results with a custom title.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTitle("This is a custom title")
     		.build();
     	
     	/**
     	 * Prints the results with 3 instead of one decimal point for time columns.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTimeFormat("%.3f")
     		.setTitle("3 decimal points in time columns")
     		.build();
@@ -141,7 +138,7 @@ public class CloudletsTableBuilderFormattingExample {
     	/**
     	 * Prints the results with additional separators in the length columns to increase readability.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setLengthFormat("%,d")
     		.setTitle("Separators in length columns")
     		.build();
@@ -149,7 +146,7 @@ public class CloudletsTableBuilderFormattingExample {
     	/**
     	 * Adds an entire additional column for displaying the submission delay of a cloudlet.
     	 */
-    	new CloudletsTableBuilder(finishedCloudlets)
+    	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTitle("Additional column for submission delay")
     		.addColumn( new MarkdownTableColumn("SubmissionDelay") , Cloudlet::getSubmissionDelay)
     		.build();

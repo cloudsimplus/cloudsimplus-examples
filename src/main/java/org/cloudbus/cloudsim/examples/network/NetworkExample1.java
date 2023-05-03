@@ -6,27 +6,26 @@
  *
  * Copyright (c) 2009, The University of Melbourne, Australia
  */
-package org.cloudbus.cloudsim.examples.network;
+package org.cloudsimplus.examples.network;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.network.topologies.BriteNetworkTopology;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.resources.SanStorage;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.network.topologies.BriteNetworkTopology;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.SanStorage;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class NetworkExample1 {
 
     private final List<Cloudlet> cloudletList;
     private final List<Vm> vmList;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     public static void main(String[] args) {
         new NetworkExample1();
@@ -66,7 +65,7 @@ public class NetworkExample1 {
 
         vmList = new ArrayList<>();
         cloudletList = new ArrayList<>();
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         datacenter0 = createDatacenter();
         broker = new DatacenterBrokerSimple(simulation);
@@ -77,8 +76,8 @@ public class NetworkExample1 {
 
         simulation.start();
 
-        List<Cloudlet> newList = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(newList).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
@@ -87,7 +86,7 @@ public class NetworkExample1 {
         final var networkTopology = BriteNetworkTopology.getInstance(NETWORK_TOPOLOGY_FILE);
         simulation.setNetworkTopology(networkTopology);
 
-        //maps CloudSim entities to BRITE entities
+        //maps CloudSimPlus entities to BRITE entities
         //Datacenter will correspond to BRITE node 0
         int briteNode = 0;
         networkTopology.mapNode(datacenter0, briteNode);
@@ -102,9 +101,9 @@ public class NetworkExample1 {
         final long fileSize = 300;
         final long outputSize = 300;
         //The RAM, CPU and Bandwidth UtilizationModel.
-        final UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
-        Cloudlet cloudlet1 =
+        final var cloudlet1 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
@@ -131,8 +130,8 @@ public class NetworkExample1 {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
-        final List<Pe> peList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
+        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
         peList.add(new PeSimple(mips));
@@ -141,7 +140,7 @@ public class NetworkExample1 {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        Host host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, peList);
         hostList.add(host);
 
         return new DatacenterSimple(simulation, hostList);

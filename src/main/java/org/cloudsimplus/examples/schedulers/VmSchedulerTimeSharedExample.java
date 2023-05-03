@@ -23,25 +23,24 @@
  */
 package org.cloudsimplus.examples.schedulers;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyFirstFit;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,8 +95,8 @@ public class VmSchedulerTimeSharedExample {
 
     private static final int CLOUDLET_LENGTH = HOST_MIPS*10;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Host> hostList;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -112,14 +111,14 @@ public class VmSchedulerTimeSharedExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         hostList = new ArrayList<>(HOSTS);
         vmList = new ArrayList<>(VMS);
         cloudletList = new ArrayList<>(VMS);
 
         createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         createVms();
@@ -139,7 +138,7 @@ public class VmSchedulerTimeSharedExample {
         System.out.printf("%n-------------------------------------- Hosts CPU usage History --------------------------------------%n");
         hostList.forEach(this::printHostStateHistory);
 
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             System.out.printf("%s: Requested MIPS: %.0f Allocated MIPS: %.0f%n", vm, vm.getCurrentRequestedMips(), vm.getMips());
         }
     }
@@ -147,7 +146,7 @@ public class VmSchedulerTimeSharedExample {
     /**
      * Prints the {@link Host#getStateHistory() state history} for a given Host.
      * Realize that the state history is just collected if that is enabled before
-     * starting the simulation by calling {@link Host#enableStateHistory()}.
+     * starting the simulation by calling {@link Host#setStateHistoryEnabled(boolean)}.
      *
      * @param host
      */
@@ -179,7 +178,7 @@ public class VmSchedulerTimeSharedExample {
      */
     private void createDatacenter() {
         for(int h = 0; h < HOSTS; h++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -188,15 +187,15 @@ public class VmSchedulerTimeSharedExample {
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS, new PeProvisionerSimple()));
+            peList.add(new PeSimple(HOST_MIPS));
         }
 
-        Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
-        host.setVmScheduler(new VmSchedulerTimeShared());
-        host.enableStateHistory();
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        host.setStateHistoryEnabled(true)
+            .setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
 
@@ -205,7 +204,7 @@ public class VmSchedulerTimeSharedExample {
      */
     private void createVms() {
         for (int i = 0; i < VMS; i++) {
-            Vm vm =
+            final var vm =
                 new VmSimple(VM_MIPS, VM_PES)
                     .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             vmList.add(vm);
@@ -216,8 +215,8 @@ public class VmSchedulerTimeSharedExample {
      * Creates one Cloudlet for each VM belonging to {@link #broker0}.
      */
     private void createCloudlets() {
-        for (Vm vm : vmList) {
-            Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+        for (final var vm : vmList) {
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
             cloudlet.setVm(vm);
             cloudletList.add(cloudlet);
         }

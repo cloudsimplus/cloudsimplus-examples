@@ -23,33 +23,27 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,18 +77,18 @@ import java.util.List;
  * to set the scheduling interval. Check the method documentation for more details.
  * This example uses the CloudSim Plus Listener features to enable your simulation
  * to be notified when some event happens.
- * In this case, it's being used the {@link CloudSim#addOnClockTickListener(EventListener)}
+ * In this case, it's being used the {@link CloudSimPlus#addOnClockTickListener(EventListener)}
  * to pass a {@link EventListener} object that will be notified
  * when the simulation clock advances.
  * </p>
  *
- * <p>In fact, this {@link EventListener} is a Java 8 {@link FunctionalInterface}
+ * <p>In fact, this {@link EventListener} is a Java 8+ {@link FunctionalInterface}
  * that enables using Lambda Expression
  * or method references in order to provide a {@link FunctionalInterface}.
  * This example uses a reference to the {@link #clockTickListener(EventInfo)} method
- * as being the {@link EventListener} required by the {@link CloudSim#addOnClockTickListener(EventListener)}.</p>
+ * as being the {@link EventListener} required by the {@link CloudSimPlus#addOnClockTickListener(EventListener)}.</p>
  *
- * <p><b>Lambda Expressions, method references and Functional Interfaces are Java 8 features.</b>
+ * <p><b>Lambda Expressions, method references and Functional Interfaces are Java 8+ features.</b>
  * If you don't know what these features are, I suggest checking out this
  * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">tutorial</a></p>
  *
@@ -115,8 +109,8 @@ public class DynamicHostCreation {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -130,10 +124,10 @@ public class DynamicHostCreation {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms(4);
@@ -145,8 +139,8 @@ public class DynamicHostCreation {
         simulation.addOnClockTickListener(this::clockTickListener);
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -159,17 +153,17 @@ public class DynamicHostCreation {
         /* Checks if the time specified in the scheduling interval has passed.
          * This way, creates a new PM just once at that time. */
         if(time == SCHEDULING_INTERVAL) {
-            Host host = createHost();
+            final var host = createHost();
             datacenter0.addHost(host);
             System.out.printf("%n %.2f: # Physically expanding the %s by adding the new %s to it.", info.getTime(), datacenter0, host);
 
             //Creates and submits a new VM
-            Vm vm = createVm(vmList.size());
+            final var vm = createVm(vmList.size());
             System.out.printf("%.2f: # Created %s%n", info.getTime(), vm);
             broker0.submitVm(vm);
 
             //Creates and submits 2 Cloudlets, binding them to the new VM
-            List<Cloudlet> newCloudletList = createCloudlets(2);
+            final var newCloudletList = createCloudlets(2);
             broker0.submitCloudletList(newCloudletList, vm);
             System.out.printf("%.2f: # Created %d Cloudlets for %s%n", info.getTime(), newCloudletList.size(), vm);
 
@@ -183,35 +177,30 @@ public class DynamicHostCreation {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        ResourceProvisioner ramProvisioner = new ResourceProvisionerSimple();
-        ResourceProvisioner bwProvisioner = new ResourceProvisionerSimple();
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
-        Host host = new HostSimple(ram, bw, storage, peList);
-        host
-            .setRamProvisioner(ramProvisioner)
-            .setBwProvisioner(bwProvisioner)
-            .setVmScheduler(vmScheduler);
+        final var vmScheduler = new VmSchedulerTimeShared();
+        final var host = new HostSimple(ram, bw, storage, peList);
+        host.setVmScheduler(vmScheduler);
         return host;
     }
 
@@ -219,12 +208,12 @@ public class DynamicHostCreation {
      * Creates a list of VMs.
      */
     private List<Vm> createVms(final int count) {
-        final List<Vm> list = new ArrayList<>(count);
+        final var newVmList = new ArrayList<Vm>(count);
         for (int i = 0; i < count; i++) {
-            list.add(createVm(i));
+            newVmList.add(createVm(i));
         }
 
-        return list;
+        return newVmList;
     }
 
     private Vm createVm(final int id) {
@@ -234,18 +223,18 @@ public class DynamicHostCreation {
     }
 
     private List<Cloudlet> createCloudlets(final int count) {
-        final List<Cloudlet> list = new ArrayList<>(count);
-        UtilizationModel utilization = new UtilizationModelFull();
+        final var newCloudletList = new ArrayList<Cloudlet>(count);
+        final var utilization = new UtilizationModelFull();
         for (int i = 0; i < count; i++) {
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())
                     .setUtilizationModelRam(new UtilizationModelDynamic(0.2));
-            list.add(cloudlet);
+            newCloudletList.add(cloudlet);
         }
 
-        return list;
+        return newCloudletList;
     }
 }

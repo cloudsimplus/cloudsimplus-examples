@@ -1,10 +1,9 @@
-package org.cloudbus.cloudsim.examples.network.applications;
+package org.cloudsimplus.examples.network.applications;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.network.NetworkVm;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.cloudlets.network.NetworkCloudlet;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.network.NetworkVm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,31 +32,30 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
 
     @Override
     public List<NetworkCloudlet> createNetworkCloudlets(DatacenterBroker broker) {
-        final NetworkCloudlet networkCloudletList[] = new NetworkCloudlet[3];
-        final List<NetworkVm> selectedVms = randomlySelectVmsForApp(networkCloudletList.length);
+        final var networkCloudlets = new NetworkCloudlet[3];
+        final List<NetworkVm> selectedVms = randomlySelectVmsForApp(networkCloudlets.length);
 
-        for(int i = 0; i < networkCloudletList.length; i++){
-            networkCloudletList[i] =
-                    createNetworkCloudlet(selectedVms.get(i), broker);
+        for(int i = 0; i < networkCloudlets.length; i++){
+            networkCloudlets[i] = createNetworkCloudlet(selectedVms.get(i), broker);
             System.out.printf(
                 "Created NetworkCloudlet %d for Application %d%n",
-                networkCloudletList[i].getId(), broker.getId());
+                networkCloudlets[i].getId(), broker.getId());
         }
 
         //NetworkCloudlet 0 Tasks
-        addExecutionTask(networkCloudletList[0]);
-        addSendTask(networkCloudletList[0], networkCloudletList[2]);
+        addExecutionTask(networkCloudlets[0]);
+        addSendTask(networkCloudlets[0], networkCloudlets[2]);
 
         //NetworkCloudlet 1 Tasks
-        addExecutionTask(networkCloudletList[1]);
-        addSendTask(networkCloudletList[1], networkCloudletList[2]);
+        addExecutionTask(networkCloudlets[1]);
+        addSendTask(networkCloudlets[1], networkCloudlets[2]);
 
         //NetworkCloudlet 2 Tasks
-        addReceiveTask(networkCloudletList[2], networkCloudletList[0]);
-        addReceiveTask(networkCloudletList[2], networkCloudletList[1]);
-        addExecutionTask(networkCloudletList[2]);
+        addReceiveTask(networkCloudlets[2], networkCloudlets[0]);
+        addReceiveTask(networkCloudlets[2], networkCloudlets[1]);
+        addExecutionTask(networkCloudlets[2]);
 
-        return Arrays.asList(networkCloudletList);
+        return Arrays.asList(networkCloudlets);
     }
 
     /**
@@ -68,7 +66,7 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
      * @return
      */
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm, DatacenterBroker broker) {
-        final UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
         final var cloudlet = new NetworkCloudlet(1, CLOUDLET_PES);
         cloudlet
                 .setFileSize(CLOUDLET_FILE_SIZE)

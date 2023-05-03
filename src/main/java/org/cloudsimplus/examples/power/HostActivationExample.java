@@ -23,29 +23,29 @@
  */
 package org.cloudsimplus.examples.power;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyBestFit;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.power.models.PowerModelHost;
-import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicyBestFit;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.HostEventInfo;
+import org.cloudsimplus.power.models.PowerModelHost;
+import org.cloudsimplus.power.models.PowerModelHostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -123,8 +123,8 @@ public class HostActivationExample {
 
     private static final int CLOUDLET_LENGTH = 20000;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -139,7 +139,7 @@ public class HostActivationExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
         /*After Host 1 is shutdown, send new VMs to request it to startup again.*/
@@ -153,9 +153,9 @@ public class HostActivationExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingLong(Cloudlet::getLength).reversed());
-        new CloudletsTableBuilder(finishedCloudlets)
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingLong(Cloudlet::getLength).reversed());
+        new CloudletsTableBuilder(cloudletFinishedList)
             .addColumn(new TextTableColumn("Start up time", "Seconds"), cl -> cl.getVm().getHost().getStartTime(), 4)
             .addColumn(new TextTableColumn("Submission delay", "Seconds"), cl -> cl.getVm().getSubmissionDelay(),  7)
             .build();
@@ -169,8 +169,8 @@ public class HostActivationExample {
      * @param info
      */
     private void hostShutdownListener(final HostEventInfo info) {
-        final List<Vm> createVmList = createAndSubmitVmsAndCloudlets(MIN_VMS*2);
-        final Host host = info.getHost();
+        final var createVmList = createAndSubmitVmsAndCloudlets(MIN_VMS*2);
+        final var host = info.getHost();
         System.out.printf(
             "%s: Sending new %d VMs after Host %d shutdown: %s.%n",
             simulation.clockStr(), createVmList.size(), host.getId(), createVmList);
@@ -197,7 +197,7 @@ public class HostActivationExample {
     }
 
     private DatacenterBroker createBroker() {
-        final DatacenterBrokerSimple broker = new DatacenterBrokerSimple(simulation);
+        final var broker = new DatacenterBrokerSimple(simulation);
 
         /*Indicates that idle VMs must be destroyed after some seconds.
         * This forces the Host to become idle.
@@ -232,13 +232,13 @@ public class HostActivationExample {
     }
 
     private List<Vm> createAndSubmitVmsAndCloudlets(final int vmsToCreate) {
-        final List<Vm> newVmList = new ArrayList<>(vmsToCreate);
-        final List<Cloudlet> newCloudletList = new ArrayList<>(vmsToCreate);
+        final var newVmList = new ArrayList<Vm>(vmsToCreate);
+        final var newCloudletList = new ArrayList<Cloudlet>(vmsToCreate);
 
         for (int i = 0; i < vmsToCreate; i++) {
-            final Vm vm = new VmSimple(HOST_MIPS, VM_PES);
+            final var vm = new VmSimple(HOST_MIPS, VM_PES);
             //vm.setSubmissionDelay(2.0);
-            final Cloudlet cloudlet = createCloudlet(vm);
+            final var cloudlet = createCloudlet(vm);
             vmList.add(vm);
             newVmList.add(vm);
 
@@ -252,13 +252,13 @@ public class HostActivationExample {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost(i);
+            final var host = createHost(i);
             hostList.add(host);
         }
 
-        final DatacenterSimple dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyBestFit());
+        final var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyBestFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -269,7 +269,7 @@ public class HostActivationExample {
      * @param id
      */
     private Host createHost(final long id) {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             peList.add(new PeSimple(HOST_MIPS));
@@ -277,10 +277,10 @@ public class HostActivationExample {
 
         //Indicates if the Host will be powered on or not after creation
         final boolean activate = false;
-        final Host host = new HostSimple(peList, activate);
+        final var host = new HostSimple(peList, activate);
         host.setId(id);
 
-        final PowerModelHost powerModel = new PowerModelHostSimple(MAX_POWER, STATIC_POWER);
+        final var powerModel = new PowerModelHostSimple(MAX_POWER, STATIC_POWER);
         powerModel.setStartupDelay(HOST_START_UP_DELAY)
                   .setShutDownDelay(HOST_SHUT_DOWN_DELAY)
                   .setStartupPower(HOST_START_UP_POWER)

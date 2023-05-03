@@ -23,28 +23,26 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +53,7 @@ import java.util.List;
  *
  * <p>This example uses CloudSim Plus Listener features to intercept when
  * the a Cloudlet finishes its execution to then request
- * the creation of a new Cloudlet. It uses the Java 8 Lambda Functions features
+ * the creation of a new Cloudlet. It uses the Java 8+ Lambda Functions features
  * to pass a listener to the mentioned Cloudlet, by means of the
  * {@link Cloudlet#addOnFinishListener(EventListener)} method.</p>
  *
@@ -74,7 +72,7 @@ public class CreateCloudletAfterLastFinishedOne {
     private final List<Cloudlet> cloudletList;
     private final DatacenterBroker broker;
     private final Datacenter datacenter;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     /**
      * Starts the example execution, calling the class constructor\
@@ -95,7 +93,7 @@ public class CreateCloudletAfterLastFinishedOne {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         this.hostList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
@@ -112,19 +110,18 @@ public class CreateCloudletAfterLastFinishedOne {
 
     private void runSimulationAndPrintResults() {
         simulation.start();
-        List<Cloudlet> cloudlets = broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(cloudlets).build();
+        final var cloudletFinishedList = broker.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     private List<Vm> createAndSubmitVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            list.add(createVm());
+            newVmList.add(createVm());
         }
 
-        broker.submitVmList(list);
-
-        return list;
+        broker.submitVmList(newVmList);
+        return newVmList;
     }
 
     /**
@@ -152,7 +149,7 @@ public class CreateCloudletAfterLastFinishedOne {
         final int id = cloudletList.size();
         final long length = 10000; //in number of Million Instructions (MI)
         final int pesNumber = 1;
-        Cloudlet cloudlet = new CloudletSimple(id, length, pesNumber)
+        final var cloudlet = new CloudletSimple(id, length, pesNumber)
             .setFileSize(300)
             .setOutputSize(300)
             .setUtilizationModel(new UtilizationModelFull());
@@ -183,7 +180,7 @@ public class CreateCloudletAfterLastFinishedOne {
             hostList.add(createHost(i));
         }
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     /**
@@ -193,19 +190,18 @@ public class CreateCloudletAfterLastFinishedOne {
      * @return the created host
      */
     private Host createHost(int id) {
-        List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         long mips = 1000;
         for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
         long ram = 2048; // host memory (Megabyte)
         long storage = 1000000; // host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
        return new HostSimple(ram, bw, storage, peList)
-           .setRamProvisioner(new ResourceProvisionerSimple())
-           .setBwProvisioner(new ResourceProvisionerSimple())
+            .setRamProvisioner(new ResourceProvisionerSimple())
+            .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerSpaceShared());
-
     }
 }

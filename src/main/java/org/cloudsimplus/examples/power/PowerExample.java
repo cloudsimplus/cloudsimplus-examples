@@ -23,28 +23,28 @@
  */
 package org.cloudsimplus.examples.power;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.power.models.PowerModel;
-import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.HostResourceStats;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmResourceStats;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.examples.resourceusage.VmsRamAndBwUsageExample;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.power.models.PowerModel;
+import org.cloudsimplus.power.models.PowerModelHostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.HostResourceStats;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmResourceStats;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -87,6 +87,7 @@ import static java.util.Comparator.comparingLong;
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 1.2.4
  *
+ * @see PowerSpecFileExample
  * @see VmsRamAndBwUsageExample
  * @see org.cloudsimplus.examples.resourceusage.VmsCpuUsageExample
  */
@@ -128,8 +129,8 @@ public class PowerExample {
      */
     private static final int MAX_POWER = 50;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -144,7 +145,7 @@ public class PowerExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         hostList = new ArrayList<>(HOSTS);
         datacenter0 = createDatacenter();
         //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
@@ -158,11 +159,11 @@ public class PowerExample {
         simulation.start();
 
         System.out.println("------------------------------- SIMULATION FOR SCHEDULING INTERVAL = " + SCHEDULING_INTERVAL+" -------------------------------");
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
         final Comparator<Cloudlet> hostComparator = comparingLong(cl -> cl.getVm().getHost().getId());
-        finishedCloudlets.sort(hostComparator.thenComparing(cl -> cl.getVm().getId()));
+        cloudletFinishedList.sort(hostComparator.thenComparing(cl -> cl.getVm().getId()));
 
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         printHostsCpuUtilizationAndPowerConsumption();
         printVmsCpuUtilizationAndPowerConsumption();
     }
@@ -190,8 +191,9 @@ public class PowerExample {
      * This adds up to 70 W. If the two VMs are equal and using the same amount of CPU,
      * their power consumption would be the half of the total Host's power consumption.
      * This would be 60 W, not 70.
+     * </p>
      *
-     * This way, we have to compute VM power consumption by sharing a supposed Host static power
+     * <p>This way, we have to compute VM power consumption by sharing a supposed Host static power
      * consumption with each VM, as it's being shown here.
      * Not all {@link PowerModel} have this static power consumption.
      * However, the way the VM power consumption
@@ -243,6 +245,7 @@ public class PowerExample {
      * Creates a {@link Datacenter} and its {@link Host}s.
      */
     private Datacenter createDatacenter() {
+
         for(int i = 0; i < HOSTS; i++) {
             final var host = createPowerHost(i);
             hostList.add(host);
@@ -273,8 +276,9 @@ public class PowerExample {
                   .setStartupPower(HOST_START_UP_POWER)
                   .setShutDownPower(HOST_SHUT_DOWN_POWER);
 
-        host.setVmScheduler(vmScheduler).setPowerModel(powerModel);
-        host.setId(id);
+        host.setId(id)
+            .setVmScheduler(vmScheduler)
+            .setPowerModel(powerModel);
         host.enableUtilizationStats();
 
         return host;

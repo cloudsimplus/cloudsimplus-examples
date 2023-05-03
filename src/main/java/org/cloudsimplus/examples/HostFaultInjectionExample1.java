@@ -23,30 +23,29 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.distributions.PoissonDistr;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.distributions.PoissonDistr;
 import org.cloudsimplus.faultinjection.HostFaultInjection;
 import org.cloudsimplus.faultinjection.VmClonerSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.util.TimeUtil;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +116,7 @@ public final class HostFaultInjectionExample1 {
     private static final long CLOUDLET_FILESIZE = 300;
     private static final long CLOUDLET_OUTPUT_SIZE = 300;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final List<DatacenterBrokerSimple> brokerList;
 
     private int createdVms;
@@ -140,9 +139,9 @@ public final class HostFaultInjectionExample1 {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
-        final Datacenter datacenter = createDatacenter();
+        final var datacenter = createDatacenter();
 
         brokerList = IntStream.range(0, BROKERS).mapToObj(i -> new DatacenterBrokerSimple(simulation)).toList();
         createVmsAndCloudlets();
@@ -173,14 +172,14 @@ public final class HostFaultInjectionExample1 {
     }
 
     private void createVmsAndCloudlets() {
-        for (final var broker : brokerList) {
+        for (final DatacenterBroker broker : brokerList) {
             createAndSubmitVms(broker);
             createAndSubmitCloudlets(broker);
         }
     }
 
     public void createAndSubmitVms(final DatacenterBroker broker) {
-        final List<Vm> list = new ArrayList<>(VMS_BY_BROKER);
+        final var list = new ArrayList<Vm>(VMS_BY_BROKER);
 
         for (int i = 0; i < VMS_BY_BROKER; i++) {
             list.add(createVm());
@@ -227,7 +226,7 @@ public final class HostFaultInjectionExample1 {
         }
         System.out.println();
 
-        final var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS);
         return dc;
     }
@@ -248,12 +247,12 @@ public final class HostFaultInjectionExample1 {
     }
 
     public List<Pe> createPeList(final int pesNumber, final long mips) {
-        final List<Pe> list = new ArrayList<>(pesNumber);
+        final var peList = new ArrayList<Pe>(pesNumber);
         for (int i = 0; i < pesNumber; i++) {
-            list.add(new PeSimple(mips));
+            peList.add(new PeSimple(mips));
         }
 
-        return list;
+        return peList;
     }
 
     /**
@@ -271,7 +270,7 @@ public final class HostFaultInjectionExample1 {
         final var fault = new HostFaultInjection(datacenter, poisson);
         fault.setMaxTimeToFailInHours(MAX_TIME_TO_FAIL_IN_HOURS);
 
-        for (final var broker : brokerList) {
+        for (final DatacenterBroker broker : brokerList) {
             fault.addVmCloner(broker, new VmClonerSimple(this::cloneVm, this::cloneCloudlets));
         }
 
@@ -285,10 +284,10 @@ public final class HostFaultInjectionExample1 {
      * @param vm the VM to be cloned
      * @return the cloned (new) VM.
      *
-     * @see #createFaultInjectionForHosts(org.cloudbus.cloudsim.datacenters.Datacenter)
+     * @see #createFaultInjectionForHosts(Datacenter)
      */
     private Vm cloneVm(final Vm vm) {
-        final Vm clone = new VmSimple(vm.getMips(), vm.getNumberOfPes());
+        final Vm clone = new VmSimple(vm.getMips(), vm.getPesNumber());
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the vm to its clone,
@@ -304,7 +303,7 @@ public final class HostFaultInjectionExample1 {
 
         System.out.printf(
             "%n# %s: Cloning %s as Vm %d -> MIPS: %.0f PEs Number: %d%n",
-            vm.getBroker(), vm, clone.getId(), clone.getMips(), clone.getNumberOfPes());
+            vm.getBroker(), vm, clone.getId(), clone.getMips(), clone.getPesNumber());
 
         return clone;
     }
@@ -319,7 +318,7 @@ public final class HostFaultInjectionExample1 {
      * @param sourceVm the VM to clone its Cloudlets
      * @return the List of cloned Cloudlets.
      * @see
-     * #createFaultInjectionForHosts(org.cloudbus.cloudsim.datacenters.Datacenter)
+     * #createFaultInjectionForHosts(Datacenter)
      */
     private List<Cloudlet> cloneCloudlets(final Vm sourceVm) {
         final var sourceVmCloudletList = sourceVm.getCloudletScheduler().getCloudletList();
@@ -342,7 +341,7 @@ public final class HostFaultInjectionExample1 {
      * @return the cloned (new) cloudlet
      */
     private Cloudlet cloneCloudlet(Cloudlet source) {
-        Cloudlet clone = new CloudletSimple(source.getLength(), source.getNumberOfPes());
+        final var clone = new CloudletSimple(source.getLength(), source.getPesNumber());
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the cloudlet to its clone,

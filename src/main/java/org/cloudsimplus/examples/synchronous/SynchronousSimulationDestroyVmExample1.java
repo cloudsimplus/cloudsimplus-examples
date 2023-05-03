@@ -24,21 +24,22 @@
 package org.cloudsimplus.examples.synchronous;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBrokerAbstract;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,7 +47,7 @@ import java.util.List;
 
 /**
  * An example showing how to destroy a VM running within a synchronous simulation,
- * by calling {@link org.cloudbus.cloudsim.brokers.DatacenterBrokerAbstract#destroyVm(Vm)}).
+ * by calling {@link DatacenterBrokerAbstract#destroyVm(Vm)}).
  * By calling that method instead of {@link Host#destroyVm(Vm)} we are able to
  * get a list of unfinished Cloudlets, so that they can be re-submitted
  * to the broker to try to run them into another VM.
@@ -83,7 +84,7 @@ public class SynchronousSimulationDestroyVmExample1 {
     private static final int TIME_TO_DESTROY_VM = 10;
     private boolean vmDestructionRequested;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private DatacenterBrokerSimple broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
@@ -97,10 +98,10 @@ public class SynchronousSimulationDestroyVmExample1 {
     private SynchronousSimulationDestroyVmExample1() {
         Log.setLevel(Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -115,11 +116,11 @@ public class SynchronousSimulationDestroyVmExample1 {
             printVmCpuUtilization();
         }
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
         //Sorts finished Cloudlets by Vm ID and then Cloudlet ID
         final Comparator<Cloudlet> comparator = Comparator.comparingLong(cl -> cl.getVm().getId());
-        finishedCloudlets.sort(comparator.thenComparingLong(Cloudlet::getId));
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        cloudletFinishedList.sort(comparator.thenComparingLong(Cloudlet::getId));
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -169,9 +170,9 @@ public class SynchronousSimulationDestroyVmExample1 {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -180,7 +181,7 @@ public class SynchronousSimulationDestroyVmExample1 {
     }
 
     private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -202,7 +203,7 @@ public class SynchronousSimulationDestroyVmExample1 {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(1000, VM_PES);
@@ -217,10 +218,10 @@ public class SynchronousSimulationDestroyVmExample1 {
      * Creates a list of Cloudlets with different submission delays.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
             cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                     .setSizes(1024)
                     .setSubmissionDelay(i);

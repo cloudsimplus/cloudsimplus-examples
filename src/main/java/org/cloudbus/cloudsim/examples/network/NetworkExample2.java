@@ -6,25 +6,24 @@
  *
  * Copyright (c) 2009, The University of Melbourne, Australia
  */
-package org.cloudbus.cloudsim.examples.network;
+package org.cloudsimplus.examples.network;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.network.topologies.BriteNetworkTopology;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.network.topologies.BriteNetworkTopology;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class NetworkExample2 {
     private final List<Datacenter> datacenterList;
     private final List<Cloudlet> cloudletList;
     private final List<Vm> vmlist;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker;
 
     public static void main(String[] args) {
@@ -57,7 +56,7 @@ public class NetworkExample2 {
         vmlist = new ArrayList<>();
         cloudletList = new ArrayList<>();
         datacenterList = new ArrayList<>();
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         for (int i = 0; i < 2; i++) {
             datacenterList.add(createDatacenter());
@@ -80,7 +79,7 @@ public class NetworkExample2 {
         final var networkTopology = BriteNetworkTopology.getInstance(NETWORK_TOPOLOGY_FILE);
         simulation.setNetworkTopology(networkTopology);
 
-        //Maps CloudSim entities to BRITE entities
+        //Maps CloudSimPlus entities to BRITE entities
         //Datacenter0 will correspond to BRITE node 0
         int briteNode = 0;
         networkTopology.mapNode(datacenterList.get(0), briteNode);
@@ -98,15 +97,15 @@ public class NetworkExample2 {
         final long length = 40000;
         final long fileSize = 300;
         final long outputSize = 300;
-        final UtilizationModel utilizationModel = new UtilizationModelFull();
+        final var utilizationModel = new UtilizationModelFull();
 
-        final Cloudlet cloudlet1 =
+        final var cloudlet1 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
 
-        final Cloudlet cloudlet2 =
+        final var cloudlet2 =
             new CloudletSimple(length, VM_PES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
@@ -139,8 +138,8 @@ public class NetworkExample2 {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
-        final List<Pe> peList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
+        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
         peList.add(new PeSimple(mips));

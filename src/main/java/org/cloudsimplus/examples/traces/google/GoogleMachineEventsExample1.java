@@ -23,30 +23,29 @@
  */
 package org.cloudsimplus.examples.traces.google;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.util.TraceReaderAbstract;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.HostEventInfo;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.traces.google.GoogleMachineEventsTraceReader;
 import org.cloudsimplus.traces.google.MachineEvent;
 import org.cloudsimplus.traces.google.MachineEventType;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +86,8 @@ public class GoogleMachineEventsExample1 {
     private static final int CLOUDLET_LENGTH = 100000;
     private static final int DATACENTERS_NUMBER = 2;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Datacenter> datacenters;
 
     public static void main(String[] args) {
@@ -100,10 +99,10 @@ public class GoogleMachineEventsExample1 {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         createDatacenters();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         List<Vm> vmList = createAndSubmitVms(datacenters.get(0));
@@ -116,8 +115,8 @@ public class GoogleMachineEventsExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets)
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList)
                 .addColumn(new TextTableColumn("Host Startup", "Time"), this::getHostStartupTime, 5)
                 .build();
     }
@@ -166,7 +165,7 @@ public class GoogleMachineEventsExample1 {
         * The second Datacenter that is given as parameter will be used to add the Hosts with timestamp greater than 0.
         * */
         reader.setDatacenterForLaterHosts(datacenters.get(1));
-        final List<Host> hostList = new ArrayList<>(reader.process());
+        final var hostList = new ArrayList<Host>(reader.process());
 
         System.out.println();
         System.out.printf("# Created %d Hosts that were immediately available from the Google trace file%n", hostList.size());
@@ -194,7 +193,7 @@ public class GoogleMachineEventsExample1 {
     private List<Pe> createPesList(final int count) {
         List<Pe> cpuCoresList = new ArrayList<>(count);
         for(int i = 0; i < count; i++){
-            cpuCoresList.add(new PeSimple(HOST_MIPS, new PeProvisionerSimple()));
+            cpuCoresList.add(new PeSimple(HOST_MIPS));
         }
 
         return cpuCoresList;
@@ -204,7 +203,7 @@ public class GoogleMachineEventsExample1 {
      * Creates a list of VMs and Cloudlets in a given Datacenter.
      */
     private List<Vm> createAndSubmitVms(Datacenter datacenter) {
-        final List<Vm> list = new ArrayList<>(datacenter.getHostList().size());
+        final var list = new ArrayList<Vm>(datacenter.getHostList().size());
         /* Creates 1 VM for each available Host of the datacenter.
         *  Each VM will have the same RAM, BW and Storage of the its Host. */
         for (Host host : datacenter.getHostList()) {
@@ -222,7 +221,7 @@ public class GoogleMachineEventsExample1 {
      * @return
      */
     private Vm createVm(final Host host) {
-        return new VmSimple(1000, host.getNumberOfPes())
+        return new VmSimple(1000, host.getPesNumber())
             .setRam(host.getRam().getCapacity()).setBw(HOST_BW).setSize(HOST_STORAGE)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
     }
@@ -231,9 +230,9 @@ public class GoogleMachineEventsExample1 {
      * Creates a list of Cloudlets for the given VMs.
      */
     private void createAndSubmitCloudlets(final List<Vm> vmList) {
-        final List<Cloudlet> list = new ArrayList<>(vmList.size());
-        for (Vm vm : vmList) {
-            Cloudlet cloudlet = createCloudlet(vm);
+        final var list = new ArrayList<Cloudlet>(vmList.size());
+        for (final var vm : vmList) {
+            final var cloudlet = createCloudlet(vm);
             list.add(cloudlet);
         }
 
@@ -242,7 +241,7 @@ public class GoogleMachineEventsExample1 {
 
     private Cloudlet createCloudlet(Vm vm) {
         final var utilization = new UtilizationModelFull();
-        return new CloudletSimple(CLOUDLET_LENGTH, vm.getNumberOfPes())
+        return new CloudletSimple(CLOUDLET_LENGTH, vm.getPesNumber())
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModel(utilization)

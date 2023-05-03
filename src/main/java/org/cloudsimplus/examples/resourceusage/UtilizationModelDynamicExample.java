@@ -23,27 +23,23 @@
  */
 package org.cloudsimplus.examples.resourceusage;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +58,7 @@ public class UtilizationModelDynamicExample {
     private static final int VMS = 1;
     private static final int CLOUDLETS_PER_VM = 1;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
 
@@ -79,13 +75,13 @@ public class UtilizationModelDynamicExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        this.simulation = new CloudSim();
+        this.simulation = new CloudSimPlus();
 
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
         /*Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer).*/
-        DatacenterBroker broker0 = new DatacenterBrokerSimple(simulation);
+        final var broker0 = new DatacenterBrokerSimple(simulation);
 
         this.vmList = new ArrayList<>(VMS);
         this.cloudletList = new ArrayList<>(VMS);
@@ -94,11 +90,11 @@ public class UtilizationModelDynamicExample {
          * Creates VMs and one Cloudlet for each VM.
          */
         for (int i = 0; i < VMS; i++) {
-            Vm vm = createVm(broker0);
+            final var vm = createVm(broker0);
             this.vmList.add(vm);
             for (int j = 0; j < CLOUDLETS_PER_VM; j++) {
                 /*Creates a Cloudlet that represents an application to be run inside a VM.*/
-                Cloudlet cloudlet = createCloudlet(broker0, vm);
+                final var cloudlet = createCloudlet(broker0, vm);
                 this.cloudletList.add(cloudlet);
             }
         }
@@ -110,47 +106,44 @@ public class UtilizationModelDynamicExample {
 
         /*Prints results when the simulation is over
         (you can use your own code here to print what you want from this cloudlet list)*/
-        List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
     private DatacenterSimple createDatacenter() {
-        List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
-        long  mips = 1000; // capacity of each CPU core (in Million Instructions per Second)
-        long  ram = 2048; // host memory (Megabyte)
-        long storage = 1000000; // host storage (Megabyte)
-        long bw = 10000; //in Megabits/s
+        final long  mips = 1000; // capacity of each CPU core (in Million Instructions per Second)
+        final long  ram = 2048; // host memory (Megabyte)
+        final long storage = 1000000; // host storage (Megabyte)
+        final long bw = 10000; //in Megabits/s
 
-        List<Pe> peList = new ArrayList<>(); //List of CPU cores
+        final var peList = new ArrayList<Pe>(); //List of CPU cores
 
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
         for (int i = 0; i < 2; i++) {
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
 
-        return new HostSimple(ram, bw, storage, peList)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-                .setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm(DatacenterBroker broker) {
-        long   mips = 1000;
-        long   storage = 10000; // vm image size (Megabyte)
-        int    ram = 512; // vm memory (Megabyte)
-        long   bw = 1000; // vm bandwidth (Megabits/s)
-        int    pesNumber = 2; // number of CPU cores
+        final long   mips = 1000;
+        final long   storage = 10000; // vm image size (Megabyte)
+        final int    ram = 512; // vm memory (Megabyte)
+        final long   bw = 1000; // vm bandwidth (Megabits/s)
+        final int    pesNumber = 2; // number of CPU cores
 
         return new VmSimple(vmList.size(), mips, pesNumber)
                 .setRam(ram)
@@ -160,10 +153,10 @@ public class UtilizationModelDynamicExample {
     }
 
     private Cloudlet createCloudlet(DatacenterBroker broker, Vm vm) {
-        long length = 10000; //in Million Instructions (MI)
-        long fileSize = 300; //Size (in bytes) before execution
-        long outputSize = 300; //Size (in bytes) after execution
-        long numberOfCpuCores = vm.getNumberOfPes(); //cloudlet will use all the VM's CPU cores
+        final long length = 10000; //in Million Instructions (MI)
+        final long fileSize = 300; //Size (in bytes) before execution
+        final long outputSize = 300; //Size (in bytes) after execution
+        final long numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
 
         //Defines that the Cloudlet will use all the VM's RAM and Bandwidth.
         final var utilizationFull = new UtilizationModelFull();
@@ -181,5 +174,4 @@ public class UtilizationModelDynamicExample {
                         .setUtilizationModelCpu(utilizationHalfCapacity)
                         .setVm(vm);
     }
-
 }

@@ -24,29 +24,31 @@
 package org.cloudsimplus.examples.brokers;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.datacenters.TimeZoned;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.datacenters.TimeZoned;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Map.Entry;
 
 /**
  * An example showing how to use the {@link DatacenterBrokerSimple}
@@ -93,8 +95,8 @@ public class DatacenterSelectionByTimeZoneExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private List<Datacenter> datacenterList;
@@ -107,10 +109,10 @@ public class DatacenterSelectionByTimeZoneExample {
     private DatacenterSelectionByTimeZoneExample() {
         Log.setLevel(Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenterList = createDatacenters();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -124,10 +126,10 @@ public class DatacenterSelectionByTimeZoneExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingDouble(cl -> cl.getVm().getTimeZone()));
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingDouble(cl -> cl.getVm().getTimeZone()));
 
-        new CloudletsTableBuilder(finishedCloudlets)
+        new CloudletsTableBuilder(cloudletFinishedList)
                 .addColumn(new TextTableColumn("   DC   ", "TimeZone"), this::getDatacenterTimeZone, 3)
                 .addColumn(new TextTableColumn("VM Expected", " TimeZone "), this::getVmTimeZone, 8)
                 .build();
@@ -148,8 +150,8 @@ public class DatacenterSelectionByTimeZoneExample {
      */
     private List<Datacenter> createDatacenters(){
         final var dcList = new ArrayList<Datacenter>(DATACENTERS_TIMEZONES.size());
-        for (Map.Entry<String, Double> entry : DATACENTERS_TIMEZONES.entrySet()) {
-            final Datacenter dc = createDatacenter(entry.getValue());
+        for (Entry<String, Double> entry : DATACENTERS_TIMEZONES.entrySet()) {
+            final var dc = createDatacenter(entry.getValue());
             dcList.add(dc);
             System.out.printf("Created Datacenter %2d in %15s | %s%n", dc.getId(), entry.getKey(), TimeZoned.format(entry.getValue()));
         }
@@ -165,7 +167,7 @@ public class DatacenterSelectionByTimeZoneExample {
     private Datacenter createDatacenter(final double timeZone) {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
@@ -220,10 +222,10 @@ public class DatacenterSelectionByTimeZoneExample {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 
         //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
             cloudlet.setSizes(1024);
             cloudletList.add(cloudlet);
         }

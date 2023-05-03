@@ -23,31 +23,27 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +61,7 @@ import java.util.function.Function;
  * <p>It shows Host CPU utilization every second, so that when the overloaded VM
  * is destroyed, we can check the Host CPU utilization reduces.</p>
  *
- * <p><b>Lambda Expressions and Functional Interfaces are Java 8 features.</b>
+ * <p><b>Lambda Expressions and Functional Interfaces are Java 8+ features.</b>
  * If you don't know what these features are, I suggest checking out this
  * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">tutorial</a></p>
  *
@@ -97,8 +93,8 @@ public class VmDestructionExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -112,10 +108,10 @@ public class VmDestructionExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -133,8 +129,8 @@ public class VmDestructionExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     /**
@@ -163,31 +159,31 @@ public class VmDestructionExample {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        ResourceProvisioner ramProvisioner = new ResourceProvisionerSimple();
-        ResourceProvisioner bwProvisioner = new ResourceProvisionerSimple();
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
-        Host host = new HostSimple(ram, bw, storage, peList);
+        final var ramProvisioner = new ResourceProvisionerSimple();
+        final var bwProvisioner = new ResourceProvisionerSimple();
+        final var vmScheduler = new VmSchedulerTimeShared();
+        final var host = new HostSimple(ram, bw, storage, peList);
         host
             .setRamProvisioner(ramProvisioner)
             .setBwProvisioner(bwProvisioner)
@@ -199,7 +195,7 @@ public class VmDestructionExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             Vm vm =
                 new VmSimple(i, 1000, VM_PES)
@@ -216,7 +212,7 @@ public class VmDestructionExample {
      * Creates a list of Cloudlets.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelFull();
 
         /*Creates a utilization model that enables increasing resource usage over time.
@@ -230,7 +226,7 @@ public class VmDestructionExample {
         dynamicUtilization.setUtilizationUpdateFunction(um -> um.getUtilization() + um.getTimeSpan()*0.1);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            Cloudlet cloudlet =
+            final var cloudlet =
                 new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_PES)
                     .setFileSize(1024)
                     .setOutputSize(1024)

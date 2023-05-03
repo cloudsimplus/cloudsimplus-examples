@@ -23,30 +23,27 @@
  */
 package org.cloudsimplus.examples.resourceusage;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.*;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Simulation;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.*;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.*;
 
@@ -86,7 +83,7 @@ public class VmsRamAndBwUsageExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private final List<Vm> vmList;
     private final List<Cloudlet> cloudletList;
@@ -95,11 +92,11 @@ public class VmsRamAndBwUsageExample {
     /**
      * A map to store RAM utilization history for every VM.
      * Each key is a VM and each value is another map.
-     * This entire data structure is usually called a multi-map.
+     * This entire data structure is usually called a multimap.
      *
-     * Such an internal map stores RAM utilization for a VM.
+     * <p>Such an internal map stores RAM utilization for a VM.
      * The keys of this internal map are the time the utilization was collected (in seconds)
-     * and the value the utilization percentage (from 0 to 1).
+     * and the value the utilization percentage (from 0 to 1).</p>
      */
     private final Map<Vm, Map<Double, Double>> allVmsRamUtilizationHistory;
 
@@ -115,7 +112,7 @@ public class VmsRamAndBwUsageExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
         broker0 = new DatacenterBrokerSimple(simulation);
@@ -131,8 +128,8 @@ public class VmsRamAndBwUsageExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
 
         printVmListResourceUtilizationHistory();
     }
@@ -142,7 +139,7 @@ public class VmsRamAndBwUsageExample {
      */
     private void printVmListResourceUtilizationHistory() {
         System.out.println();
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             printVmUtilizationHistory(vm);
         }
     }
@@ -182,7 +179,7 @@ public class VmsRamAndBwUsageExample {
         //TreeMap sorts entries based on the key
         final Map<Vm, Map<Double, Double>> map = new HashMap<>(VMS);
 
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             map.put(vm, new TreeMap<>());
         }
 
@@ -212,7 +209,7 @@ public class VmsRamAndBwUsageExample {
      * @param resourceClass the kind of resource to collect its utilization (usually {@link Ram} or {@link Bandwidth}).
      */
     private void collectVmResourceUtilization(final Map<Vm, Map<Double, Double>> allVmsUtilizationHistory, Class<? extends ResourceManageable> resourceClass) {
-        for (Vm vm : vmList) {
+        for (final var vm : vmList) {
             /*Gets the internal resource utilization map for the current VM.
             * The key of this map is the time the usage was collected (in seconds)
             * and the value the percentage of utilization (from 0 to 1). */
@@ -225,32 +222,29 @@ public class VmsRamAndBwUsageExample {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        Host host = new HostSimple(ram, bw, storage, peList);
-        host
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        final var host = new HostSimple(ram, bw, storage, peList);
+        host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
 
@@ -258,11 +252,11 @@ public class VmsRamAndBwUsageExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            list.add(createVm(VM_PES));
+            newVmList.add(createVm(VM_PES));
         }
-        return list;
+        return newVmList;
     }
 
     private Vm createVm(final int pes) {
@@ -275,12 +269,12 @@ public class VmsRamAndBwUsageExample {
      * Creates a list of Cloudlets.
      */
     private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            list.add(createCloudlet());
+            newCloudletList.add(createCloudlet());
         }
 
-        return list;
+        return newCloudletList;
     }
 
     /**
@@ -289,8 +283,8 @@ public class VmsRamAndBwUsageExample {
      * @return
      */
     private Cloudlet createCloudlet() {
-        UtilizationModelDynamic ramUtilizationModel = new UtilizationModelDynamic(0.2);
-        UtilizationModelDynamic bwUtilizationModel = new UtilizationModelDynamic(0.1);
+        final var ramUtilizationModel = new UtilizationModelDynamic(0.2);
+        final var bwUtilizationModel = new UtilizationModelDynamic(0.1);
 
         ramUtilizationModel.setUtilizationUpdateFunction(this::utilizationUpdate);
         bwUtilizationModel.setUtilizationUpdateFunction(this::utilizationUpdate);

@@ -23,25 +23,24 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmGroup;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.builders.tables.TextTableColumn;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmGroup;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -83,7 +82,7 @@ public class VmGroupPlacementExample1 {
 
     private static final int CLOUDLET_LENGTH = 10_000;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
 
     /**
@@ -102,10 +101,10 @@ public class VmGroupPlacementExample1 {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         cloudletList = new ArrayList<>();
@@ -120,9 +119,9 @@ public class VmGroupPlacementExample1 {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingLong(cl -> cl.getVm().getId()));
-        new CloudletsTableBuilder(finishedCloudlets)
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingLong(cl -> cl.getVm().getId()));
+        new CloudletsTableBuilder(cloudletFinishedList)
             .addColumn(new TextTableColumn("      VmGroup"), cl -> cl.getVm().getGroup(), 7)
             .build();
     }
@@ -131,9 +130,9 @@ public class VmGroupPlacementExample1 {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 1; i <= HOSTS; i++) {
-            Host host = createHost(i, i);
+            final var host = createHost(i, i);
             hostList.add(host);
         }
 
@@ -142,7 +141,7 @@ public class VmGroupPlacementExample1 {
     }
 
     private Host createHost(final long id, final int pes) {
-        final List<Pe> peList = new ArrayList<>(pes);
+        final var peList = new ArrayList<Pe>(pes);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < pes; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -168,16 +167,16 @@ public class VmGroupPlacementExample1 {
      * Each group contains a List of VMs to try to place them into the same Host.
      */
     private List<VmGroup> createVmGroupList() {
-        final List<VmGroup> groupList = new ArrayList<>(GROUPS);
+        final var vmGroupList = new ArrayList<VmGroup>(GROUPS);
         for (int i = 0; i < GROUPS; i++) {
-            groupList.add(new VmGroup(createVms()));
+            vmGroupList.add(new VmGroup(createVms()));
         }
 
-        return groupList;
+        return vmGroupList;
     }
 
     private List<Vm> createVms() {
-        final List<Vm> vmList = new ArrayList<>(VMS_BY_GROUP);
+        final var vmList = new ArrayList<Vm>(VMS_BY_GROUP);
         for (int i = 0; i < VMS_BY_GROUP; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(HOST_MIPS, VM_PES);
@@ -194,11 +193,11 @@ public class VmGroupPlacementExample1 {
      */
     private void createCloudlets(final VmGroup group) {
         //UtilizationModel defining the Cloudlets use only 10% of RAM and BW all the time
-        final UtilizationModel utilizationModelRamBw = new UtilizationModelDynamic(0.1);
-        final UtilizationModel utilizationModelCpu = new UtilizationModelFull();
+        final var utilizationModelRamBw = new UtilizationModelDynamic(0.1);
+        final var utilizationModelCpu = new UtilizationModelFull();
 
         for (Vm vm : group.getVmList()) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_PES);
             cloudlet.setSizes(1024)
                     .setUtilizationModelCpu(utilizationModelCpu)
                     .setUtilizationModelRam(utilizationModelRamBw)

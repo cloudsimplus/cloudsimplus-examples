@@ -24,34 +24,30 @@
 package org.cloudsimplus.examples.brokers;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerHeuristic;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.distributions.UniformDistr;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerHeuristic;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.distributions.UniformDistr;
 import org.cloudsimplus.heuristics.CloudletToVmMappingHeuristic;
 import org.cloudsimplus.heuristics.CloudletToVmMappingSimulatedAnnealing;
 import org.cloudsimplus.heuristics.CloudletToVmMappingSolution;
 import org.cloudsimplus.heuristics.HeuristicSolution;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +84,7 @@ public class DatacenterBrokerHeuristicExample {
     public static final double SA_COOLING_RATE = 0.003;
     public static final int    SA_NUMBER_OF_NEIGHBORHOOD_SEARCHES = 50;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final List<Cloudlet> cloudletList;
     private List<Vm> vmList;
     private CloudletToVmMappingSimulatedAnnealing heuristic;
@@ -121,26 +117,25 @@ public class DatacenterBrokerHeuristicExample {
         this.vmList = new ArrayList<>();
         this.cloudletList = new ArrayList<>();
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
-        final Datacenter datacenter0 = createDatacenter();
-
-        DatacenterBrokerHeuristic broker0 = createBroker();
+        final var datacenter0 = createDatacenter();
+        final var broker0 = createDatacenterBrokerHeuristic();
 
         createAndSubmitVms(broker0);
         createAndSubmitCloudlets(broker0);
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
 
         print(broker0);
     }
 
-	private DatacenterBrokerHeuristic createBroker() {
+	private DatacenterBrokerHeuristic createDatacenterBrokerHeuristic() {
 		createSimulatedAnnealingHeuristic();
-		final DatacenterBrokerHeuristic broker0 = new DatacenterBrokerHeuristic(simulation);
+		final var broker0 = new DatacenterBrokerHeuristic(simulation);
 		broker0.setHeuristic(heuristic);
 		return broker0;
 	}
@@ -161,11 +156,10 @@ public class DatacenterBrokerHeuristicExample {
 	}
 
 	private void createSimulatedAnnealingHeuristic() {
-		heuristic =
-		        new CloudletToVmMappingSimulatedAnnealing(SA_INITIAL_TEMPERATURE, new UniformDistr(0, 1));
-		heuristic.setColdTemperature(SA_COLD_TEMPERATURE);
-		heuristic.setCoolingRate(SA_COOLING_RATE);
-		heuristic.setSearchesByIteration(SA_NUMBER_OF_NEIGHBORHOOD_SEARCHES);
+		heuristic = new CloudletToVmMappingSimulatedAnnealing(SA_INITIAL_TEMPERATURE, new UniformDistr(0, 1));
+        heuristic.setColdTemperature(SA_COLD_TEMPERATURE)
+                 .setCoolingRate(SA_COOLING_RATE)
+                 .setSearchesByIteration(SA_NUMBER_OF_NEIGHBORHOOD_SEARCHES);
 	}
 
 	private void print(final DatacenterBrokerHeuristic broker0) {
@@ -197,12 +191,12 @@ public class DatacenterBrokerHeuristicExample {
     }
 
     private DatacenterSimple createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
         for(int i = 0; i < HOSTS_TO_CREATE; i++) {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
@@ -211,11 +205,11 @@ public class DatacenterBrokerHeuristicExample {
         final long storage = 1000000; // host storage
         final long bw = 10000;
 
-        final List<Pe> peList = new ArrayList<>();
+        final var peList = new ArrayList<Pe>();
         /*Creates the Host's CPU cores and defines the provisioner
         used to allocate each core for requesting VMs.*/
         for(int i = 0; i < 8; i++)
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
 
        return new HostSimple(ram, bw, storage, peList)
                    .setRamProvisioner(new ResourceProvisionerSimple())
@@ -234,15 +228,15 @@ public class DatacenterBrokerHeuristicExample {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    private Cloudlet createCloudlet(final DatacenterBroker broker, final int numberOfPes) {
+    private Cloudlet createCloudlet(final DatacenterBroker broker, final int pesNumber) {
         final long length = 400000; //in Million Instructions (MI)
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
 
-        final UtilizationModel utilizationFull = new UtilizationModelFull();
-        final UtilizationModel utilizationDynamic = new UtilizationModelDynamic(0.1);
+        final var utilizationFull = new UtilizationModelFull();
+        final var utilizationDynamic = new UtilizationModelDynamic(0.1);
 
-        return new CloudletSimple(createdCloudlets++, length, numberOfPes)
+        return new CloudletSimple(createdCloudlets++, length, pesNumber)
                     .setFileSize(fileSize)
                     .setOutputSize(outputSize)
                     .setUtilizationModelCpu(utilizationFull)
@@ -251,7 +245,7 @@ public class DatacenterBrokerHeuristicExample {
     }
 
     private double computeRoundRobinMappingCost() {
-        final CloudletToVmMappingSolution roundRobinSolution = new CloudletToVmMappingSolution(heuristic);
+        final var roundRobinSolution = new CloudletToVmMappingSolution(heuristic);
         int i = 0;
         for (Cloudlet c : cloudletList) {
             //cyclically selects a Vm (as in a circular queue)
@@ -279,9 +273,9 @@ public class DatacenterBrokerHeuristicExample {
             System.out.printf(
                 "Cloudlet %3d (%d PEs, %6d MI) mapped to Vm %3d (%d PEs, %6.0f MIPS)%n",
                 e.getKey().getId(),
-                e.getKey().getNumberOfPes(), e.getKey().getLength(),
+                e.getKey().getPesNumber(), e.getKey().getLength(),
                 e.getValue().getId(),
-                e.getValue().getNumberOfPes(), e.getValue().getMips());
+                e.getValue().getPesNumber(), e.getValue().getMips());
         }
 
         System.out.println();

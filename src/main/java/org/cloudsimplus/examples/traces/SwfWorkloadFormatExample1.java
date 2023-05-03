@@ -23,36 +23,27 @@
  */
 package org.cloudsimplus.examples.traces;
 
-/*
- * Title:        CloudSim Toolkit
- * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation
- *               of Clouds
- * Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
- *
- * Copyright (c) 2009, The University of Melbourne, Australia
- */
-
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyFirstFit;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
-import org.cloudbus.cloudsim.util.SwfWorkloadFileReader;
-import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.util.TraceReaderAbstract;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.DatacenterBrokerEventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
+import org.cloudsimplus.traces.SwfWorkloadFileReader;
+import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.util.TimeUtil;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -72,7 +63,7 @@ import java.util.List;
  * at the developer machine and can <b>spend a long time to finish</b>,
  * the example allow to limit the maximum number of cloudlets to be submitted
  * to the DatacenterBroker.
- * See the {@link #maximumNumberOfCloudletsToCreateFromTheWorkloadFile} attribute for more details.
+ * See the {@link #maxCloudletsToCreateFromWorkloadFile} attribute for more details.
  * </p>
  *
  * <p>
@@ -95,15 +86,15 @@ public class SwfWorkloadFormatExample1 {
      */
     private static final String WORKLOAD_FILENAME = "workload/swf/NASA-iPSC-1993-3.1-cln.swf.gz";
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
 
     /**
      * Defines the maximum number of cloudlets to be created
      * from the given workload file.
-     * The value -1 indicates that every job inside the workload file
+     * {@link Integer#MAX_VALUE} indicates that every job inside the workload file
      * will be created as one cloudlet.
      */
-    private int maximumNumberOfCloudletsToCreateFromTheWorkloadFile = -1;
+    private int maxCloudletsToCreateFromWorkloadFile = Integer.MAX_VALUE;
 
     private final int HOST_PES = 12;
 
@@ -138,7 +129,7 @@ public class SwfWorkloadFormatExample1 {
         final double startSecs = TimeUtil.currentTimeSecs();
         System.out.printf("Simulation started at %s%n%n", LocalTime.now());
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         try {
             broker = new DatacenterBrokerSimple(simulation);
 
@@ -156,10 +147,9 @@ public class SwfWorkloadFormatExample1 {
 
             simulation.start();
 
-            List<Cloudlet> newList = broker.getCloudletFinishedList();
-            new CloudletsTableBuilder(newList).build();
+            final var cloudletFinishedList = broker.getCloudletFinishedList();
+            new CloudletsTableBuilder(cloudletFinishedList).build();
 
-            System.out.println(getClass().getSimpleName() + " finished!");
             System.out.printf("Simulation finished at %s. Execution time: %.2f seconds%n", LocalTime.now(), TimeUtil.elapsedSeconds(startSecs));
         } catch (Exception e) {
             System.out.printf("Error during simulation execution: %s%n", e.getMessage());
@@ -189,14 +179,14 @@ public class SwfWorkloadFormatExample1 {
      * in order to try accommodating all Cloudlets into those VMs.
      */
     private void createVms() {
-        final double totalCloudletPes = cloudletList.stream().mapToDouble(Cloudlet::getNumberOfPes).sum();
-        /* The number to multiple the VM_PES was chosen at random.
+        final double totalCloudletPes = cloudletList.stream().mapToDouble(Cloudlet::getPesNumber).sum();
+        /* The number to multiply the VM_PES was chosen at random.
         * It's used to reduce the number of VMs to create. */
         final int totalVms = (int)Math.ceil(totalCloudletPes / (VM_PES*6));
 
         vmlist = new ArrayList<>();
         for (int i = 0; i < totalVms; i++) {
-            Vm vm = new VmSimple(VM_MIPS, VM_PES)
+            final var vm = new VmSimple(VM_MIPS, VM_PES)
                             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
                             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
             vmlist.add(vm);
@@ -206,8 +196,8 @@ public class SwfWorkloadFormatExample1 {
     }
 
     private void createCloudletsFromWorkloadFile() {
-        SwfWorkloadFileReader reader = SwfWorkloadFileReader.getInstance(WORKLOAD_FILENAME, VM_MIPS);
-        reader.setMaxLinesToRead(maximumNumberOfCloudletsToCreateFromTheWorkloadFile);
+        final var reader = SwfWorkloadFileReader.getInstance(WORKLOAD_FILENAME, VM_MIPS);
+        reader.setMaxLinesToRead(maxCloudletsToCreateFromWorkloadFile);
         this.cloudletList = reader.generateWorkload();
 
         System.out.printf("# Created %12d Cloudlets for %s%n", this.cloudletList.size(), broker);
@@ -220,8 +210,8 @@ public class SwfWorkloadFormatExample1 {
      * @return the created Datacenter
      */
     private Datacenter createDatacenter() {
-        List<Host> hostList = createHosts(vmlist.size()/2);
-        Datacenter datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        final var hostList = createHosts(vmlist.size()/2);
+        var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
 
         System.out.printf("# Added   %12d Hosts to %s%n", hostList.size(), datacenter);
         return datacenter;
@@ -238,23 +228,22 @@ public class SwfWorkloadFormatExample1 {
         final long storage = VM_SIZE * 1000;
         final long bw = VM_BW * 1000;
 
-        final List<Host> list = new ArrayList<>((int)hostsNumber);
+        final var hostList = new ArrayList<Host>((int)hostsNumber);
         for (int i = 0; i < hostsNumber; i++) {
             List<Pe> peList = createPeList(VM_MIPS);
-            Host host = new HostSimple(ram, bw, storage, peList);
-            list.add(host);
+            final var host = new HostSimple(ram, bw, storage, peList);
+            hostList.add(host);
         }
 
-        return list;
+        return hostList;
     }
 
     private List<Pe> createPeList(final long mips) {
-        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         for (int i = 0; i < HOST_PES; i++) {
             peList.add(new PeSimple(mips));
         }
 
         return peList;
     }
-
 }

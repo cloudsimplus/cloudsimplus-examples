@@ -24,27 +24,25 @@
 package org.cloudsimplus.examples;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +72,7 @@ import java.util.List;
  */
 public class ParallelSimulationsExample implements Runnable {
     private final String title;
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private DatacenterBroker broker;
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;
@@ -139,7 +137,7 @@ public class ParallelSimulationsExample implements Runnable {
         this.title = title;
         this.cloudletList = new ArrayList<>();
         this.vmList = new ArrayList<>();
-        this.simulation = new CloudSim();
+        this.simulation = new CloudSimPlus();
     }
 
     private List<Host> createHosts() {
@@ -165,7 +163,7 @@ public class ParallelSimulationsExample implements Runnable {
 
         final var peList = new ArrayList<Pe>(pesNumber); // List of CPU cores
         for(int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
 
         return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
@@ -232,7 +230,7 @@ public class ParallelSimulationsExample implements Runnable {
      */
     @Override
     public void run() {
-        final Datacenter datacenter0 = new DatacenterSimple(simulation, createHosts());
+        final var datacenter0 = new DatacenterSimple(simulation, createHosts());
 
         /* Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer). */

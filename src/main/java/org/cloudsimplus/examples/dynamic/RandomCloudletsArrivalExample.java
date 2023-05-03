@@ -23,32 +23,30 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
-import org.cloudbus.cloudsim.distributions.UniformDistr;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Simulation;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.distributions.ContinuousDistribution;
+import org.cloudsimplus.distributions.PoissonDistr;
+import org.cloudsimplus.distributions.UniformDistr;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +65,7 @@ import java.util.List;
  *
  * <p>It creates Cloudlets randomly, according to a pseudo random number generator (PRNG) following the
  * {@link UniformDistr uniform distribution}. You can change the PRNG as you wish,
- * for instance, to use a {@link org.cloudbus.cloudsim.distributions.PoissonDistr} arrival process.</p>
+ * for instance, to use a {@link PoissonDistr} arrival process.</p>
  *
  * <p>The example uses the CloudSim Plus {@link EventListener} feature
  * to enable monitoring the simulation and dynamically creating Cloudlets and VMs at runtime.
@@ -112,7 +110,7 @@ public class RandomCloudletsArrivalExample {
      */
     private static final int INITIAL_CLOUDLETS_NUMBER = 5;
 
-    private final CloudSim simulation;
+    private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private final List<Vm> vmList;
     private final List<Cloudlet> cloudletList;
@@ -128,7 +126,7 @@ public class RandomCloudletsArrivalExample {
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         random = new UniformDistr();
         simulation.terminateAt(TIME_TO_TERMINATE_SIMULATION);
         datacenter0 = createDatacenter();
@@ -144,8 +142,8 @@ public class RandomCloudletsArrivalExample {
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        new CloudletsTableBuilder(cloudletFinishedList).build();
 
         final int randomCloudlets = cloudletList.size()-INITIAL_CLOUDLETS_NUMBER;
         System.out.println(
@@ -158,32 +156,29 @@ public class RandomCloudletsArrivalExample {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOSTS);
+        final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
-            Host host = createHost();
+            final var host = createHost();
             hostList.add(host);
         }
 
-        final Datacenter dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
-        List<Pe> peList = new ArrayList<>(HOST_PES);
+        final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000, new PeProvisionerSimple()));
+            peList.add(new PeSimple(1000));
         }
 
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        Host host = new HostSimple(ram, bw, storage, peList);
-        host
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
-            .setVmScheduler(new VmSchedulerTimeShared());
+        final var host = new HostSimple(ram, bw, storage, peList);
+        host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
 
@@ -191,11 +186,11 @@ public class RandomCloudletsArrivalExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            list.add(createVm(VM_PES));
+            newVmList.add(createVm(VM_PES));
         }
-        return list;
+        return newVmList;
     }
 
     private Vm createVm(final int pes) {
@@ -209,12 +204,12 @@ public class RandomCloudletsArrivalExample {
      * @param count number of Cloudlets to create statically
      */
     private List<Cloudlet> createCloudlets(final int count) {
-        final List<Cloudlet> list = new ArrayList<>(count);
+        final var newCloudletList = new ArrayList<Cloudlet>(count);
         for (int i = 0; i < count; i++) {
-            list.add(createCloudlet());
+            newCloudletList.add(createCloudlet());
         }
 
-        return list;
+        return newCloudletList;
     }
 
     private Cloudlet createCloudlet() {
@@ -237,7 +232,7 @@ public class RandomCloudletsArrivalExample {
     private void createRandomCloudlets(final EventInfo evt) {
         if(random.sample() <= 0.3){
             System.out.printf("%n# Randomly creating 1 Cloudlet at time %.2f%n", evt.getTime());
-            Cloudlet cloudlet = createCloudlet();
+            final var cloudlet = createCloudlet();
             cloudletList.add(cloudlet);
             broker0.submitCloudlet(cloudlet);
         }

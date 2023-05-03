@@ -24,28 +24,28 @@
 package org.cloudsimplus.examples;
 
 import ch.qos.logback.classic.Level;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationStaticThreshold;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.Identifiable;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
-import org.cloudbus.cloudsim.selectionpolicies.VmSelectionPolicyRandomSelection;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
+import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationStaticThreshold;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.core.Identifiable;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletScheduler;
+import org.cloudsimplus.selectionpolicies.VmSelectionPolicyRandomSelection;
 import org.cloudsimplus.util.Log;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -83,8 +83,8 @@ public class LoggingExample {
     private static final int VM_SIZE =         10_000;
     private static final boolean DISABLE_MIGRATIONS = false;
 
-    private final CloudSim simulation;
-    private DatacenterBroker broker0;
+    private final CloudSimPlus simulation;
+    private final DatacenterBroker broker0;
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
@@ -94,10 +94,10 @@ public class LoggingExample {
     }
 
     private LoggingExample() {
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
         datacenter0 = createDatacenter();
 
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
+        //Creates a broker that is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets
         broker0 = new DatacenterBrokerSimple(simulation);
 
         vmList = createVms();
@@ -120,9 +120,9 @@ public class LoggingExample {
         configureLogs();
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        finishedCloudlets.sort(Comparator.comparingLong(Cloudlet::getId));
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        final var cloudletFinishedList = broker0.getCloudletFinishedList();
+        cloudletFinishedList.sort(Comparator.comparingLong(Cloudlet::getId));
+        new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
     private void configureLogs() {
@@ -141,7 +141,7 @@ public class LoggingExample {
      * and keeps increasing along the time.
      */
     private UtilizationModelDynamic createDynamicUtilizationModel() {
-        UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final var utilizationModel = new UtilizationModelDynamic(0.5);
         utilizationModel.setUtilizationUpdateFunction(model -> model.getUtilization() + model.getTimeSpan()*0.1);
         return utilizationModel;
     }
@@ -150,18 +150,18 @@ public class LoggingExample {
      * Creates a Datacenter and its Hosts.
      */
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(HOST_PES.length);
+        final var hostList = new ArrayList<Host>(HOST_PES.length);
         for (int pes : HOST_PES) {
-            Host host = createHost(pes);
+            final var host = createHost(pes);
             hostList.add(host);
         }
 
         /*Creates a VmAllocationPolicy that migrates VMs from under/overloaded hosts,
         selecting migrating VMs randomly.*/
-        VmAllocationPolicy vmAllocationPolicy =
+        final var vmAllocationPolicy =
             new VmAllocationPolicyMigrationStaticThreshold(
                 new VmSelectionPolicyRandomSelection(), HOST_OVER_UTILIZATION_MIGRATION_THRESHOLD);
-        Datacenter dc = new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
+        final var dc = new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL_SECS);
         if(DISABLE_MIGRATIONS) {
             dc.disableMigrations();
@@ -171,7 +171,7 @@ public class LoggingExample {
     }
 
     private Host createHost(final int pes) {
-        final List<Pe> peList = new ArrayList<>(pes);
+        final var peList = new ArrayList<Pe>(pes);
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < pes; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
@@ -189,7 +189,7 @@ public class LoggingExample {
      * Creates a list of VMs.
      */
     private List<Vm> createVms() {
-        final List<Vm> list = new ArrayList<>(VMS);
+        final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final Vm vm = new VmSimple(VM_MIPS, VM_PES);
@@ -214,10 +214,10 @@ public class LoggingExample {
      * @param submissionDelay the delay to submit Cloudlets to the broker
      */
     private List<Cloudlet> createCloudlets(final UtilizationModel utilizationModel, final double submissionDelay) {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+        final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
             cloudlet.setSubmissionDelay(submissionDelay);
             cloudlet.setSizes(1024);
             list.add(cloudlet);

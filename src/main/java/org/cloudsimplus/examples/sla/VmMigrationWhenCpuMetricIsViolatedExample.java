@@ -23,31 +23,29 @@
  */
 package org.cloudsimplus.examples.sla;
 
-import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
-import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationWorstFitStaticThreshold;
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
-import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
-import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
-import org.cloudbus.cloudsim.selectionpolicies.VmSelectionPolicyMinimumUtilization;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationWorstFitStaticThreshold;
+import org.cloudsimplus.brokers.DatacenterBroker;
+import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudsimplus.cloudlets.Cloudlet;
+import org.cloudsimplus.cloudlets.CloudletSimple;
+import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.hosts.Host;
+import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.power.models.PowerModelHostSimple;
+import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.resources.Pe;
+import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudsimplus.selectionpolicies.VmSelectionPolicyMinimumUtilization;
 import org.cloudsimplus.slametrics.SlaContract;
+import org.cloudsimplus.utilizationmodels.UtilizationModel;
+import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
+import org.cloudsimplus.vms.Vm;
+import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +102,7 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     private static final int CLOUDLETS_BY_VM = 4;
 
     private final List<Vm> vmList = new ArrayList<>();
-    private CloudSim simulation;
+    private CloudSimPlus simulation;
 
     /**
      * The file containing the Customer's SLA Contract in JSON format.
@@ -124,15 +122,15 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         System.out.println("Starting " + getClass().getSimpleName());
-        simulation = new CloudSim();
+        simulation = new CloudSimPlus();
 
         this.contract = SlaContract.getInstance(CUSTOMER_SLA_CONTRACT);
         cloudletList = new ArrayList<>(CLOUDLETS_BY_VM);
 
         @SuppressWarnings("unused")
-        Datacenter datacenter0 = createDatacenter();
+        final var datacenter0 = createDatacenter();
 
-        DatacenterBroker broker = new DatacenterBrokerSimple(simulation);
+        final var broker = new DatacenterBrokerSimple(simulation);
 
         createAndSubmitVms(broker);
 
@@ -267,26 +265,26 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     }
 
     private Datacenter createDatacenter() {
-        final List<Host> hostList = new ArrayList<>();
+        final var hostList = new ArrayList<Host>();
         for (int i = 0; i < HOSTS; i++) {
             hostList.add(createHost(HOST_NUMBER_OF_PES, HOST_MIPS_BY_PE));
         }
         System.out.println();
 
-        final VmAllocationPolicyMigration allocationPolicy
+        final var allocationPolicy
                 = new VmAllocationPolicyMigrationWorstFitStaticThreshold(
                         new VmSelectionPolicyMinimumUtilization(),
                         contract.getCpuUtilizationMetric().getMaxDimension().getValue());
         allocationPolicy.setUnderUtilizationThreshold(contract.getCpuUtilizationMetric().getMinDimension().getValue());
 
-        final DatacenterSimple dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
         dc.enableMigrations().setSchedulingInterval(SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS);
         return dc;
     }
 
-    private Host createHost(final int numberOfPes, final long mipsByPe) {
-        final List<Pe> peList = createPeList(numberOfPes, mipsByPe);
-        final Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+    private Host createHost(final int pesNumber, final long mipsByPe) {
+        final var peList = createPeList(pesNumber, mipsByPe);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
         host.setPowerModel(new PowerModelHostSimple(1000, 700));
         host.setRamProvisioner(new ResourceProvisionerSimple());
         host.setBwProvisioner(new ResourceProvisionerSimple());
@@ -295,10 +293,10 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     }
 
     private List<Pe> createPeList(final int numberOfPEs, final long mips) {
-        final List<Pe> list = new ArrayList<>(numberOfPEs);
+        final var peList = new ArrayList<Pe>(numberOfPEs);
         for (int i = 0; i < numberOfPEs; i++) {
-            list.add(new PeSimple(mips, new PeProvisionerSimple()));
+            peList.add(new PeSimple(mips));
         }
-        return list;
+        return peList;
     }
 }
