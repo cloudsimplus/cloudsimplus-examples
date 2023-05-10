@@ -194,10 +194,11 @@ public class PowerSpecFileExample {
         final var vmScheduler = new VmSchedulerTimeShared();
 
         final var host = new HostSimple(ram, bw, storage, peList);
+        host.setStartupDelay(HOST_START_UP_DELAY)
+            .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
 
         final var powerModel = new PowerModelHostSpec(DEF_POWER_MODEL.getPowerSpecs());
-        powerModel.setStartupDelay(HOST_START_UP_DELAY)
-                  .setShutDownDelay(HOST_SHUT_DOWN_DELAY)
+        powerModel
                   .setStartupPower(HOST_START_UP_POWER)
                   .setShutDownPower(HOST_SHUT_DOWN_POWER);
         System.out.println(Arrays.toString(powerModel.getPowerSpecs()));
