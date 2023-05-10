@@ -149,7 +149,7 @@ public class VmDestructionExample {
             System.out.printf(
                 "%n# %.2f: Intentionally destroying %s due to CPU overload. Current VM CPU usage is %.2f%%%n",
                 info.getTime(), vm, vm.getCpuPercentUtilization()*100);
-            vm.getHost().destroyVm(vm);
+            vm.shutdown();
         }
 
         datacenter0.getHostList().forEach(h -> System.out.printf("# %.2f: %s CPU Utilization %.2f%%%n", info.getTime(), h, h.getCpuPercentUtilization()*100));
