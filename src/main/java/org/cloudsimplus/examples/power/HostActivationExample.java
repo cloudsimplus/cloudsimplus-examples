@@ -278,11 +278,12 @@ public class HostActivationExample {
         //Indicates if the Host will be powered on or not after creation
         final boolean activate = false;
         final var host = new HostSimple(peList, activate);
-        host.setId(id);
+        host.setId(id)
+            .setStartupDelay(HOST_START_UP_DELAY)
+            .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
 
         final var powerModel = new PowerModelHostSimple(MAX_POWER, STATIC_POWER);
-        powerModel.setStartupDelay(HOST_START_UP_DELAY)
-                  .setShutDownDelay(HOST_SHUT_DOWN_DELAY)
+        powerModel
                   .setStartupPower(HOST_START_UP_POWER)
                   .setShutDownPower(HOST_SHUT_DOWN_POWER);
 

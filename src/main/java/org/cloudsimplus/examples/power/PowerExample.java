@@ -269,10 +269,11 @@ public class PowerExample {
         final var vmScheduler = new VmSchedulerTimeShared();
 
         final var host = new HostSimple(ram, bw, storage, peList);
+        host.setStartupDelay(HOST_START_UP_DELAY)
+            .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
 
         final var powerModel = new PowerModelHostSimple(MAX_POWER, STATIC_POWER);
-        powerModel.setStartupDelay(HOST_START_UP_DELAY)
-                  .setShutDownDelay(HOST_SHUT_DOWN_DELAY)
+        powerModel
                   .setStartupPower(HOST_START_UP_POWER)
                   .setShutDownPower(HOST_SHUT_DOWN_POWER);
 
