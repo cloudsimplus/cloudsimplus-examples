@@ -34,6 +34,8 @@ import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.Datacenter;
+import org.cloudsimplus.datacenters.DatacenterCharacteristics;
+import org.cloudsimplus.datacenters.DatacenterCharacteristics.Distribution;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
@@ -293,8 +295,8 @@ public final class InterDatacenterMigration1 {
             new CloudletsTableBuilder(cloudletFinishedList).setTitle(broker.toString()).build();
         }
 
-        System.out.printf("%nNumber of VM migrations: %d%n", migrationsNumber);
         printHostStateHistory();
+        System.out.printf("%nNumber of VM migrations: %d%n", migrationsNumber);
     }
 
     private void printHostStateHistory() {
@@ -327,12 +329,18 @@ public final class InterDatacenterMigration1 {
      * setting the allocation policy to the default value
      * so that some Hosts will be overloaded with the placed VMs and migration will be fired.
      *
-     * The listener is removed after finishing, so that it's called just once,
-     * even if new VMs are submitted and created latter on.
+     * <p>The listener is removed after finishing, so that it's called just once,
+     * even if new VMs are submitted and created later on.</p>
      */
     private void onVmsCreatedListener(final DatacenterBrokerEventInfo info) {
         final var broker = info.getDatacenterBroker();
-        System.out.printf("# All %d VMs submitted to %s have been created.%n", broker.getVmCreatedList().size(), broker);
+        final String vmIds = broker.getVmCreatedList()
+              .stream()
+              .mapToLong(Vm::getId)
+              .mapToObj(Long::toString)
+              .collect(joining(", "));
+
+        System.out.printf("# %d VMs submitted to %s have been created. VMs: %s.%n", broker.getVmCreatedList().size(), broker, vmIds);
         datacenterList.stream()
                       .map(dc -> (VmAllocationPolicyMigrationFirstFitStaticThreshold)dc.getVmAllocationPolicy())
                       .forEach(policy -> policy.setOverUtilizationThreshold(HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION));
@@ -442,18 +450,27 @@ public final class InterDatacenterMigration1 {
         return IntStream.range(0, datacentersNumber).mapToObj(this::createDatacenter).toList();
     }
 
+    /**
+     * Create a private-cloud Datacenter for even indexes and public-cloud one for odd indexes.
+     * @param index the Datacenter index
+     * @return the created Datacenter
+     * @see DatacenterCharacteristics.Distribution
+     */
     private Datacenter createDatacenter(final int index) {
+        final var distribution = index % 2 == 0 ? Distribution.PRIVATE : Distribution.PUBLIC;
         final var hostList = createHosts(DC_HOST_PES[index]);
         final var allocationPolicy = createVmAllocationPolicy();
         final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
-          .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY);
+          .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY)
+          .getCharacteristics()
+          .setDistribution(distribution);
 
         final String hostsStr =
             hostList.stream()
                     .map(host -> String.format("Host %d w/ %d PEs", host.getId(), host.getPesNumber()))
                     .collect(joining(", "));
-        System.out.printf("%s: %s%n", dc, hostsStr);
+        System.out.printf("%7s-cloud %s: %s%n", distribution, dc, hostsStr);
         return dc;
     }
 
