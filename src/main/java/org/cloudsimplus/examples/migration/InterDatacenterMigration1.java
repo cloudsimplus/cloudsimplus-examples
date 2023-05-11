@@ -131,7 +131,7 @@ public final class InterDatacenterMigration1 {
      *
      * <p>The total number of items define the number of Hosts to create.</p>
      */
-    private static final int[][] DC_HOST_PES = {{4, 5}, {8, 8, 8}};
+    private static final int[][] DC_HOST_PES = {{4, 5}, {8, 8, 8, 16}};
 
     /**
      * The percentage of host CPU usage that trigger VM migration
@@ -171,7 +171,7 @@ public final class InterDatacenterMigration1 {
      * RAM capacity for created Hosts.
      * The length of this array must be the length of the largest row on {@link #DC_HOST_PES} matrix.
      */
-    private static final long[] HOST_RAM = {50_000, 50_000, 50_000}; //host memory (MB)
+    private static final long[] HOST_RAM = {50_000, 50_000, 50_000, 50_000}; //host memory (MB)
 
     private static final long   HOST_STORAGE = 1_000_000; //host storage (MB)
 
@@ -185,11 +185,11 @@ public final class InterDatacenterMigration1 {
     private static final int[][] VM_PES = {{3, 2, 2}, {4, 4, 4}};
 
     private static final int    VM_MIPS = 1000; //for each PE
-    private static final long   VM_SIZE = 1000; //image size (MB)
+    private static final long   VM_SIZE = 100_000; //image size (MB)
     private static final int    VM_RAM  = 10_000; //VM memory (MB)
     private static final long   VM_BW   = 2000; //Mbps
 
-    private static final long   CLOUDLET_LENGTH = 20_000;
+    private static final long   CLOUDLET_LENGTH = 50_000;
     private static final long   CLOUDLET_FILESIZE = 300;
     private static final long   CLOUDLET_OUTPUT_SIZE = 300;
 
@@ -270,11 +270,11 @@ public final class InterDatacenterMigration1 {
      * become overloaded in order to trigger the migration.
      */
     private VmAllocationPolicyMigration createVmAllocationPolicy() {
-        final var policy = new VmAllocationPolicyMigrationFirstFitStaticThreshold(
-            new VmSelectionPolicyMinimumUtilization(), 0.9);
+        final var vmSelection = new VmSelectionPolicyMinimumUtilization();
+        final var vmAllocation = new VmAllocationPolicyMigrationFirstFitStaticThreshold(vmSelection, 0.9);
 
-        policy.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
-        return policy;
+        vmAllocation.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
+        return vmAllocation;
     }
 
     /**
