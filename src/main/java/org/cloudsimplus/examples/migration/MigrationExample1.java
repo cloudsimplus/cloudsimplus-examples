@@ -65,7 +65,6 @@ import static java.util.Comparator.comparingLong;
  * 3 VMs with 2 PEs each one;
  * and 1 cloudlet by VM, each one having the same number of PEs from its VM.
  *
- *
  * <p>The example then performs VM migration using
  * a {@link VmAllocationPolicyMigrationBestFitStaticThreshold}.
  * Such a policy migrates VMs based on
@@ -79,7 +78,9 @@ import static java.util.Comparator.comparingLong;
  * Each cloudlet will start using 80% of its VM CPU.
  * As the VM 0 will run one Cloudlet and requires just 2 PEs from Host 0 (which has 4 PEs),
  * the initial Host CPU usage will be just 40% (1 VM using 80% of 2 PEs from a total of 4 Host PEs = 0.8*2 / 4).
+ * </p>
  *
+ * <p>
  * Allocating a second VM into Host 0 would double the Host CPU utilization,
  * overreaching its upper utilization threshold (defined as 70%).
  * This way, VMs 1 and 2 are allocated to Host 1 which has 5 PEs.
@@ -90,7 +91,7 @@ import static java.util.Comparator.comparingLong;
  * enable VM migration.
  * The example uses a {@link UtilizationModelDynamic} to define that CPU usage of cloudlets
  * increases along simulation time.
- * The first 2 Cloudlets all start with a usage of 80% of CPU,
+ * The first 2 Cloudlets start with a usage of 80% of CPU,
  * which increases along the time (see {@link #CLOUDLET_CPU_INCREMENT_PER_SECOND}).
  * The third Cloudlet starts at a lower CPU usage and increases in the same way.
  * </p>
@@ -98,8 +99,8 @@ import static java.util.Comparator.comparingLong;
  * <p>Some constants are used to create simulation objects such as
  * {@link  DatacenterSimple}, {@link  Host} and {@link  Vm}.
  * The values of these constants were careful and accordingly chosen to allow:
- * (i) migration of VMs due to either under and overloaded hosts; and (ii)
- * the researcher to know exactly how the simulation will run
+ * (i) migration of VMs due to either under and overloaded hosts;
+ * and (ii) the researcher to know exactly how the simulation will run
  * and what will be the final results.
  * </p>
  *
@@ -108,7 +109,9 @@ import static java.util.Comparator.comparingLong;
  * (i) hosts CPU capacity and number of PEs,
  * (ii) VMs and cloudlets requirements and
  * (iii) even VM bandwidth (which defines the VM migration time).
+ * </p>
  *
+ * <p>
  * This way, if you want to change these values, you must
  * define new appropriated ones to allow the simulation
  * to run correctly.</p>
