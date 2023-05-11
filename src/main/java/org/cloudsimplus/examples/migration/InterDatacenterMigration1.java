@@ -75,7 +75,12 @@ import static java.util.stream.Collectors.joining;
  * cloud providers.
  * </p>
  *
- * <p>The example then performs VM migration using
+ * <p>Realize the example is creating datacenters in private and public clouds.
+ * This way, when migrating VMs from/to a public cloud, non-live migration will be performed,
+ * where the VM is shutdown and restarted on the target datacenter.
+ * Check {@link DatacenterCharacteristics#getDistribution()} for details.</p>
+ *
+ * <p>The example performs VM migration using
  * a {@link VmAllocationPolicyMigrationFirstFitStaticThreshold}.
  * Such a policy migrates VMs based on
  * a static host CPU utilization threshold.
