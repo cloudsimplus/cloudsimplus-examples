@@ -54,8 +54,8 @@ on Linux/macOS
 on Windows
 
 ```bash
-./mvnw.cmd clean install
-./mvnw.cmd dependency:resolve -Dclassifier=javadoc
+mvnw.cmd clean install
+mvnw.cmd dependency:resolve -Dclassifier=javadoc
 ```
 
 The second command is optional but very useful to download CloudSim Plus JavaDocs and help you understand the API inside your IDE.
