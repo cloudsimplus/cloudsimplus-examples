@@ -15,7 +15,7 @@ Therefore, after you understood how to build basic simulations, you may want to 
 
 ## 1. Project Requirements
 
-CloudSim Plus Examples is a Java 17 project that uses maven for build and dependency management. To build and run the project, you need JDK 17+ installed and an updated version of maven (such as 3.8.6+). Maven is already installed on your IDE. Unless it's out-of-date or you want to build the project from the command line, you need to install maven into your operating system. 
+CloudSim Plus Examples is a Java 17 project that uses maven for build and dependency management. To build and run the project, you need JDK 17+ installed. 
 
 All project dependencies are download automatically by maven (including CloudSim Plus jars).
 
@@ -42,14 +42,23 @@ Open the project on your favorite IDE and click the build button and that is it.
 
 ## 3.1 Using a terminal
 
-First, make sure you have an updated Maven version installed (such as 3.8.6+), open a terminal at the project root directory and type:
+Open a terminal at the project root directory and type one of the following commands:
+
+on Linux/macOS
 
 ```bash
-mvn clean install
-mvn dependency:resolve -Dclassifier=javadoc
+./mvnw clean install
+./mvnw dependency:resolve -Dclassifier=javadoc
 ```
 
-The second command is optional but very useful to download CloudSim Plus JavaDocs and help you understand the API inside your IDE. 
+on Windows
+
+```bash
+./mvnw.cmd clean install
+./mvnw.cmd dependency:resolve -Dclassifier=javadoc
+```
+
+The second command is optional but very useful to download CloudSim Plus JavaDocs and help you understand the API inside your IDE.
 
 ## 4. Running Examples
 
