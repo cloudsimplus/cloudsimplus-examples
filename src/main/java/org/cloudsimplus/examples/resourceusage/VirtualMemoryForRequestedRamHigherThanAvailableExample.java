@@ -107,7 +107,8 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * As slower is the reading speed, higher is the memory swapping overhead
      * and the increase in cloudlet processing (exec) time.
      */
-    public static final int HOSTS_MAX_TRANSFER_RATE = 1600;
+    private static final int HOSTS_MAX_TRANSFER_RATE = 1600;
+    private static final long HOST_RAM = 2048; //in Megabytes
 
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -122,7 +123,6 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * VM RAM capacity (in MB)
      */
     public static final int VM_RAM = 1000;
-
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
@@ -227,7 +227,6 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
             peList.add(new PeSimple(1000));
         }
 
-        final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storageSize = 1000000; //in Megabytes
         final var hardDrive = new HarddriveStorage(storageSize);
@@ -237,7 +236,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(ram, bw, hardDrive, peList);
+        return new HostSimple(HOST_RAM, bw, hardDrive, peList);
     }
 
     /**
