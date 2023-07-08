@@ -168,6 +168,7 @@ public class DatacenterBrokerHeuristicExample {
 		        "Heuristic solution for mapping cloudlets to Vm's         ",
 		        heuristic.getBestSolutionSoFar(), false);
 
+        System.out.printf("\tTotal number of solutions created: %d%n", CloudletToVmMappingSimulatedAnnealing.getSolutions());
 		System.out.printf(
 		    "\tThe heuristic solution cost represents %.2f%% of the round robin mapping cost used by the DatacenterBrokerSimple%n",
 		    heuristic.getBestSolutionSoFar().getCost()*100.0/roundRobinMappingCost);
