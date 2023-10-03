@@ -203,7 +203,7 @@ public class NetworkVmsExampleSimpleApp {
      * @return
      */
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm) {
-        final var netCloudlet = new NetworkCloudlet(4000, HOST_PES);
+        final var netCloudlet = new NetworkCloudlet(HOST_PES);
         netCloudlet
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)

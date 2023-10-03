@@ -67,7 +67,7 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
      */
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm, DatacenterBroker broker) {
         final var utilizationModel = new UtilizationModelFull();
-        final var cloudlet = new NetworkCloudlet(1, CLOUDLET_PES);
+        final var cloudlet = new NetworkCloudlet(CLOUDLET_PES);
         cloudlet
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)
