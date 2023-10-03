@@ -108,7 +108,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * and the increase in cloudlet processing (exec) time.
      */
     private static final int HOSTS_MAX_TRANSFER_RATE = 1600;
-    private static final long HOST_RAM = 2048; //in Megabytes
+    private static final long HOST_RAM = 20480; //in Megabytes
 
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -122,7 +122,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
     /**
      * VM RAM capacity (in MB)
      */
-    public static final int VM_RAM = 1000;
+    public static final int VM_RAM = 10000;
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
