@@ -1,4 +1,4 @@
-package org.cloudsimplus.examples.network.applications;
+package org.cloudbus.cloudsim.examples.network.applications;
 
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.cloudlets.network.NetworkCloudlet;

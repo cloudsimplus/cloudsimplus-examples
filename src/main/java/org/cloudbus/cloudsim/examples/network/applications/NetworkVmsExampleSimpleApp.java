@@ -1,4 +1,4 @@
-package org.cloudsimplus.examples.network.applications;
+package org.cloudbus.cloudsim.examples.network.applications;
 
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
@@ -22,7 +22,7 @@ import org.cloudsimplus.vms.network.NetworkVm;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.cloudsimplus.examples.network.applications.NetworkVmExampleAbstract.getSwitchIndex;
+import static org.cloudbus.cloudsim.examples.network.applications.NetworkVmExampleAbstract.getSwitchIndex;
 
 /**
  * A simple example simulating a distributed application.
