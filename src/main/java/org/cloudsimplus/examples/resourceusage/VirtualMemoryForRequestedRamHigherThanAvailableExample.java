@@ -107,22 +107,24 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
      * As slower is the reading speed, higher is the memory swapping overhead
      * and the increase in cloudlet processing (exec) time.
      */
-    private static final int HOSTS_MAX_TRANSFER_RATE = 1600;
-    private static final long HOST_RAM = 20480; //in Megabytes
+    private static final int HOSTS_MAX_TRANSFER_RATE = 1_600;
+    private static final long HOST_RAM = 20_480; //in Megabytes
 
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
+    private static final int HOST_MIPS = 1_000;
+
 
     private static final int VMS = 3;
     private static final int VM_PES = 2;
-
-    private static final int CLOUDLET_PES = 1;
-    private static final int CLOUDLET_LENGTH = 10000;
-
+    private static final int VM_MIPS = 1_000;
     /**
      * VM RAM capacity (in MB)
      */
-    public static final int VM_RAM = 10000;
+    private static final int VM_RAM = 10_000;
+
+    private static final int CLOUDLET_PES = 1;
+    private static final int CLOUDLET_LENGTH = 10_000;
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
@@ -164,7 +166,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
     }
 
     private void printOverSubscriptionDelay() {
-        final String format = "%s exec time: %6.2f | RAM/BW over-subscription delay: %6.2f secs | Expected finish time (if no over-subscription): %6.2f secs%n";
+        final String format = "%s exec time: %6.1f | RAM/BW over-subscription delay: %6.1f secs | Expected finish time (if no over-subscription): %6.1f secs%n";
         for (final var vm : vmList) {
             vm.getCloudletScheduler()
               .getCloudletFinishedList()
@@ -224,11 +226,11 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         //List of Host's CPUs (Processing Elements, PEs)
         for (int i = 0; i < HOST_PES; i++) {
             //Uses a PeProvisionerSimple by default to provision PEs for VMs
-            peList.add(new PeSimple(1000));
+            peList.add(new PeSimple(HOST_MIPS));
         }
 
         final long bw = 10000; //in Megabits/s
-        final long storageSize = 1000000; //in Megabytes
+        final long storageSize = 1_000_000; //in Megabytes
         final var hardDrive = new HarddriveStorage(storageSize);
         hardDrive.setAvgSeekTime(0).setLatency(0).setMaxTransferRate(HOSTS_MAX_TRANSFER_RATE);
 
@@ -246,7 +248,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(1000, VM_PES);
+            final Vm vm = new VmSimple(VM_MIPS, VM_PES);
             vm.setRam(VM_RAM).setBw(1000).setSize(10000);
             newVmList.add(vm);
         }
