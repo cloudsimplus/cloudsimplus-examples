@@ -36,10 +36,10 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
         final List<NetworkVm> selectedVms = randomlySelectVmsForApp(networkCloudlets.length);
 
         for(int i = 0; i < networkCloudlets.length; i++){
-            networkCloudlets[i] = createNetworkCloudlet(selectedVms.get(i), broker);
+            networkCloudlets[i] = createNetworkCloudlet(i, selectedVms.get(i), broker);
             System.out.printf(
-                "Created NetworkCloudlet %d for Application %d%n",
-                networkCloudlets[i].getId(), broker.getId());
+                "Created NetworkCloudlet %d for %s (broker %d)%n",
+                networkCloudlets[i].getId(), broker.getName(), broker.getId());
         }
 
         //NetworkCloudlet 0 Tasks
@@ -61,13 +61,14 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
     /**
      * Creates a {@link NetworkCloudlet}.
      *
-     * @param vm the VM that will run the created {@link NetworkCloudlet)
+     * @param id
+     * @param vm     the VM that will run the created {@link NetworkCloudlet)
      * @param broker the broker that will own the create NetworkCloudlet
      * @return
      */
-    private NetworkCloudlet createNetworkCloudlet(NetworkVm vm, DatacenterBroker broker) {
+    private NetworkCloudlet createNetworkCloudlet(final int id, NetworkVm vm, DatacenterBroker broker) {
         final var utilizationModel = new UtilizationModelFull();
-        final var cloudlet = new NetworkCloudlet(CLOUDLET_PES);
+        final var cloudlet = new NetworkCloudlet(id, CLOUDLET_PES);
         cloudlet
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)

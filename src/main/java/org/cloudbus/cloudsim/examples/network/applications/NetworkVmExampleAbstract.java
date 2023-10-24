@@ -128,13 +128,12 @@ abstract class NetworkVmExampleAbstract {
         for(int i = 0; i < APPS_NUMBER; i++){
             final DatacenterBroker broker = brokerList.get(i);
             final var newCloudletList = broker.getCloudletFinishedList();
-            String caption = broker.getName() + " - Application " + broker.getId();
             new CloudletsTableBuilder(newCloudletList)
-                    .setTitle(caption)
+                    .setTitle("%s (broker %d)".formatted(broker.getName(), broker.getId()))
                     .build();
             System.out.printf(
-                "Number of NetworkCloudlets for Application %s: %d%n",
-                broker.getId(), newCloudletList.size());
+                "Number of NetworkCloudlets for %s (broker %d): %d%n",
+                broker.getName(), broker.getId(), newCloudletList.size());
         }
 
         for(NetworkHost host: datacenter.getHostList()){
@@ -153,8 +152,8 @@ abstract class NetworkVmExampleAbstract {
      */
     private  List<DatacenterBroker> createBrokerForEachApp() {
         final var brokerList = new ArrayList<DatacenterBroker>();
-        for(int i = 0; i < APPS_NUMBER; i++){
-            brokerList.add(new DatacenterBrokerSimple(simulation));
+        for(int i = 1; i <= APPS_NUMBER; i++){
+            brokerList.add(new DatacenterBrokerSimple(simulation, "App "+i));
         }
 
         return brokerList;
