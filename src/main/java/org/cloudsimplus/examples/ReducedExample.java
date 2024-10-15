@@ -36,14 +36,14 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.List;
 
 /**
- * An example showing a very minimal code required to create
+ * An example showing the very minimal code required to create
  * a simulation scenario in CloudSim Plus.
  *
- * <p><b>NOTICE: This example is not intended to be reused and we strongly recommend
- * you not doing that. Since all the code is inside a single method,
- * that is completely unappropriated.</b></p>
+ * <p><b>NOTICE: This example is not intended to be reused and we strongly advise
+ * against doing that. Since all the code is inside a single method,
+ * that is completely inappropriate.</b></p>
  *
- * <p>This code has the <b>only intention</b> to show how it's simpler
+ * <p>This code is only intended to show how it's simpler
  * and easier to create cloud computing simulations using CloudSim Plus.</p>
  *
  * <p>If you want a basic, but organized and reusable first example,
