@@ -67,7 +67,7 @@ import static org.cloudsimplus.utilizationmodels.UtilizationModel.Unit;
  * is set to each initially created VM (check {@link #createListOfScalableVms(int)}),
  * which will check at {@link #SCHEDULING_INTERVAL specific time intervals}
  * if a VM's RAM {@link #upperRamUtilizationThreshold(Vm) is overloaded or not},
- * according to a <b>static computed utilization threshold</b>.
+ * according to a <b>statically computed utilization threshold</b>.
  * Then it requests the RAM to be scaled up.</p>
  *
  * <p>The example uses the CloudSim Plus {@link EventListener} feature
