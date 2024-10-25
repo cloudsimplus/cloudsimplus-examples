@@ -114,6 +114,14 @@ public class VerticalVmRamScalingExample {
     private static final int VM_RAM = 1000;
     private static final int VM_PES = 5;
     private static final int VM_MIPS = 1000;
+
+    /**
+     * The percentage (in scale from 0 to 1) to scale VM RAM capacity up/down
+     * when it becomes under/overloaded.
+     * @see #createVerticalRamScalingForVm(Vm)
+     */
+    private static final double VM_RAM_SCALING_FACTOR = 0.1;
+
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private final List<Host> hostList;
@@ -172,7 +180,7 @@ public class VerticalVmRamScalingExample {
                 event.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
                 vm.getRam().getAllocatedResource(), vm.getRam().getCapacity());
 
-            System.out.printf(" | Host Ram Allocation: %6.2f%% (%5d of %5d MB). Running Cloudlets: %d",
+            System.out.printf(" | Host Ram Allocation: %6.2f%% (%5d of %5d MB). Running Cloudlets: %d%n",
                 vm.getHost().getRam().getPercentUtilization() * 100,
                 vm.getHost().getRam().getAllocatedResource(),
                 vm.getHost().getRam().getCapacity(), vm.getCloudletScheduler().getCloudletExecList().size());
@@ -241,7 +249,8 @@ public class VerticalVmRamScalingExample {
      * @see #createListOfScalableVms(int)
      */
     private void createVerticalRamScalingForVm(final Vm vm) {
-        final var verticalRamScaling = new VerticalVmScalingSimple(Ram.class, 0.1);
+        final var verticalRamScaling = new VerticalVmScalingSimple(Ram.class, VM_RAM_SCALING_FACTOR);
+
         /* By uncommenting the line below, you will see that, instead of gradually
          * increasing or decreasing the RAM when the scaling object detects
          * the RAM usage is up or down the defined thresholds,
@@ -249,6 +258,7 @@ public class VerticalVmRamScalingExample {
          * move the VM from the over or under-load condition.
         */
         //verticalRamScaling.setResourceScaling(new ResourceScalingInstantaneous());
+
         verticalRamScaling.setLowerThresholdFunction(this::lowerRamUtilizationThreshold)
                           .setUpperThresholdFunction(this::upperRamUtilizationThreshold);
         vm.setRamVerticalScaling(verticalRamScaling);
@@ -287,6 +297,7 @@ public class VerticalVmRamScalingExample {
     private void createCloudletList() {
         final int initialRamUtilization1 = 100; //MB
 
+        // A constant RAM utilization model
         final var ramModel1 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization1);
         for (long length: CLOUDLET_LENGTHS) {
             cloudletList.add(createCloudlet(ramModel1, length));
@@ -294,6 +305,8 @@ public class VerticalVmRamScalingExample {
 
         final int initialRamUtilization2 = 10; //MB
         final int maxRamUtilization = 500; //MB
+
+        // An increasing RAM utilization model
         final var ramModel2 = new UtilizationModelDynamic(Unit.ABSOLUTE, initialRamUtilization2);
         ramModel2
             .setMaxResourceUtilization(maxRamUtilization)
