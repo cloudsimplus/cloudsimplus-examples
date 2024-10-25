@@ -107,6 +107,7 @@ public class VerticalVmRamScalingExample {
 
     private static final int HOST_MIPS = 1000;
     private static final int VMS = 1;
+
     /**
      * Vm RAM capacity in Megabytes.
      */
@@ -165,7 +166,7 @@ public class VerticalVmRamScalingExample {
         printSimulationResults();
     }
 
-    private void onClockTickListener(EventInfo event) {
+    private void onClockTickListener(final EventInfo event) {
         for (final var vm : vmList) {
             System.out.printf("\t\tTime %6.1f: Vm %d Ram Usage: %6.2f%% (%4d of %4d MB)",
                 event.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
@@ -239,8 +240,8 @@ public class VerticalVmRamScalingExample {
      * @param vm the VM in which the VerticalVmScaling will be created
      * @see #createListOfScalableVms(int)
      */
-    private void createVerticalRamScalingForVm(Vm vm) {
-        var verticalRamScaling = new VerticalVmScalingSimple(Ram.class, 0.1);
+    private void createVerticalRamScalingForVm(final Vm vm) {
+        final var verticalRamScaling = new VerticalVmScalingSimple(Ram.class, 0.1);
         /* By uncommenting the line below, you will see that, instead of gradually
          * increasing or decreasing the RAM when the scaling object detects
          * the RAM usage is up or down the defined thresholds,
@@ -264,7 +265,7 @@ public class VerticalVmRamScalingExample {
      *        threshold is applied for any Vm.
      * @return the lower RAM utilization threshold
      */
-    private double lowerRamUtilizationThreshold(Vm vm) {
+    private double lowerRamUtilizationThreshold(final Vm vm) {
         return 0.5;
     }
 
@@ -279,7 +280,7 @@ public class VerticalVmRamScalingExample {
      *        threshold is applied for any Vm.
      * @return the upper RAM utilization threshold
      */
-    private double upperRamUtilizationThreshold(Vm vm) {
+    private double upperRamUtilizationThreshold(final Vm vm) {
         return 0.7;
     }
 
@@ -322,7 +323,7 @@ public class VerticalVmRamScalingExample {
      * @param um the Utilization Model that has called this function
      * @return the new resource utilization after the increment
      */
-    private double utilizationIncrement(UtilizationModelDynamic um) {
+    private double utilizationIncrement(final UtilizationModelDynamic um) {
         final int ramIncreaseMB = 10;
         return um.getUtilization() + um.getTimeSpan() * ramIncreaseMB;
     }
