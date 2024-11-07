@@ -136,12 +136,13 @@ abstract class NetworkVmExampleAbstract {
                 broker.getName(), broker.getId(), newCloudletList.size());
         }
 
+        System.out.println();
         for(NetworkHost host: datacenter.getHostList()){
-            System.out.printf("%nHost %d data transferred: %d bytes",
+            System.out.printf("Host %d data transferred: %d bytes%n",
                     host.getId(), host.getTotalDataTransferBytes());
         }
 
-        System.out.println(getClass().getSimpleName() + " finished!");
+        System.out.printf("%n%s finished!%n", getClass().getSimpleName());
     }
 
     /**
