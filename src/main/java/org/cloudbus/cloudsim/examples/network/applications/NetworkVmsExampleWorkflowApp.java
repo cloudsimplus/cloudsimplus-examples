@@ -31,7 +31,7 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
     }
 
     @Override
-    public List<NetworkCloudlet> createNetworkCloudlets(DatacenterBroker broker) {
+    public List<NetworkCloudlet> createNetworkCloudlets(final DatacenterBroker broker) {
         final var networkCloudlets = new NetworkCloudlet[3];
         final List<NetworkVm> selectedVms = randomlySelectVmsForApp(networkCloudlets.length);
 
@@ -62,11 +62,10 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
      * Creates a {@link NetworkCloudlet}.
      *
      * @param id
-     * @param vm     the VM that will run the created {@link NetworkCloudlet)
-     * @param broker the broker that will own the create NetworkCloudlet
+     * @param vm the VM that will run the created {@link NetworkCloudlet}
      * @return
      */
-    private NetworkCloudlet createNetworkCloudlet(final int id, NetworkVm vm, DatacenterBroker broker) {
+    private NetworkCloudlet createNetworkCloudlet(final int id, final NetworkVm vm) {
         final var utilizationModel = new UtilizationModelFull();
         final var cloudlet = new NetworkCloudlet(id, CLOUDLET_PES);
         cloudlet
