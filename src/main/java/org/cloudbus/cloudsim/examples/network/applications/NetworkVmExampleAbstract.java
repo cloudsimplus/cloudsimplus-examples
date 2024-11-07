@@ -146,7 +146,7 @@ abstract class NetworkVmExampleAbstract {
     }
 
     /**
-     * Create a {@link DatacenterBroker} for each each list of {@link NetworkCloudlet},
+     * Create a {@link DatacenterBroker} for each list of {@link NetworkCloudlet},
      * representing cloudlets that compose the same application.
      *
      * @return the list of created NetworkDatacenterBroker
