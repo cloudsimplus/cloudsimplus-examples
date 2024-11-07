@@ -33,10 +33,8 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
     @Override
     public List<NetworkCloudlet> createNetworkCloudlets(final DatacenterBroker broker) {
         final var networkCloudlets = new NetworkCloudlet[3];
-        final List<NetworkVm> selectedVms = randomlySelectVmsForApp(networkCloudlets.length);
-
         for(int i = 0; i < networkCloudlets.length; i++){
-            networkCloudlets[i] = createNetworkCloudlet(i, selectedVms.get(i), broker);
+            networkCloudlets[i] = createNetworkCloudlet(i, getVm(i));
             System.out.printf(
                 "Created NetworkCloudlet %d for %s (broker %d)%n",
                 networkCloudlets[i].getId(), broker.getName(), broker.getId());

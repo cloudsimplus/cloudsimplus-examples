@@ -9,7 +9,6 @@ import org.cloudsimplus.cloudlets.network.CloudletSendTask;
 import org.cloudsimplus.cloudlets.network.NetworkCloudlet;
 import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.network.NetworkDatacenter;
-import org.cloudsimplus.distributions.UniformDistr;
 import org.cloudsimplus.hosts.network.NetworkHost;
 import org.cloudsimplus.network.switches.AggregateSwitch;
 import org.cloudsimplus.network.switches.EdgeSwitch;
@@ -262,30 +261,14 @@ abstract class NetworkVmExampleAbstract {
     }
 
     /**
-     * Randomly select a given number of VMs from the list of created VMs,
-     * to be used by the NetworkCloudlets of the given application.
-     *
-     * @param vmsToSelect number of VMs to selected from the existing list of VMs.
-     * @return The list of randomly selected VMs
-     */
-    protected List<NetworkVm> randomlySelectVmsForApp(int vmsToSelect) {
-        final var netVmList = new ArrayList<NetworkVm>();
-        final int existingVms = this.vmList.size();
-        final var rand = new UniformDistr(0, existingVms, 5);
-        for (int i = 0; i < vmsToSelect; i++) {
-            final int vmIndex = (int)rand.sample() % vmList.size();
-            final NetworkVm vm = vmList.get(vmIndex);
-            netVmList.add(vm);
-        }
-
-        return netVmList;
-    }
-
-    /**
      * @return List of VMs of all Brokers.
      */
     public List<NetworkVm> getVmList() {
         return vmList;
+    }
+
+    public NetworkVm getVm(final int i) {
+        return vmList.get(i);
     }
 
     public NetworkDatacenter getDatacenter() {
