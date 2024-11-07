@@ -318,30 +318,30 @@ abstract class NetworkVmExampleAbstract {
      * Adds a SendTask to the list of tasks of the given {@link NetworkCloudlet}.
      *
      * @param sourceCloudlet the {@link NetworkCloudlet} from which packets will be sent
-     * @param destinationCloudlet the destination {@link NetworkCloudlet} to send packets to
+     * @param targetCloudlet the destination {@link NetworkCloudlet} to send packets to
      */
     protected void addSendTask(
-        NetworkCloudlet sourceCloudlet,
-        NetworkCloudlet destinationCloudlet)
+        final NetworkCloudlet sourceCloudlet,
+        final NetworkCloudlet targetCloudlet)
     {
         final var task = new CloudletSendTask(sourceCloudlet.getTasks().size());
         task.setMemory(TASK_RAM);
         sourceCloudlet.addTask(task);
         for(int i = 0; i < PACKETS_TO_SEND; i++) {
-            task.addPacket(destinationCloudlet, PACKET_DATA_LENGTH_IN_BYTES);
+            task.addPacket(targetCloudlet, PACKET_DATA_LENGTH_IN_BYTES);
         }
     }
 
     /**
      * Adds a ReceiveTask to the list of tasks of the given {@link NetworkCloudlet}.
      *
-     * @param cloudlet the {@link NetworkCloudlet} the task will belong to
+     * @param targetCloudlet the {@link NetworkCloudlet} the task will belong to
      * @param sourceCloudlet the {@link NetworkCloudlet} expected to receive packets from
      */
-    protected void addReceiveTask(NetworkCloudlet cloudlet, NetworkCloudlet sourceCloudlet) {
-        final var task = new CloudletReceiveTask(cloudlet.getTasks().size(), sourceCloudlet.getVm());
+    protected void addReceiveTask(final NetworkCloudlet targetCloudlet, final NetworkCloudlet sourceCloudlet) {
+        final var task = new CloudletReceiveTask(targetCloudlet.getTasks().size(), sourceCloudlet.getVm());
         task.setMemory(TASK_RAM);
         task.setExpectedPacketsToReceive(PACKETS_TO_SEND);
-        cloudlet.addTask(task);
+        targetCloudlet.addTask(task);
     }
 }
