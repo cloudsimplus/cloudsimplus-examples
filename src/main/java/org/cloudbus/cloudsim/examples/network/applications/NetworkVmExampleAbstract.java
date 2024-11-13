@@ -69,7 +69,7 @@ abstract class NetworkVmExampleAbstract {
     public static final int CLOUDLET_FILE_SIZE = 300;
     public static final int CLOUDLET_OUTPUT_SIZE = 300;
     public static final long TASK_RAM = 100; // in Megabytes
-    private static final long PACKET_DATA_LENGTH_IN_BYTES = 1000;
+    private static final long PACKET_DATA_LENGTH_IN_BYTES = 200_000;
     private static final long PACKETS_TO_SEND = 100;
     private static final int SCHEDULING_INTERVAL = 5;
 
