@@ -17,7 +17,7 @@ Therefore, after you understood how to build basic simulations, you may want to 
 
 CloudSim Plus Examples is a Java 17 project that uses maven for build and dependency management. To build and run the project, you need JDK 17+ installed. 
 
-All project dependencies are download automatically by maven (including CloudSim Plus jars).
+All project dependencies are downloaded automatically by maven (including CloudSim Plus jars).
 
 ## 2. Downloading the Project Sources
 
