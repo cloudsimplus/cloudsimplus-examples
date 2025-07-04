@@ -56,7 +56,7 @@ import java.util.List;
 public class BasicFirstExample {
     private static final int  HOSTS = 1;
     private static final int  HOST_PES = 8;
-    private static final int  HOST_MIPS = 1000; // Milion Instructions per Second (MIPS)
+    private static final int  HOST_MIPS = 1000; // Million Instructions per Second (MIPS)
     private static final int  HOST_RAM = 2048; //in Megabytes
     private static final long HOST_BW = 10_000; //in Megabits/s
     private static final long HOST_STORAGE = 1_000_000; //in Megabytes
@@ -66,7 +66,7 @@ public class BasicFirstExample {
 
     private static final int CLOUDLETS = 4;
     private static final int CLOUDLET_PES = 2;
-    private static final int CLOUDLET_LENGTH = 10_000; // Milion Instructions (MI)
+    private static final int CLOUDLET_LENGTH = 10_000; // Million Instructions (MI)
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
