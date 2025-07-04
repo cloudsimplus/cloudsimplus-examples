@@ -8,7 +8,7 @@
     The module version defines the version of CloudSim Plus to be used.
     This way, it cannot be a version number which doesn't exist for CloudSim Plus.
     -->
-    <version>8.5.5</version>
+    <version>9.0.0-snapshot</version>
 
     <name>CloudSim Plus Examples</name>
     <description>
@@ -53,8 +53,8 @@
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <!-- License file to be used by the com.mycila.license-maven-plugin -->
         <copyrightfile>../COPYRIGHT</copyrightfile>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>24</maven.compiler.release>
+        <logback.version>1.5.18</logback.version>
     </properties>
 
     <build>
@@ -62,16 +62,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <release>17</release>
-                </configuration>
+                <version>3.14.0</version>
             </plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.2</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -96,7 +93,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.4</version>
+				<version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -147,13 +144,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.4.5</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <!-- Automatically includes slf4j-api 2.0 -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.5</version>
+            <version>${logback.version}</version>
         </dependency>
     </dependencies>
 </project>
