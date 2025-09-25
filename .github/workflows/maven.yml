@@ -1,4 +1,4 @@
-name: Build
+name: build
 on:
   push:
     branches: [ master, main ]
@@ -8,14 +8,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Java 24 Build
+    name: Java Build
     steps:
       - uses: actions/checkout@v4
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
+          java-version: 25
           distribution: 'adopt'
-          java-version: 24
           cache: 'maven'
       - name: Maven Build
         run: mvn -B package

@@ -50,10 +50,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
         <!-- License file to be used by the com.mycila.license-maven-plugin -->
         <copyrightfile>../COPYRIGHT</copyrightfile>
-        <maven.compiler.release>24</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <logback.version>1.5.18</logback.version>
     </properties>
 
