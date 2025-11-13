@@ -102,7 +102,7 @@ public class VmBootTimeAndOverheadExample {
         vmList = createVms();
         cloudletList = createCloudlets();
         broker0.submitVmList(vmList);
-        vmList.get(0).addOnUpdateProcessingListener(this::updateVmProcessingListener);
+        vmList.getFirst().addOnUpdateProcessingListener(this::updateVmProcessingListener);
         broker0.submitCloudletList(cloudletList);
 
         simulation.start();
@@ -172,7 +172,7 @@ public class VmBootTimeAndOverheadExample {
               .setBw(1000)
               .setSize(10_000)
               .setBootModel(new BootModel(bootModelCpu, bootModelRam))
-              .setStartupDelay(VM_BOOT_DELAY)
+              .setStartupDelay(VM_BOOT_DELAY*i)
               .setShutDownDelay(VM_SHUTDOWN_DELAY);
             vmList.add(vm);
         }

@@ -29,7 +29,6 @@ import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigration
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
-import org.cloudsimplus.builders.tables.HostHistoryTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
@@ -236,12 +235,21 @@ public final class MigrationExample1 {
             comparingLong((Cloudlet c) -> c.getVm().getHost().getId())
                 .thenComparingLong(c -> c.getVm().getId());
         cloudletFinishedList.sort(cloudletComparator);
+
+        printHosts();
         new CloudletsTableBuilder(cloudletFinishedList).build();
         System.out.printf("%nHosts CPU usage History (when the allocated MIPS is lower than the requested, it is due to VM migration overhead)%n");
 
-        hostList.stream().filter(h -> h.getId() <= 2).forEach(this::printHostStateHistory);
         System.out.printf("Number of VM migrations: %d%n", migrationsNumber);
         System.out.println(getClass().getSimpleName() + " finished!");
+    }
+
+    private void printHosts() {
+        System.out.println("Host ID | CPUs | MIPS");
+        System.out.println("---------------------");
+        for (final var host : hostList) {
+            System.out.printf("%7s | %4s | %s%n", host.getId(), host.getPesNumber(), (int)host.getMips());
+        }
     }
 
     /**
@@ -305,10 +313,6 @@ public final class MigrationExample1 {
         System.out.printf(
             "%.2f: %s allocated %.2f MIPS from %.2f total capacity%n",
             time, host, host.getTotalAllocatedMips(), host.getTotalMipsCapacity());
-    }
-
-    private void printHostStateHistory(final Host host) {
-        new HostHistoryTableBuilder(host).setTitle(host.toString()).build();
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {

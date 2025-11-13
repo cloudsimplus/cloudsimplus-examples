@@ -62,7 +62,7 @@ public class CostsExample1 {
      */
     private static final int SCHEDULING_INTERVAL = 1;
 
-    private static final int HOSTS = 2;
+    private static final int HOSTS = 4;
     private static final int HOST_PES = 8;
     private static final int HOST_MIPS = 1000;
 
