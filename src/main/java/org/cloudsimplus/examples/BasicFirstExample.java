@@ -74,7 +74,7 @@ public class BasicFirstExample {
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
 
-    public static void main(String[] args) {
+    static void main() {
         new BasicFirstExample();
     }
 

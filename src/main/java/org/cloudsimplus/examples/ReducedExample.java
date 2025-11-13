@@ -53,8 +53,8 @@ import java.util.List;
  * @since CloudSim Plus 1.0
  * @see BasicFirstExample
  */
-class ReducedExample {
-    public static void main(String[] args) {
+public class ReducedExample {
+    void main() {
         //tag::cloudsimplus-reduced-example[]
         //Enables just some level of log messages
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
