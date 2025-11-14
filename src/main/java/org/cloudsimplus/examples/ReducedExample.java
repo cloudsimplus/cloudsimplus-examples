@@ -21,19 +21,17 @@
  *     You should have received a copy of the GNU General Public License
  *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cloudsimplus.examples;
 
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.DatacenterSimple;
+import org.cloudsimplus.examples.BasicFirstExample;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.vms.VmSimple;
-
-import java.util.List;
 
 /**
  * An example showing the very minimal code required to create
@@ -53,58 +51,56 @@ import java.util.List;
  * @since CloudSim Plus 1.0
  * @see BasicFirstExample
  */
-public class ReducedExample {
-    void main() {
-        //tag::cloudsimplus-reduced-example[]
-        //Enables just some level of log messages
-        //Log.setLevel(ch.qos.logback.classic.Level.WARN);
+void main() {
+    //tag::cloudsimplus-reduced-example[]
+    //Enables just some level of log messages
+    //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
-        //Creates a CloudSimPlus object to initialize the simulation.
-        final var simulation = new CloudSimPlus();
+    //Creates a CloudSimPlus object to initialize the simulation.
+    final var simulation = new CloudSimPlus();
 
-        //Creates a Broker that will act on behalf of a cloud user (customer).
-        final var broker0 = new DatacenterBrokerSimple(simulation);
+    //Creates a Broker that will act on behalf of a cloud user (customer).
+    final var broker0 = new DatacenterBrokerSimple(simulation);
 
-        //Host configuration
-        final long ram = 10000; //in Megabytes
-        final long storage = 100000; //in Megabytes
-        final long bw = 100000; //in Megabits/s
+    //Host configuration
+    final long ram = 10000; //in Megabytes
+    final long storage = 100000; //in Megabytes
+    final long bw = 100000; //in Megabits/s
 
-        //Creates one Hosts with a specific list of CPU cores (PEs).
-        //Uses a PeProvisionerSimple by default to provision PEs for VMs.
-        //Uses ResourceProvisionerSimple by default for RAM and BW provisioning
-        //Uses VmSchedulerSpaceShared by default for VM scheduling
-        final var host0 = new HostSimple(ram, bw, storage, List.of(new PeSimple(20000)));
+    //Creates one Hosts with a specific list of CPU cores (PEs).
+    //Uses a PeProvisionerSimple by default to provision PEs for VMs.
+    //Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+    //Uses VmSchedulerSpaceShared by default for VM scheduling
+    final var host0 = new HostSimple(ram, bw, storage, List.of(new PeSimple(20000)));
 
-        //Creates one Datacenter with a list of Hosts
-        //Uses a VmAllocationPolicySimple by default to allocate VMs
-        final var dc0 = new DatacenterSimple(simulation, List.of(host0));
+    //Creates one Datacenter with a list of Hosts
+    //Uses a VmAllocationPolicySimple by default to allocate VMs
+    final var dc0 = new DatacenterSimple(simulation, List.of(host0));
 
-        //Creates one Vm to run applications (Cloudlets).
-        //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets.
-        final var vm0 = new VmSimple(1000, 1);
-        vm0.setRam(1000).setBw(1000).setSize(1000);
-        final var vmList = List.of(vm0);
+    //Creates one Vm to run applications (Cloudlets).
+    //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets.
+    final var vm0 = new VmSimple(1000, 1);
+    vm0.setRam(1000).setBw(1000).setSize(1000);
+    final var vmList = List.of(vm0);
 
-        //Creates two Cloudlets that represent applications to be run inside a Vm.
-        //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
-        final var utilizationModel = new UtilizationModelDynamic(0.5);
-        final var cloudlet0 = new CloudletSimple(10000, 1, utilizationModel);
-        final var cloudlet1 = new CloudletSimple(10000, 1, utilizationModel);
-        final var cloudletList = List.of(cloudlet0, cloudlet1);
+    //Creates two Cloudlets that represent applications to be run inside a Vm.
+    //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
+    final var utilizationModel = new UtilizationModelDynamic(0.5);
+    final var cloudlet0 = new CloudletSimple(10000, 1, utilizationModel);
+    final var cloudlet1 = new CloudletSimple(10000, 1, utilizationModel);
+    final var cloudletList = List.of(cloudlet0, cloudlet1);
 
-        /*Requests the broker to create the Vms and Cloudlets.
-        It selects the Host to place each Vm and a Vm to run each Cloudlet.*/
-        broker0.submitVmList(vmList);
-        broker0.submitCloudletList(cloudletList);
+    /*Requests the broker to create the Vms and Cloudlets.
+    It selects the Host to place each Vm and a Vm to run each Cloudlet.*/
+    broker0.submitVmList(vmList);
+    broker0.submitCloudletList(cloudletList);
 
-        /*Starts the simulation and waits all cloudlets to be executed, automatically
-        stopping when there is no more events to process.*/
-        simulation.start();
+    /*Starts the simulation and waits all cloudlets to be executed, automatically
+    stopping when there is no more events to process.*/
+    simulation.start();
 
-        /*Prints the results when the simulation is over (one can use his/her own code
-        here to print what he/she wants from this cloudlet list). */
-        new CloudletsTableBuilder(broker0.getCloudletFinishedList()).build();
-        //end::cloudsimplus-reduced-example[]
-    }
+    /*Prints the results when the simulation is over (one can use his/her own code
+    here to print what he/she wants from this cloudlet list). */
+    new CloudletsTableBuilder(broker0.getCloudletFinishedList()).build();
+    //end::cloudsimplus-reduced-example[]
 }
