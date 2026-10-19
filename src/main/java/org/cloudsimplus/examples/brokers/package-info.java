@@ -14,4 +14,7 @@
  *
  * @author Manoel Campos da Silva Filho
  */
+@NullMarked
 package org.cloudsimplus.examples.brokers;
+
+import org.jspecify.annotations.NullMarked;

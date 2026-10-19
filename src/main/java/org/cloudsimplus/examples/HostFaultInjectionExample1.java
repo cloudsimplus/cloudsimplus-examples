@@ -95,7 +95,7 @@ public final class HostFaultInjectionExample1 {
     /** @see HostFaultInjection#setMaxTimeToFailInHours(double) */
     private static final double MAX_TIME_TO_FAIL_IN_HOURS = TimeUtil.daysToHours(30);
 
-    private List<Host> hostList;
+    private final List<Host> hostList = new ArrayList<>();
 
     private static final int VMS_BY_BROKER = 2;
     private static final int VM_PES = 2; //number of cpus
@@ -220,7 +220,6 @@ public final class HostFaultInjectionExample1 {
     }
 
     private Datacenter createDatacenter() {
-        hostList = new ArrayList<>();
         for (int id = 1; id <= HOSTS; id++) {
             hostList.add(createHost(id));
         }
@@ -327,8 +326,8 @@ public final class HostFaultInjectionExample1 {
             final var clonedCloudlet = cloneCloudlet(sourceCloudlet);
             clonedCloudletList.add(clonedCloudlet);
             System.out.printf(
-                "# %s: Cloning %s as Cloudlet %d%n",
-                sourceVm.getBroker(), sourceCloudlet, clonedCloudlet.getId(), sourceVm);
+                "# %s: Cloning %s from %s as Cloudlet %d%n",
+                sourceVm.getBroker(), sourceCloudlet, sourceVm, clonedCloudlet.getId());
         }
 
         return clonedCloudletList;

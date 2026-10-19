@@ -8,4 +8,7 @@
  *
  * @author Manoel Campos da Silva Filho
  */
+@NullMarked
 package org.cloudsimplus.examples.resourceusage;
+
+import org.jspecify.annotations.NullMarked;

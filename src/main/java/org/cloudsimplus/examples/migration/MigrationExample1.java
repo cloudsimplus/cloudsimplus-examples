@@ -202,8 +202,8 @@ public final class MigrationExample1 {
     private final DatacenterBrokerSimple broker;
 
     private final CloudSimPlus simulation;
-    private VmAllocationPolicyMigrationStaticThreshold allocationPolicy;
-    private List<Host> hostList;
+    private final VmAllocationPolicyMigrationStaticThreshold allocationPolicy;
+    private final List<Host> hostList;
     private int migrationsNumber = 0;
 
     public static void main(String[] args) {
@@ -220,6 +220,8 @@ public final class MigrationExample1 {
         System.out.println("Starting " + getClass().getSimpleName());
         simulation = new CloudSimPlus();
 
+        this.hostList = createHosts();
+        this.allocationPolicy = createAllocationPolicy();
         @SuppressWarnings("unused")
         final var datacenter0 = createDatacenter();
         broker = new DatacenterBrokerSimple(simulation);
@@ -424,25 +426,7 @@ public final class MigrationExample1 {
      * @return
      */
     private Datacenter createDatacenter() {
-        this.hostList = createHosts();
         System.out.println();
-
-        /**
-         * Sets an upper utilization threshold higher than the
-         * {@link #HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION}
-         * to enable placing VMs which will use more CPU than
-         * defined by the value in the mentioned constant.
-         * After VMs are all submitted to Hosts, the threshold is changed
-         * to the value of the constant.
-         * This is used to  place VMs into a Host which will
-         * become overloaded in order to trigger the migration.
-         */
-        this.allocationPolicy =
-            new VmAllocationPolicyMigrationBestFitStaticThreshold(
-                new VmSelectionPolicyMinimumUtilization(),
-                HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION + 0.2);
-        this.allocationPolicy.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
-
         final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
         for (Host host : hostList) {
             System.out.printf(
@@ -452,6 +436,26 @@ public final class MigrationExample1 {
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY);
         return dc;
+    }
+
+    /**
+     * Creates a VmAllocationPolicy that
+     * sets an upper utilization threshold higher than the
+     * {@link #HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION}
+     * to enable placing VMs which will use more CPU than
+     * defined by the value in the mentioned constant.
+     * After VMs are all submitted to Hosts, the threshold is changed
+     * to the value of the constant.
+     * This is used to  place VMs into a Host which will
+     * become overloaded in order to trigger the migration.
+     */
+    private VmAllocationPolicyMigrationStaticThreshold createAllocationPolicy() {
+        final var policy =
+            new VmAllocationPolicyMigrationBestFitStaticThreshold(
+                new VmSelectionPolicyMinimumUtilization(),
+                HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION + 0.2);
+        policy.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
+        return policy;
     }
 
     private List<Host> createHosts() {

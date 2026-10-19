@@ -104,10 +104,9 @@ public class SwfWorkloadFormatExample1 {
     private static final int  VM_RAM = 1000;
     private static final long VM_BW = 50000;
 
-    private List<Cloudlet> cloudletList;
-    private List<Vm> vmlist;
-    private Datacenter datacenter0;
-    private DatacenterBroker broker;
+    private final List<Cloudlet> cloudletList = new ArrayList<>();
+    private final List<Vm> vmlist = new ArrayList<>();
+    private final DatacenterBroker broker;
 
     /**
      * Creates main() to run this example.
@@ -130,16 +129,16 @@ public class SwfWorkloadFormatExample1 {
         System.out.printf("Simulation started at %s%n%n", LocalTime.now());
 
         simulation = new CloudSimPlus();
+        broker = new DatacenterBrokerSimple(simulation);
         try {
-            broker = new DatacenterBrokerSimple(simulation);
-
             /*Vms and cloudlets are created before the Datacenter and host
             because the example is creating: (i) hosts based on VM requirements;
             (ii) VMs based on cloudlet requirements.*/
             createCloudletsFromWorkloadFile();
             createVms();
 
-            datacenter0 = createDatacenter();
+            @SuppressWarnings("unused")
+            final var datacenter0 = createDatacenter();
 
             broker.submitVmList(vmlist);
             broker.submitCloudletList(cloudletList);
@@ -184,7 +183,6 @@ public class SwfWorkloadFormatExample1 {
         * It's used to reduce the number of VMs to create. */
         final int totalVms = (int)Math.ceil(totalCloudletPes / (VM_PES*6));
 
-        vmlist = new ArrayList<>();
         for (int i = 0; i < totalVms; i++) {
             final var vm = new VmSimple(VM_MIPS, VM_PES)
                             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
@@ -198,7 +196,7 @@ public class SwfWorkloadFormatExample1 {
     private void createCloudletsFromWorkloadFile() {
         final var reader = SwfWorkloadFileReader.getInstance(WORKLOAD_FILENAME, VM_MIPS);
         reader.setMaxLinesToRead(maxCloudletsToCreateFromWorkloadFile);
-        this.cloudletList = reader.generateWorkload();
+        this.cloudletList.addAll(reader.generateWorkload());
 
         System.out.printf("# Created %12d Cloudlets for %s%n", this.cloudletList.size(), broker);
     }

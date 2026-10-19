@@ -230,7 +230,7 @@ abstract class NetworkVmExampleAbstract {
      * @return the index of the switch to connect the host
      */
     public static int getSwitchIndex(final NetworkHost host, final int switchPorts) {
-        return Math.round(host.getId() % Integer.MAX_VALUE) / switchPorts;
+        return (int) (host.getId() % Integer.MAX_VALUE) / switchPorts;
     }
 
     /**

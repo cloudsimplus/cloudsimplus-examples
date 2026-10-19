@@ -151,16 +151,18 @@ public class VmsRamAndBwUsageExample {
         System.out.println(vm + " RAM and BW utilization history");
         System.out.println("----------------------------------------------------------------------------------");
 
-        //A set containing all resource utilization collected times
-        final Set<Double> timeSet = allVmsRamUtilizationHistory.get(vm).keySet();
+        //Every VM has a utilization map, created by initializeUtilizationHistory()
+        final Map<Double, Double> vmRamUtilization = Objects.requireNonNull(allVmsRamUtilizationHistory.get(vm));
+        final Map<Double, Double> vmBwUtilization = Objects.requireNonNull(allVmsBwUtilizationHistory.get(vm));
 
-        final Map<Double, Double> vmRamUtilization = allVmsRamUtilizationHistory.get(vm);
-        final Map<Double, Double> vmBwUtilization = allVmsBwUtilizationHistory.get(vm);
-
-        for (final double time : timeSet) {
+        //Each entry has a resource utilization collected time and the RAM utilization at that time
+        for (final var entry : vmRamUtilization.entrySet()) {
+            final double time = entry.getKey();
+            //RAM and BW utilization are collected at the same times
+            final double bwUtilization = Objects.requireNonNull(vmBwUtilization.get(time));
             System.out.printf(
                 "Time: %10.1f secs | RAM Utilization: %10.2f%% | BW Utilization: %10.2f%%%n",
-                time, vmRamUtilization.get(time) * 100, vmBwUtilization.get(time) * 100);
+                time, entry.getValue() * 100, bwUtilization * 100);
         }
 
         System.out.printf("----------------------------------------------------------------------------------%n%n");
@@ -213,7 +215,7 @@ public class VmsRamAndBwUsageExample {
             /*Gets the internal resource utilization map for the current VM.
             * The key of this map is the time the usage was collected (in seconds)
             * and the value the percentage of utilization (from 0 to 1). */
-            final Map<Double, Double> vmUtilizationHistory = allVmsUtilizationHistory.get(vm);
+            final Map<Double, Double> vmUtilizationHistory = Objects.requireNonNull(allVmsUtilizationHistory.get(vm));
             vmUtilizationHistory.put(simulation.clock(), vm.getResource(resourceClass).getPercentUtilization());
         }
     }

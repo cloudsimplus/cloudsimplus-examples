@@ -43,6 +43,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModel;
 import org.cloudsimplus.utilizationmodels.UtilizationModelStochastic;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -127,7 +128,12 @@ public class UtilizationModelStochasticPerformance {
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
-    private UtilizationModelStochastic um;
+    /**
+     * The utilization model shared by all Cloudlets
+     * (when {@link #MULTIPLE_UTILIZATION_MODELS} is false).
+     * It's null until the first Cloudlet is created.
+     */
+    private @Nullable UtilizationModelStochastic um;
 
     public static void main(String[] args) {
         new UtilizationModelStochasticPerformance();
