@@ -26,3 +26,4 @@ Test.java
 *.jar
 *.~lock*
 ~$*
+.vscode/
