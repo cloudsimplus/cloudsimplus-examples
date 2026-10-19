@@ -73,6 +73,8 @@ import java.util.List;
 public class ParallelSimulationsExample implements Runnable {
     private final String title;
     private final CloudSimPlus simulation;
+    /** Created when the simulation is started inside {@link #run()}. */
+    @SuppressWarnings("NullAway.Init")
     private DatacenterBroker broker;
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;

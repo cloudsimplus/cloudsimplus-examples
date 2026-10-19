@@ -7,4 +7,7 @@
  *
  * @author Manoel Campos da Silva Filho
  */
+@NullMarked
 package org.cloudsimplus.examples.schedulers;
+
+import org.jspecify.annotations.NullMarked;

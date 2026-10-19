@@ -4,4 +4,7 @@
  *
  * @author Manoel Campos da Silva Filho
  */
+@NullMarked
 package org.cloudsimplus.examples.simulationstatus;
+
+import org.jspecify.annotations.NullMarked;

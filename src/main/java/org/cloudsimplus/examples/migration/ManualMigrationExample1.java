@@ -135,7 +135,7 @@ public final class ManualMigrationExample1 {
     private final Datacenter datacenter0;
 
     private CloudSimPlus simulation;
-    private List<Host> hostList;
+    private final List<Host> hostList = new ArrayList<>();
     private boolean migrationRequested;
     private int migrationsNumber;
 
@@ -280,7 +280,6 @@ public final class ManualMigrationExample1 {
      * @return
      */
     private Datacenter createDatacenter() {
-        this.hostList = new ArrayList<>();
         for(int i = 0; i < HOSTS; i++){
             final int pes = HOST_INITIAL_PES + i;
             hostList.add(createHost(pes, HOST_MIPS));

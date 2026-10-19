@@ -10,4 +10,7 @@
  * @author Pawel Koperek
  * @author Manoel Campos da Silva Filho
  */
+@NullMarked
 package org.cloudsimplus.examples.synchronous;
+
+import org.jspecify.annotations.NullMarked;
