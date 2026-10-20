@@ -8,7 +8,7 @@ Ready-to-run examples for the [CloudSim Plus](https://github.com/cloudsimplus/cl
 
 ## Dependency on CloudSim Plus
 
-- The **project version sets the CloudSim Plus version**: the `cloudsimplus` dependency uses `${project.version}` (now `9.0.0-snapshot`). So the version must always be a real CloudSim Plus version.
+- The **project version sets the CloudSim Plus version**: the `cloudsimplus` dependency uses `${project.version}` (now `9.0.0-SNAPSHOT`). So the version must always be a real CloudSim Plus version.
 - A snapshot version is not on Maven Central. It must be installed into `~/.m2` from the sibling framework project `../cloudsimplus` (`cd ../cloudsimplus && ./mvnw install`). If the build fails on missing or out-of-date framework classes, rebuild `../cloudsimplus` first.
 - Logging uses SLF4J + Logback. Examples can lower verbosity with `Log.setLevel(ch.qos.logback.classic.Level.WARN)` (`org.cloudsimplus.util.Log`).
 
