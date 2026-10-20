@@ -30,18 +30,16 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a Datacenter with 1 host and a network
- * topology, running 1 cloudlet on it.
- * There is just one VM with a single PE of 250 MIPS.
- * The Cloudlet requires 1 PE and has a length of 40000 MI.
- * This way, the Cloudlet will take 160 seconds to finish (40000/250).
- *
- * <p>The Cloudlet is not requiring any files from a {@link SanStorage},
- * but since a network topology is defined from the file topology.brite,
- * communication delay between network elements is simulated,
- * causing the Cloudlet to start executing just after a few seconds.</p>
- */
+/// A simple example showing how to create a Datacenter with 1 host and a network
+/// topology, running 1 cloudlet on it.
+/// There is just one VM with a single PE of 250 MIPS.
+/// The Cloudlet requires 1 PE and has a length of 40000 MI.
+/// This way, the Cloudlet will take 160 seconds to finish (40000/250).
+///
+/// The Cloudlet is not requiring any files from a [SanStorage],
+/// but since a network topology is defined from the file topology.brite,
+/// communication delay between network elements is simulated,
+/// causing the Cloudlet to start executing just after a few seconds.
 public class NetworkExample1 {
     private static final String NETWORK_TOPOLOGY_FILE = "topology.brite";
     private static final int VM_PES = 1;

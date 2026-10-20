@@ -50,22 +50,18 @@ import java.util.Map;
 
 import static java.util.Map.Entry;
 
-/**
- * An example showing how to use the {@link DatacenterBrokerSimple}
- * to select the {@link Datacenter} closest to every submitted {@link Vm},
- * according to their {@link TimeZoned#getTimeZone() TimeZone offset}.
- *
- * <p>Realize that for this feature to work, the {@link DatacenterBroker#setSelectClosestDatacenter(boolean)}
- * must be called to enable it.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.8.0
- */
+/// An example showing how to use the [DatacenterBrokerSimple]
+/// to select the [Datacenter] closest to every submitted [Vm],
+/// according to their [TimeZone offset][TimeZoned#getTimeZone()].
+///
+/// Realize that for this feature to work, the [DatacenterBroker#setSelectClosestDatacenter(boolean)]
+/// must be called to enable it.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.8.0
 public class DatacenterSelectionByTimeZoneExample {
-    /**
-     * Amazon Web Services Regions (just some of them).
-     * @see <a href="https://aws.amazon.com/about-aws/global-infrastructure/">AWS Global Infrastructure</a>
-     */
+    /// Amazon Web Services Regions (just some of them).
+    /// @see <a href="https://aws.amazon.com/about-aws/global-infrastructure/">AWS Global Infrastructure</a>
     private static final Map<String, Double> DATACENTERS_TIMEZONES = Map.of(
         "Oregon",     -7.0,
         "Canada",     -4.0,
@@ -82,11 +78,9 @@ public class DatacenterSelectionByTimeZoneExample {
     private static final int HOSTS = 5;
     private static final int HOST_PES = 8;
 
-    /**
-     * The list of timezones where each VM is expected to be placed.
-     * This way, the broker will try to place each VM at the closest
-     * Datacenter as possible.
-     */
+    /// The list of timezones where each VM is expected to be placed.
+    /// This way, the broker will try to place each VM at the closest
+    /// Datacenter as possible.
     private static final double[] VMS_TIMEZONES = {1, 5, -3, -5, 0, 5.5, 2, 4, 9, 11, -9};
 
     private static final int VM_PES = 4;
@@ -143,11 +137,9 @@ public class DatacenterSelectionByTimeZoneExample {
         return TimeZoned.format(cloudlet.getVm().getTimeZone());
     }
 
-    /**
-     * Creates a List of Datacenters, each Datacenter having
-     * Hosts with a number of PEs higher than the previous Datacenter.
-     * @return
-     */
+    /// Creates a List of Datacenters, each Datacenter having
+    /// Hosts with a number of PEs higher than the previous Datacenter.
+    /// @return
     private List<Datacenter> createDatacenters(){
         final var dcList = new ArrayList<Datacenter>(DATACENTERS_TIMEZONES.size());
         for (Entry<String, Double> entry : DATACENTERS_TIMEZONES.entrySet()) {
@@ -160,10 +152,8 @@ public class DatacenterSelectionByTimeZoneExample {
         return dcList;
     }
 
-    /**
-     * Creates a Datacenter in a given timezone.
-     * @param timeZone the time zone offset
-     */
+    /// Creates a Datacenter in a given timezone.
+    /// @param timeZone the time zone offset
     private Datacenter createDatacenter(final double timeZone) {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -198,11 +188,9 @@ public class DatacenterSelectionByTimeZoneExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs, setting the timezone they are expected to be placed.
-     * This way, the broker will try to place each VM at the closest
-     * Datacenter as possible.
-     */
+    /// Creates a list of VMs, setting the timezone they are expected to be placed.
+    /// This way, the broker will try to place each VM at the closest
+    /// Datacenter as possible.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS_TIMEZONES.length);
         for (final double timezone : VMS_TIMEZONES) {
@@ -215,9 +203,7 @@ public class DatacenterSelectionByTimeZoneExample {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 

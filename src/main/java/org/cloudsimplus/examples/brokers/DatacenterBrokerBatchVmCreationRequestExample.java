@@ -48,17 +48,15 @@ import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
-/**
- * An example showing how to enable a {@link DatacenterBroker} to
- * request creation of a Vm List in batch, instead of in a one-by-one basis.
- * It can use any {@link org.cloudsimplus.allocationpolicies.VmAllocationPolicy}
- * but it uses the {@link VmAllocationPolicyBatchPlacementUnderloadedHosts}
- * as an example.
- * Check {@link DatacenterBroker#setBatchVmCreation(boolean)}
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 8.5.0
- */
+/// An example showing how to enable a [DatacenterBroker] to
+/// request creation of a Vm List in batch, instead of in a one-by-one basis.
+/// It can use any [org.cloudsimplus.allocationpolicies.VmAllocationPolicy]
+/// but it uses the [VmAllocationPolicyBatchPlacementUnderloadedHosts]
+/// as an example.
+/// Check [DatacenterBroker#setBatchVmCreation(boolean)]
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 8.5.0
 public class DatacenterBrokerBatchVmCreationRequestExample {
     private static final int  HOSTS = 2;
     private static final int  HOST_PES = 8;
@@ -79,12 +77,10 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
 
-    /** @see Datacenter#setSchedulingInterval(double) */
+    /// @see Datacenter#setSchedulingInterval(double)
     private static final double SCHEDULING_INTERVAL = 1;
 
-    /**
-     * Indicates wether no cloudlets were created during simulation runtime yet.
-     */
+    /// Indicates wether no cloudlets were created during simulation runtime yet.
     private boolean noDynamicCloudletsCreated = true;
 
     public static void main(String[] args) {
@@ -113,17 +109,13 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * {@return a new broker} Enables batch VM creation.
-     */
+    /// {@return a new broker} Enables batch VM creation.
     private DatacenterBroker createBroker() {
         return new DatacenterBrokerSimple(simulation).setBatchVmCreation(true);
     }
 
-    /**
-     * @param info
-     * @see Datacenter#setSchedulingInterval(double)
-     */
+    /// @param info
+    /// @see Datacenter#setSchedulingInterval(double)
     private void onClockTick(final EventInfo info) {
         if(info.getTime() >= 10 && noDynamicCloudletsCreated) {
             noDynamicCloudletsCreated = false;
@@ -146,9 +138,7 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
         createAndSubmitCloudlets(newVms);
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {

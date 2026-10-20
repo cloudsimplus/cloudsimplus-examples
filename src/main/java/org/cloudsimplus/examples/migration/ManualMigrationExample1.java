@@ -54,44 +54,38 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example showing how perform a manual VM migration
- * according to any desired condition, such as
- * when the simulation reaches specific times.
- *
- * <p>This is a manual migration, different when using some
- * {@link VmAllocationPolicyMigration} implementation.
- * Such a policy automatically migrates VMs based on
- * a static host CPU utilization threshold.
- * In this example, such an implementation is not used
- * and therefore, automatic VM migration based on CPU utilization threshold is not triggered.
- * If you want to implement a VM migration policy, you should
- * create a subclass from some of the existing ones.
- * Usually the starting point is the {@link VmAllocationPolicyMigrationAbstract}
- * but concrete implementations such as the {@link VmAllocationPolicyMigrationBestFitStaticThreshold}
- * can be used as an example.
- * </p>
- *
- * <p>VMs are initially placed into Hosts following the
- * {@link VmAllocationPolicyFirstFit} policy, which doesn't implement automatic VM
- * migration based on CPU utilization threshold. We call this VM as "manual migration"
- * exactly because we are not using a {@link VmAllocationPolicyMigration} implementation
- * and the migration is defined by the simulation class itself.</p>
- *
- * <p>When the simulation clock reaches a specific time,
- * an arbitrary VM is migrated to an arbitrary Host.
- * The clock advance is tracked by the {@link #clockTickListener(EventInfo)},
- * that actually fires the manual migration request.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @see MigrationExample1
- * @since CloudSim Plus 5.0.4
- */
+/// An example showing how perform a manual VM migration
+/// according to any desired condition, such as
+/// when the simulation reaches specific times.
+///
+/// This is a manual migration, different when using some
+/// [VmAllocationPolicyMigration] implementation.
+/// Such a policy automatically migrates VMs based on
+/// a static host CPU utilization threshold.
+/// In this example, such an implementation is not used
+/// and therefore, automatic VM migration based on CPU utilization threshold is not triggered.
+/// If you want to implement a VM migration policy, you should
+/// create a subclass from some of the existing ones.
+/// Usually the starting point is the [VmAllocationPolicyMigrationAbstract]
+/// but concrete implementations such as the [VmAllocationPolicyMigrationBestFitStaticThreshold]
+/// can be used as an example.
+///
+/// VMs are initially placed into Hosts following the
+/// [VmAllocationPolicyFirstFit] policy, which doesn't implement automatic VM
+/// migration based on CPU utilization threshold. We call this VM as "manual migration"
+/// exactly because we are not using a [VmAllocationPolicyMigration] implementation
+/// and the migration is defined by the simulation class itself.
+///
+/// When the simulation clock reaches a specific time,
+/// an arbitrary VM is migrated to an arbitrary Host.
+/// The clock advance is tracked by the [#clockTickListener(EventInfo)],
+/// that actually fires the manual migration request.
+///
+/// @author Manoel Campos da Silva Filho
+/// @see MigrationExample1
+/// @since CloudSim Plus 5.0.4
 public final class ManualMigrationExample1 {
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int  SCHEDULING_INTERVAL = 1;
     private static final int  HOSTS = 5;
     private static final int  VMS = 3;
@@ -100,21 +94,19 @@ public final class ManualMigrationExample1 {
     private static final long HOST_RAM = 500000; //host memory (MB)
     private static final long HOST_STORAGE = 1000000; //host storage
 
-    /**
-     * The time spent during VM migration depend on the
-     * bandwidth of the target Host.
-     * By default, a {@link Datacenter}
-     * uses only 50% of the BW to migrate VMs, while the
-     * remaining capacity is used for VM communication.
-     * This can be changed by calling
-     * {@link DatacenterSimple#setBandwidthPercentForMigration(double)}.
-     *
-     * <p>The 16000 Mb/s is the same as 2000 MB/s. Since just half of this capacity
-     * is used for VM migration, only 1000 MB/s will be available for this process.
-     * The time that takes to migrate a Vm depend on the VM RAM capacity.
-     * Since VMs in this example are created with 2000 MB of RAM, any migration
-     * will take 2 seconds to finish, as can be seen in the logs.
-     */
+    /// The time spent during VM migration depend on the
+    /// bandwidth of the target Host.
+    /// By default, a [Datacenter]
+    /// uses only 50% of the BW to migrate VMs, while the
+    /// remaining capacity is used for VM communication.
+    /// This can be changed by calling
+    /// [DatacenterSimple#setBandwidthPercentForMigration(double)].
+    ///
+    /// The 16000 Mb/s is the same as 2000 MB/s. Since just half of this capacity
+    /// is used for VM migration, only 1000 MB/s will be available for this process.
+    /// The time that takes to migrate a Vm depend on the VM RAM capacity.
+    /// Since VMs in this example are created with 2000 MB of RAM, any migration
+    /// will take 2 seconds to finish, as can be seen in the logs.
     private static final long   HOST_BW = 16000L; //Mb/s
 
     private static final int    VM_MIPS = 1000; //for each PE
@@ -127,9 +119,7 @@ public final class ManualMigrationExample1 {
     private static final long   CLOUDLET_FILESIZE = 300;
     private static final long   CLOUDLET_OUTPUTSIZE = 300;
 
-    /**
-     * List of all created VMs.
-     */
+    /// List of all created VMs.
     private final List<Vm> vmList = new ArrayList<>();
     private final DatacenterBrokerSimple broker;
     private final Datacenter datacenter0;
@@ -171,14 +161,12 @@ public final class ManualMigrationExample1 {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * Event listener which is called every time the simulation clock advances.
-     * When the simulation clock reaches 10 seconds, it migrates an arbitrary VM to
-     * an arbitrary Host.
-     *
-     * @param info information about the event happened.
-     * @see CloudSimPlus#addOnClockTickListener(EventListener)
-     */
+    /// Event listener which is called every time the simulation clock advances.
+    /// When the simulation clock reaches 10 seconds, it migrates an arbitrary VM to
+    /// an arbitrary Host.
+    ///
+    /// @param info information about the event happened.
+    /// @see CloudSimPlus#addOnClockTickListener(EventListener)
     private void clockTickListener(EventInfo info) {
         if(!migrationRequested && info.getTime() >= 10){
             final var sourceVm = vmList.get(0);
@@ -189,14 +177,13 @@ public final class ManualMigrationExample1 {
         }
     }
 
-    /**
-     * Prints the state of a Host along the simulation time.
-     * <p>Realize that the Host State History is just collected
-     * if {@link Host#isStateHistoryEnabled() history is enabled}
-     * by calling {@link Host#setStateHistoryEnabled(boolean)}.</p>
-     *
-     * @param host
-     */
+    /// Prints the state of a Host along the simulation time.
+    ///
+    /// Realize that the Host State History is just collected
+    /// if [history is enabled][Host#isStateHistoryEnabled()]
+    /// by calling [Host#setStateHistoryEnabled(boolean)].
+    ///
+    /// @param host
     private void printHostHistory(Host host) {
         final boolean cpuUtilizationNotZero =
             host.getStateHistory()
@@ -218,13 +205,11 @@ public final class ManualMigrationExample1 {
         broker.submitCloudletList(newCloudletList);
     }
 
-    /**
-     * Creates a Cloudlet.
-     *
-     * @param vm the VM that will run the Cloudlets
-     * @param broker the broker that the created Cloudlets belong to
-     * @return the created Cloudlets
-     */
+    /// Creates a Cloudlet.
+    ///
+    /// @param vm the VM that will run the Cloudlets
+    /// @param broker the broker that the created Cloudlets belong to
+    /// @return the created Cloudlets
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
         final var cloudlet =
             new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getPesNumber())
@@ -248,13 +233,11 @@ public final class ManualMigrationExample1 {
         vmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
     }
 
-    /**
-     * A listener method that is called when a VM migration starts.
-     * @param info information about the happened event
-     *
-     * @see #createAndSubmitVms(DatacenterBroker)
-     * @see Vm#addOnMigrationFinishListener(EventListener)
-     */
+    /// A listener method that is called when a VM migration starts.
+    /// @param info information about the happened event
+    ///
+    /// @see #createAndSubmitVms(DatacenterBroker)
+    /// @see Vm#addOnMigrationFinishListener(EventListener)
     private void startMigration(final VmHostEventInfo info) {
         final Vm vm = info.getVm();
         final Host targetHost = info.getHost();
@@ -273,12 +256,10 @@ public final class ManualMigrationExample1 {
         return vm;
     }
 
-    /**
-     * Creates a Datacenter with number of Hosts defined by {@link #HOSTS},
-     * but only some of these Hosts will be active (powered on) initially.
-     *
-     * @return
-     */
+    /// Creates a Datacenter with number of Hosts defined by [#HOSTS],
+    /// but only some of these Hosts will be active (powered on) initially.
+    ///
+    /// @return
     private Datacenter createDatacenter() {
         for(int i = 0; i < HOSTS; i++){
             final int pes = HOST_INITIAL_PES + i;

@@ -28,10 +28,8 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create 2 datacenters with 1 host.
- * It sets a network topology and then run 2 cloudlets.
- */
+/// A simple example showing how to create 2 datacenters with 1 host.
+/// It sets a network topology and then run 2 cloudlets.
 public class NetworkExample2 {
     private static final String NETWORK_TOPOLOGY_FILE = "topology.brite";
     private static final int VM_PES = 1;

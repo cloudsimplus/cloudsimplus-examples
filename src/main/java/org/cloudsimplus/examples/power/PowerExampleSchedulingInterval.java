@@ -48,23 +48,21 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example to show how the accuracy of power consumption may change
- * according to different Datacenter scheduling intervals.
- * As lower is its value, higher is the power consumption accuracy
- * because power consumption data will be collected in smaller intervals.
- *
- * <p>CloudSim Plus has a very accurate and consistent power consumption computation.
- * This way, you can see in this example that results just change
- * when a scheduling interval is set with a value equals to the time the last
- * Cloudlet finishes.
- *
- * <p>You are strongly encouraged to firstly check the {@link PowerExample} to understand the details.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @author Alexandre Henrique Teixeira Dias
- * @since CloudSim Plus 4.0.0
- */
+/// An example to show how the accuracy of power consumption may change
+/// according to different Datacenter scheduling intervals.
+/// As lower is its value, higher is the power consumption accuracy
+/// because power consumption data will be collected in smaller intervals.
+///
+/// CloudSim Plus has a very accurate and consistent power consumption computation.
+/// This way, you can see in this example that results just change
+/// when a scheduling interval is set with a value equals to the time the last
+/// Cloudlet finishes.
+///
+/// You are strongly encouraged to firstly check the [PowerExample] to understand the details.
+///
+/// @author Manoel Campos da Silva Filho
+/// @author Alexandre Henrique Teixeira Dias
+/// @since CloudSim Plus 4.0.0
 public class PowerExampleSchedulingInterval {
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -76,14 +74,10 @@ public class PowerExampleSchedulingInterval {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 50000;
 
-    /**
-     * Defines the power a Host uses, even if it's idle (in Watts).
-     */
+    /// Defines the power a Host uses, even if it's idle (in Watts).
     private static final double STATIC_POWER = 35;
 
-    /**
-     * The max power a Host uses (in Watts).
-     */
+    /// The max power a Host uses (in Watts).
     private static final int MAX_POWER = 50;
 
     private final int schedulingInterval;
@@ -103,11 +97,8 @@ public class PowerExampleSchedulingInterval {
         }
     }
 
-    /**
-     * Instantiates and run the example with a specific configuration.
-     * @param schedulingInterval the {@link Datacenter#getSchedulingInterval()} (in seconds)
-     *
-     */
+    /// Instantiates and run the example with a specific configuration.
+    /// @param schedulingInterval the [Datacenter#getSchedulingInterval()] (in seconds)
     private PowerExampleSchedulingInterval(final int schedulingInterval) {
         simulation = new CloudSimPlus();
         hostList = new ArrayList<>(HOSTS);

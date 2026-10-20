@@ -8,22 +8,18 @@ import org.cloudsimplus.vms.network.NetworkVm;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example of "Bag of Tasks" distributed application that is compounded by
- * 3 {@link NetworkCloudlet}, where 2 of them send data to the first created one,
- * which waits the data to be received.
- *
- * @author Saurabh Kumar Garg
- * @author Rajkumar Buyya
- * @author Manoel Campos da Silva Filho
- */
+/// An example of "Bag of Tasks" distributed application that is compounded by
+/// 3 [NetworkCloudlet], where 2 of them send data to the first created one,
+/// which waits the data to be received.
+///
+/// @author Saurabh Kumar Garg
+/// @author Rajkumar Buyya
+/// @author Manoel Campos da Silva Filho
 public class NetworkVmsExampleBagOfTasksApp extends NetworkVmExampleAbstract {
     private static final long CLOUDLET_LENGTH = 1;
 
-    /**
-     * Starts the execution of the example.
-     * @param args
-     */
+    /// Starts the execution of the example.
+    /// @param args
     public static void main(String[] args) {
         new NetworkVmsExampleBagOfTasksApp();
     }

@@ -21,11 +21,9 @@
  *     You should have received a copy of the GNU General Public License
  *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Examples showing how to create simulations using a trace file.
- *
- * @author Manoel Campos da Silva Filho
- */
+/// Examples showing how to create simulations using a trace file.
+///
+/// @author Manoel Campos da Silva Filho
 @NullMarked
 package org.cloudsimplus.examples.traces;
 

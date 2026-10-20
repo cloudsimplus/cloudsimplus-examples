@@ -46,23 +46,19 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to create a Datacenter with two hosts and run
- * two cloudlets on it. At the end, it shows the total CPU utilization of VMs
- * into a Datacenter.
- *
- * <p>
- * Cloudlets run in VMs with different MIPS requirements and will
- * take different times to complete the execution, depending on the requested VM
- * performance.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- *
- * @see VmsRamAndBwUsageExample
- * @see org.cloudsimplus.examples.power.PowerExample
- */
+/// An example showing how to create a Datacenter with two hosts and run
+/// two cloudlets on it. At the end, it shows the total CPU utilization of VMs
+/// into a Datacenter.
+///
+/// Cloudlets run in VMs with different MIPS requirements and will
+/// take different times to complete the execution, depending on the requested VM
+/// performance.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
+///
+/// @see VmsRamAndBwUsageExample
+/// @see org.cloudsimplus.examples.power.PowerExample
 public class VmsCpuUsageExample {
     private List<Cloudlet> cloudletList;
     private List<Vm> vmlist;
@@ -131,13 +127,11 @@ public class VmsCpuUsageExample {
         return cloudlet;
     }
 
-    /**
-     * Creates a VM enabling the collection of CPU utilization history.
-     * @param pesNumber
-     * @param mips
-     * @param id
-     * @return
-     */
+    /// Creates a VM enabling the collection of CPU utilization history.
+    /// @param pesNumber
+    /// @param mips
+    /// @param id
+    /// @return
     private Vm createVm(final int pesNumber, final int mips, final int id) {
         final long size = 10000; //image size (Megabyte)
         final int ram = 2048; //vm memory (Megabyte)
@@ -160,14 +154,12 @@ public class VmsCpuUsageExample {
         }
     }
 
-    /**
-     * Creates a datacenter setting the scheduling interval
-     * that, between other things, defines the times to collect
-     * VM CPU utilization.
-     *
-     * @param simulation
-     * @return
-     */
+    /// Creates a datacenter setting the scheduling interval
+    /// that, between other things, defines the times to collect
+    /// VM CPU utilization.
+    ///
+    /// @param simulation
+    /// @return
     private static Datacenter createDatacenter(CloudSimPlus simulation) {
         final var hostList = new ArrayList<Host>(HOSTS);
         final int pesNumber = 4;

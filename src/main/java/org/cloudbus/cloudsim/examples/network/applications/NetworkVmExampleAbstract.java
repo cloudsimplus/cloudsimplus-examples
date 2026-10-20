@@ -25,18 +25,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A base class for network simulation examples
- * using objects such as{@link NetworkDatacenter},
- * {@link NetworkHost}, {@link NetworkVm} and {@link NetworkCloudlet}.
- *
- * <p>The class simulate applications that are compounded by a list of
- * {@link NetworkCloudlet}.</p>
- *
- * @author Saurabh Kumar Garg
- * @author Rajkumar Buyya
- * @author Manoel Campos da Silva Filho
- */
+/// A base class for network simulation examples
+/// using objects such as[NetworkDatacenter],
+/// [NetworkHost], [NetworkVm] and [NetworkCloudlet].
+///
+/// The class simulate applications that are compounded by a list of
+/// [NetworkCloudlet].
+///
+/// @author Saurabh Kumar Garg
+/// @author Rajkumar Buyya
+/// @author Manoel Campos da Silva Filho
 abstract class NetworkVmExampleAbstract {
     public static final int MAX_VMS_PER_HOST = 2;
 
@@ -57,11 +55,9 @@ abstract class NetworkVmExampleAbstract {
     public static final long VM_BW = 1000;
     public static final int  VM_PES_NUMBER = HOST_PES / MAX_VMS_PER_HOST;
 
-    /**
-     * Number of fictitious applications to create.
-     * Each application is just a list of {@link  NetworkCloudlet}.
-     * @see #appMap
-     */
+    /// Number of fictitious applications to create.
+    /// Each application is just a list of [NetworkCloudlet].
+    /// @see #appMap
     public static final int APPS_NUMBER = 1;
 
     public static final int CLOUDLET_PES = VM_PES_NUMBER;
@@ -79,16 +75,12 @@ abstract class NetworkVmExampleAbstract {
     private final NetworkDatacenter datacenter;
     private final List<DatacenterBroker> brokerList;
 
-    /**
-     * A Map representing a list of cloudlets from different applications.
-     * Each key represents the ID of an app that is composed by a list
-     * of {@link  NetworkCloudlet}.
-     */
+    /// A Map representing a list of cloudlets from different applications.
+    /// Each key represents the ID of an app that is composed by a list
+    /// of [NetworkCloudlet].
     private final Map<Integer, List<NetworkCloudlet>> appMap;
 
-    /**
-     * Creates, starts, stops the simulation and shows results.
-     */
+    /// Creates, starts, stops the simulation and shows results.
     NetworkVmExampleAbstract() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -112,11 +104,9 @@ abstract class NetworkVmExampleAbstract {
         showSimulationResults();
     }
 
-    /**
-     * Adds an execution task to the list of tasks of the given {@link NetworkCloudlet}.
-     *
-     * @param cloudlet the {@link NetworkCloudlet} the task will belong to
-     */
+    /// Adds an execution task to the list of tasks of the given [NetworkCloudlet].
+    ///
+    /// @param cloudlet the [NetworkCloudlet] the task will belong to
     protected static void addExecutionTask(NetworkCloudlet cloudlet) {
         final var task = new CloudletExecutionTask(cloudlet.getTasks().size(), TASK_LENGTH);
         task.setMemory(TASK_RAM);
@@ -144,12 +134,10 @@ abstract class NetworkVmExampleAbstract {
         System.out.printf("%n%s finished!%n", getClass().getSimpleName());
     }
 
-    /**
-     * Create a {@link DatacenterBroker} for each list of {@link NetworkCloudlet},
-     * representing cloudlets that compose the same application.
-     *
-     * @return the list of created NetworkDatacenterBroker
-     */
+    /// Create a [DatacenterBroker] for each list of [NetworkCloudlet],
+    /// representing cloudlets that compose the same application.
+    ///
+    /// @return the list of created NetworkDatacenterBroker
     private  List<DatacenterBroker> createBrokerForEachApp() {
         final var brokerList = new ArrayList<DatacenterBroker>();
         for(int i = 1; i <= APPS_NUMBER; i++){
@@ -159,11 +147,9 @@ abstract class NetworkVmExampleAbstract {
         return brokerList;
     }
 
-    /**
-     * Creates the Datacenter.
-     *
-     * @return the Datacenter
-     */
+    /// Creates the Datacenter.
+    ///
+    /// @return the Datacenter
     protected final NetworkDatacenter createDatacenter() {
         final int hostsNumber = EdgeSwitch.PORTS * AggregateSwitch.PORTS * RootSwitch.PORTS;
         final var netHostList = new ArrayList<NetworkHost>(hostsNumber);
@@ -198,10 +184,8 @@ abstract class NetworkVmExampleAbstract {
         return peList;
     }
 
-    /**
-     * Creates internal Datacenter network.
-     * @param datacenter Datacenter where the network will be created
-     */
+    /// Creates internal Datacenter network.
+    /// @param datacenter Datacenter where the network will be created
     protected void createNetwork(final NetworkDatacenter datacenter) {
         final var edgeSwitches = new EdgeSwitch[1];
         for (int i = 0; i < edgeSwitches.length; i++) {
@@ -215,31 +199,27 @@ abstract class NetworkVmExampleAbstract {
         }
     }
 
-    /**
-     * Gets the index of a switch where a Host will be connected,
-     * considering the number of ports the switches have.
-     * Ensures that each set of N Hosts is connected to the same switch
-     * (where N is defined as the number of switch's ports).
-     * Since the host ID is long but the switch array index is int,
-     * the module operation is used safely convert a long to int
-     * For instance, if the id is 2147483648 (higher than the max int value 2147483647),
-     * it will be returned 0. For 2147483649 it will be 1 and so on.
-     *
-     * @param host the Host to get the index of the switch to connect to
-     * @param switchPorts the number of ports (N) the switches where the Host will be connected have
-     * @return the index of the switch to connect the host
-     */
+    /// Gets the index of a switch where a Host will be connected,
+    /// considering the number of ports the switches have.
+    /// Ensures that each set of N Hosts is connected to the same switch
+    /// (where N is defined as the number of switch's ports).
+    /// Since the host ID is long but the switch array index is int,
+    /// the module operation is used safely convert a long to int
+    /// For instance, if the id is 2147483648 (higher than the max int value 2147483647),
+    /// it will be returned 0. For 2147483649 it will be 1 and so on.
+    ///
+    /// @param host the Host to get the index of the switch to connect to
+    /// @param switchPorts the number of ports (N) the switches where the Host will be connected have
+    /// @return the index of the switch to connect the host
     public static int getSwitchIndex(final NetworkHost host, final int switchPorts) {
         return (int) (host.getId() % Integer.MAX_VALUE) / switchPorts;
     }
 
-    /**
-     * Creates a list of virtual machines in a Datacenter for a given broker
-     * and submit the list to the broker.
-     *
-     * @param broker The broker that will own the created VMs
-     * @return the list of created VMs
-     */
+    /// Creates a list of virtual machines in a Datacenter for a given broker
+    /// and submit the list to the broker.
+    ///
+    /// @param broker The broker that will own the created VMs
+    /// @return the list of created VMs
     protected final List<NetworkVm> createAndSubmitVMs(DatacenterBroker broker) {
         final int vmsNumber = getDatacenterHostList().size() * MAX_VMS_PER_HOST;
         final var netVmList = new ArrayList<NetworkVm>();
@@ -260,9 +240,7 @@ abstract class NetworkVmExampleAbstract {
         return datacenter.getHostList();
     }
 
-    /**
-     * @return List of VMs of all Brokers.
-     */
+    /// @return List of VMs of all Brokers.
     public List<NetworkVm> getVmList() {
         return vmList;
     }
@@ -275,34 +253,28 @@ abstract class NetworkVmExampleAbstract {
         return datacenter;
     }
 
-    /**
-     * Creates a list of {@link NetworkCloudlet}'s that represents
-     * a single application and then submits the created cloudlets to a given Broker.
-     *
-     * @param broker the broker to submit the list of NetworkCloudlets of the application
-     * @return the list of created  {@link NetworkCloudlet}'s
-     */
+    /// Creates a list of [NetworkCloudlet]'s that represents
+    /// a single application and then submits the created cloudlets to a given Broker.
+    ///
+    /// @param broker the broker to submit the list of NetworkCloudlets of the application
+    /// @return the list of created  [NetworkCloudlet]'s
     protected final List<NetworkCloudlet> createAppAndSubmitToBroker(DatacenterBroker broker) {
         final var netCloudletList = createNetworkCloudlets(broker);
         broker.submitCloudletList(netCloudletList);
         return netCloudletList;
     }
 
-    /**
-     * Creates a list of {@link NetworkCloudlet} that together represents the distributed
-     * processes of a given application.
-     *
-     * @param broker broker to associate the NetworkCloudlets
-     * @return the list of create NetworkCloudlets
-     */
+    /// Creates a list of [NetworkCloudlet] that together represents the distributed
+    /// processes of a given application.
+    ///
+    /// @param broker broker to associate the NetworkCloudlets
+    /// @return the list of create NetworkCloudlets
     protected abstract List<NetworkCloudlet> createNetworkCloudlets(DatacenterBroker broker);
 
-    /**
-     * Adds a SendTask to the list of tasks of the given {@link NetworkCloudlet}.
-     *
-     * @param sourceCloudlet the {@link NetworkCloudlet} from which packets will be sent
-     * @param targetCloudlet the destination {@link NetworkCloudlet} to send packets to
-     */
+    /// Adds a SendTask to the list of tasks of the given [NetworkCloudlet].
+    ///
+    /// @param sourceCloudlet the [NetworkCloudlet] from which packets will be sent
+    /// @param targetCloudlet the destination [NetworkCloudlet] to send packets to
     protected void addSendTask(
         final NetworkCloudlet sourceCloudlet,
         final NetworkCloudlet targetCloudlet)
@@ -315,12 +287,10 @@ abstract class NetworkVmExampleAbstract {
         }
     }
 
-    /**
-     * Adds a ReceiveTask to the list of tasks of the given {@link NetworkCloudlet}.
-     *
-     * @param targetCloudlet the {@link NetworkCloudlet} the task will belong to
-     * @param sourceCloudlet the {@link NetworkCloudlet} expected to receive packets from
-     */
+    /// Adds a ReceiveTask to the list of tasks of the given [NetworkCloudlet].
+    ///
+    /// @param targetCloudlet the [NetworkCloudlet] the task will belong to
+    /// @param sourceCloudlet the [NetworkCloudlet] expected to receive packets from
     protected void addReceiveTask(final NetworkCloudlet targetCloudlet, final NetworkCloudlet sourceCloudlet) {
         final var task = new CloudletReceiveTask(targetCloudlet.getTasks().size(), sourceCloudlet.getVm());
         task.setMemory(TASK_RAM);

@@ -56,31 +56,28 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toCollection;
 
-/**
- * An example showing how the {@link UtilizationModelStochastic} can affect
- * the simulation time and memory utilization in large scale simulations.
- *
- * <p>There are a set of constants you can change to see how the simulation
- * is impacted. The most impacting ones are {@link #CLOUDLETS},
- * {@link #CLOUDLET_LENGTH}, {@link #SCHEDULING_INTERVAL},
- * {@link #MULTIPLE_UTILIZATION_MODELS}
- * and {@link #STORE_CLOUDLETS_CPU_UTILIZATION_HISTORY}.
- * Just play with these values to see the results.</p>
- *
- * <p>Since the utilization history Map stored by the {@link UtilizationModelStochastic}
- * is commonly not used after the simulation finishes,
- * maintaining such history is a time and memory expensive operation.
- * This way, if you don't need such a history, you can
- * disable it by setting {@link #STORE_CLOUDLETS_CPU_UTILIZATION_HISTORY} to false.
- * However, keep in mind it is a trade-off between performance and memory consumption,
- * as it's explained in {@link UtilizationModelStochastic#setHistoryEnabled(boolean)}
- * documentation.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.3.6
- * @see <a href="https://github.com/cloudsimplus/cloudsimplus/issues/197">Issue #197 for more details</a>
- */
+/// An example showing how the [UtilizationModelStochastic] can affect
+/// the simulation time and memory utilization in large scale simulations.
+///
+/// There are a set of constants you can change to see how the simulation
+/// is impacted. The most impacting ones are [#CLOUDLETS],
+/// [#CLOUDLET_LENGTH], [#SCHEDULING_INTERVAL],
+/// [#MULTIPLE_UTILIZATION_MODELS]
+/// and [#STORE_CLOUDLETS_CPU_UTILIZATION_HISTORY].
+/// Just play with these values to see the results.
+///
+/// Since the utilization history Map stored by the [UtilizationModelStochastic]
+/// is commonly not used after the simulation finishes,
+/// maintaining such history is a time and memory expensive operation.
+/// This way, if you don't need such a history, you can
+/// disable it by setting [#STORE_CLOUDLETS_CPU_UTILIZATION_HISTORY] to false.
+/// However, keep in mind it is a trade-off between performance and memory consumption,
+/// as it's explained in [UtilizationModelStochastic#setHistoryEnabled(boolean)]
+/// documentation.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.3.6
+/// @see <a href="https://github.com/cloudsimplus/cloudsimplus/issues/197">Issue #197 for more details</a>
 public class UtilizationModelStochasticPerformance {
     private static final int HOSTS = 20_000;
     private static final int HOST_PES = 16;
@@ -93,31 +90,25 @@ public class UtilizationModelStochasticPerformance {
     private static final int CLOUDLET_LENGTH = 10_000;
     private static final int SCHEDULING_INTERVAL = 10;
 
-    /**
-     * Defines if one {@link UtilizationModel} must be instantiated
-     * for each Cloudlet or a single instance used by all Cloudlets.
-     *
-     * <p>Realize that if you use a single {@link UtilizationModel} for all
-     * Cloudlets, the resource utilization will usually be the same
-     * for all of them.
-     * Using the {@link UtilizationModelStochastic}, if two Cloudlets
-     * consecutively request the current resource utilization for the same time,
-     * it will be returned the same value. If they send consecutive requests for different times,
-     * probably it will be returned distinct randomly generated values.</p>
-     */
+    /// Defines if one [UtilizationModel] must be instantiated
+    /// for each Cloudlet or a single instance used by all Cloudlets.
+    ///
+    /// Realize that if you use a single [UtilizationModel] for all
+    /// Cloudlets, the resource utilization will usually be the same
+    /// for all of them.
+    /// Using the [UtilizationModelStochastic], if two Cloudlets
+    /// consecutively request the current resource utilization for the same time,
+    /// it will be returned the same value. If they send consecutive requests for different times,
+    /// probably it will be returned distinct randomly generated values.
     private static final boolean MULTIPLE_UTILIZATION_MODELS = false;
 
-    /**
-     * See {@link UtilizationModelStochastic#isAlwaysGenNewRandUtilization()}
-     * for details.
-     */
+    /// See [UtilizationModelStochastic#isAlwaysGenNewRandUtilization()]
+    /// for details.
     private static final boolean ALWAYS_GENERATE_NEW_RANDOM_UTILIZATION = false;
 
-    /**
-     * Indicates if the {@link UtilizationModelStochastic} instances
-     * will keep a map that stores the resource utilization along simulation
-     * execution. Disabling this flag reduces simulation time and memory consumption.
-     */
+    /// Indicates if the [UtilizationModelStochastic] instances
+    /// will keep a map that stores the resource utilization along simulation
+    /// execution. Disabling this flag reduces simulation time and memory consumption.
     private static final boolean STORE_CLOUDLETS_CPU_UTILIZATION_HISTORY = true;
 
     private static final VmAllocationPolicy VM_ALLOCATION_POLICY = new VmAllocationPolicyFirstFit();
@@ -128,11 +119,9 @@ public class UtilizationModelStochasticPerformance {
     private List<Vm> vmList;
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
-    /**
-     * The utilization model shared by all Cloudlets
-     * (when {@link #MULTIPLE_UTILIZATION_MODELS} is false).
-     * It's null until the first Cloudlet is created.
-     */
+    /// The utilization model shared by all Cloudlets
+    /// (when [#MULTIPLE_UTILIZATION_MODELS] is false).
+    /// It's null until the first Cloudlet is created.
     private @Nullable UtilizationModelStochastic um;
 
     public static void main(String[] args) {
@@ -171,11 +160,9 @@ public class UtilizationModelStochasticPerformance {
             HOSTS, VMS, CLOUDLETS, CLOUDLET_LENGTH, SCHEDULING_INTERVAL);
     }
 
-    /**
-     * Gets the maximum number of GB ever used by the application's heap.
-     * @return the max heap utilization in GB
-     * @see <a href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html">Java Garbage Collection Basics (for information about heap space)</a>
-     */
+    /// Gets the maximum number of GB ever used by the application's heap.
+    /// @return the max heap utilization in GB
+    /// @see <a href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html">Java Garbage Collection Basics (for information about heap space)</a>
     private double getMaxHeapUtilizationGB() {
         final double memoryBytes =
             ManagementFactory.getMemoryPoolMXBeans()

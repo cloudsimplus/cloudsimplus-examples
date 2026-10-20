@@ -47,19 +47,17 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to dynamically create one Cloudlet after the previous one finishes.
- * It stops creating Cloudlets when the number reaches {@link #CLOUDLETS}.
- *
- * <p>This example uses CloudSim Plus Listener features to intercept when
- * the a Cloudlet finishes its execution to then request
- * the creation of a new Cloudlet. It uses the Java 8+ Lambda Functions features
- * to pass a listener to the mentioned Cloudlet, by means of the
- * {@link Cloudlet#addOnFinishListener(EventListener)} method.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 2.2.0
- */
+/// An example showing how to dynamically create one Cloudlet after the previous one finishes.
+/// It stops creating Cloudlets when the number reaches [#CLOUDLETS].
+///
+/// This example uses CloudSim Plus Listener features to intercept when
+/// the a Cloudlet finishes its execution to then request
+/// the creation of a new Cloudlet. It uses the Java 8+ Lambda Functions features
+/// to pass a listener to the mentioned Cloudlet, by means of the
+/// [Cloudlet#addOnFinishListener(EventListener)] method.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 2.2.0
 public class CreateCloudletAfterLastFinishedOne {
     private static final int HOSTS = 2;
     private static final int VMS = 4;
@@ -74,19 +72,15 @@ public class CreateCloudletAfterLastFinishedOne {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new CreateCloudletAfterLastFinishedOne();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private CreateCloudletAfterLastFinishedOne() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -124,12 +118,9 @@ public class CreateCloudletAfterLastFinishedOne {
         return newVmList;
     }
 
-    /**
-     * Creates a VM with pre-defined configuration.
-     *
-     * @return the created VM
-     *
-     */
+    /// Creates a VM with pre-defined configuration.
+    ///
+    /// @return the created VM
     private Vm createVm() {
         final int mips = 1000;
 
@@ -138,13 +129,11 @@ public class CreateCloudletAfterLastFinishedOne {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    /**
-     * Creates and submit one Cloudlet,
-     * defining an Event Listener that is notified when such a Cloudlet
-     * is finished in order to create another one.
-     * Cloudlets stop to be created when the
-     * number of Cloudlets reaches {@link #CLOUDLETS}.
-     */
+    /// Creates and submit one Cloudlet,
+    /// defining an Event Listener that is notified when such a Cloudlet
+    /// is finished in order to create another one.
+    /// Cloudlets stop to be created when the
+    /// number of Cloudlets reaches [#CLOUDLETS].
     private void createAndSubmitOneCloudlet() {
         final int id = cloudletList.size();
         final long length = 10000; //in number of Million Instructions (MI)
@@ -170,11 +159,9 @@ public class CreateCloudletAfterLastFinishedOne {
         createAndSubmitOneCloudlet();
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         for (int i = 0; i < HOSTS; i++) {
             hostList.add(createHost(i));
@@ -183,12 +170,10 @@ public class CreateCloudletAfterLastFinishedOne {
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         long mips = 1000;

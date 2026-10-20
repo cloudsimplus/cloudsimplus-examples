@@ -48,57 +48,50 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to create Hosts at simulation runtime,
- * enabling to simulate the physical expansion of a Datacenter by
- * the addition of new Hosts (PMs).
- * The example starts by creating 2 hosts and 4 VMs (2 VMs for each Host).
- * Then it creates 4 Cloudlets (1 for each VM).
- *
- * <p>After the simulation starts and reaches 5 seconds (defined in {@link #SCHEDULING_INTERVAL}),
- * it's created a new Host and VM. Two new Cloudlets are created for this new VM
- * the Cloudlets and the VM is submitted by the broker to the Datacenter.
- * Since the Hosts created before starting the simulation
- * don't have enough PEs to place this new VM, the {@link VmAllocationPolicy}
- * will chose the 5th Host (created dynamically) to place that VM
- * and run the Cloudlets.
- * </p>
- *
- * <p>Since these two new Cloudlets are running in the same VM,
- * which is using a {@link CloudletSchedulerTimeShared}, and there aren't
- * enough VM PEs for all the 2 Cloudlets, they will spend the double of the time to finish,
- * because they will share the VM PEs.
- * Realize that the start time of these 2 dynamically created Cloudlets is 5,
- * showing they were submitted to the broker just that time.
- * </p>
- *
- * <p>To allow track the simulation time and know when the clock is in 5 seconds,
- * it is required to call {@link Datacenter#setSchedulingInterval(double)}
- * to set the scheduling interval. Check the method documentation for more details.
- * This example uses the CloudSim Plus Listener features to enable your simulation
- * to be notified when some event happens.
- * In this case, it's being used the {@link CloudSimPlus#addOnClockTickListener(EventListener)}
- * to pass a {@link EventListener} object that will be notified
- * when the simulation clock advances.
- * </p>
- *
- * <p>In fact, this {@link EventListener} is a Java 8+ {@link FunctionalInterface}
- * that enables using Lambda Expression
- * or method references in order to provide a {@link FunctionalInterface}.
- * This example uses a reference to the {@link #clockTickListener(EventInfo)} method
- * as being the {@link EventListener} required by the {@link CloudSimPlus#addOnClockTickListener(EventListener)}.</p>
- *
- * <p><b>Lambda Expressions, method references and Functional Interfaces are Java 8+ features.</b>
- * If you don't know what these features are, I suggest checking out this
- * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">tutorial</a></p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.3.0
- */
+/// An example showing how to create Hosts at simulation runtime,
+/// enabling to simulate the physical expansion of a Datacenter by
+/// the addition of new Hosts (PMs).
+/// The example starts by creating 2 hosts and 4 VMs (2 VMs for each Host).
+/// Then it creates 4 Cloudlets (1 for each VM).
+///
+/// After the simulation starts and reaches 5 seconds (defined in [#SCHEDULING_INTERVAL]),
+/// it's created a new Host and VM. Two new Cloudlets are created for this new VM
+/// the Cloudlets and the VM is submitted by the broker to the Datacenter.
+/// Since the Hosts created before starting the simulation
+/// don't have enough PEs to place this new VM, the [VmAllocationPolicy]
+/// will chose the 5th Host (created dynamically) to place that VM
+/// and run the Cloudlets.
+///
+/// Since these two new Cloudlets are running in the same VM,
+/// which is using a [CloudletSchedulerTimeShared], and there aren't
+/// enough VM PEs for all the 2 Cloudlets, they will spend the double of the time to finish,
+/// because they will share the VM PEs.
+/// Realize that the start time of these 2 dynamically created Cloudlets is 5,
+/// showing they were submitted to the broker just that time.
+///
+/// To allow track the simulation time and know when the clock is in 5 seconds,
+/// it is required to call [Datacenter#setSchedulingInterval(double)]
+/// to set the scheduling interval. Check the method documentation for more details.
+/// This example uses the CloudSim Plus Listener features to enable your simulation
+/// to be notified when some event happens.
+/// In this case, it's being used the [CloudSimPlus#addOnClockTickListener(EventListener)]
+/// to pass a [EventListener] object that will be notified
+/// when the simulation clock advances.
+///
+/// In fact, this [EventListener] is a Java 8+ [FunctionalInterface]
+/// that enables using Lambda Expression
+/// or method references in order to provide a [FunctionalInterface].
+/// This example uses a reference to the [#clockTickListener(EventInfo)] method
+/// as being the [EventListener] required by the [CloudSimPlus#addOnClockTickListener(EventListener)].
+///
+/// **Lambda Expressions, method references and Functional Interfaces are Java 8+ features.**
+/// If you don't know what these features are, I suggest checking out this
+/// [tutorial](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html)
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.3.0
 public class DynamicHostCreation {
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 5;
 
     private static final int HOSTS = 2;
@@ -143,10 +136,8 @@ public class DynamicHostCreation {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Event listener which is called every time the simulation clock advances.
-     * @param info information about the event happened.
-     */
+    /// Event listener which is called every time the simulation clock advances.
+    /// @param info information about the event happened.
     private void clockTickListener(final EventInfo info) {
         final int time = (int)info.getTime();
 
@@ -173,9 +164,7 @@ public class DynamicHostCreation {
         }
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -204,9 +193,7 @@ public class DynamicHostCreation {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms(final int count) {
         final var newVmList = new ArrayList<Vm>(count);
         for (int i = 0; i < count; i++) {

@@ -44,15 +44,13 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example that uses a {@link UtilizationModelDynamic} to define how a Cloudlet
- * uses the VM CPU in order to use just 50% of CPU capacity (MIPS)
- * all the time. That makes the Cloudlet spend the double of the expected
- * time to finish.
- *
- * @author raysaoliveira
- * @since CloudSim Plus 1.0
- */
+/// An example that uses a [UtilizationModelDynamic] to define how a Cloudlet
+/// uses the VM CPU in order to use just 50% of CPU capacity (MIPS)
+/// all the time. That makes the Cloudlet spend the double of the expected
+/// time to finish.
+///
+/// @author raysaoliveira
+/// @since CloudSim Plus 1.0
 public class UtilizationModelDynamicExample {
     private static final int HOSTS = 1;
     private static final int VMS = 1;
@@ -66,9 +64,7 @@ public class UtilizationModelDynamicExample {
         new UtilizationModelDynamicExample();
     }
 
-    /**
-     * Default constructor that builds the simulation.
-     */
+    /// Default constructor that builds the simulation.
     private UtilizationModelDynamicExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -86,9 +82,7 @@ public class UtilizationModelDynamicExample {
         this.vmList = new ArrayList<>(VMS);
         this.cloudletList = new ArrayList<>(VMS);
 
-        /**
-         * Creates VMs and one Cloudlet for each VM.
-         */
+        /// Creates VMs and one Cloudlet for each VM.
         for (int i = 0; i < VMS; i++) {
             final var vm = createVm(broker0);
             this.vmList.add(vm);

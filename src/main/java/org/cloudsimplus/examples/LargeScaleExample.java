@@ -48,23 +48,21 @@ import java.util.List;
 import static org.cloudsimplus.util.TimeUtil.elapsedSeconds;
 import static org.cloudsimplus.util.TimeUtil.secondsToStr;
 
-/**
- * An example creating a huge number of Hosts, VMs and Cloudlets
- * to simulate a large-scale cloud infrastructure.
- *
- * <p>The example may run out of memory.
- * Try to increase heap memory space passing, for instance,
- * -Xmx6g to the java command line, where 6g means 6GB of maximum heap size.</p>
- *
- * <p>Your computer may not even have enough memory capacity to run this example
- * and it may just crashes with OutOfMemoryException.</p>
- *
- * <p>Some factors that drastically impact simulation performance and memory consumption
- * is the {@link #CLOUDLETS} number and {@link #SCHEDULING_INTERVAL}.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since ClodSimPlus 7.3.1
- */
+/// An example creating a huge number of Hosts, VMs and Cloudlets
+/// to simulate a large-scale cloud infrastructure.
+///
+/// The example may run out of memory.
+/// Try to increase heap memory space passing, for instance,
+/// -Xmx6g to the java command line, where 6g means 6GB of maximum heap size.
+///
+/// Your computer may not even have enough memory capacity to run this example
+/// and it may just crashes with OutOfMemoryException.
+///
+/// Some factors that drastically impact simulation performance and memory consumption
+/// is the [#CLOUDLETS] number and [#SCHEDULING_INTERVAL].
+///
+/// @author Manoel Campos da Silva Filho
+/// @since ClodSimPlus 7.3.1
 public class LargeScaleExample {
     private static final int  HOSTS = 200_000;
     private static final int  HOST_PES = 16;
@@ -80,14 +78,12 @@ public class LargeScaleExample {
     private static final int CLOUDLET_PES = VM_PES/2;
     private static final int CLOUDLET_LENGTH = HOST_MIPS * 10;
 
-    /**
-     * Defines a time interval to process cloudlets execution
-     * and possibly collect data. Setting a value greater than 0
-     * enables that interval, which cause huge performance penaults for
-     * lage scale simulations.
-     *
-     * @see Datacenter#setSchedulingInterval(double)
-     */
+    /// Defines a time interval to process cloudlets execution
+    /// and possibly collect data. Setting a value greater than 0
+    /// enables that interval, which cause huge performance penaults for
+    /// lage scale simulations.
+    ///
+    /// @see Datacenter#setSchedulingInterval(double)
     private static final double SCHEDULING_INTERVAL = -1;
 
     private final CloudSimPlus simulation;
@@ -146,9 +142,7 @@ public class LargeScaleExample {
         broker0.submitCloudletList(cloudletList);
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         System.out.printf("Creating %,d Hosts%n", HOSTS);
@@ -177,9 +171,7 @@ public class LargeScaleExample {
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         System.out.printf("Creating %,d VMs%n", VMS);
@@ -193,9 +185,7 @@ public class LargeScaleExample {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 

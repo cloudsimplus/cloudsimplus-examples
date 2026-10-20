@@ -50,16 +50,12 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This example shows how to do a migration using CpuUtilization threshold
- * defined in an SLA Contract. VM migration is triggered when the CPU metric is violated.
- *
- * @author raysaoliveira
- */
+/// This example shows how to do a migration using CpuUtilization threshold
+/// defined in an SLA Contract. VM migration is triggered when the CPU metric is violated.
+///
+/// @author raysaoliveira
 public final class VmMigrationWhenCpuMetricIsViolatedExample {
-    /**
-     * @see Datacenter#setSchedulingInterval(double)
-     */
+    /// @see Datacenter#setSchedulingInterval(double)
     private static final int SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS = 5;
 
     private static final int  HOST_MIPS_BY_PE = 1000;
@@ -78,23 +74,19 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     private static final long CLOUDLET_FILESIZE = 300;
     private static final long CLOUDLET_OUTPUTSIZE = 300;
 
-    /**
-     * The percentage of CPU that a cloudlet will use when it starts executing
-     * (in scale from 0 to 1, where 1 is 100%). For each cloudlet create, this
-     * value is used as a base to define CPU usage.
-     *
-     * @see #createAndSubmitCloudlets(DatacenterBroker)
-     */
+    /// The percentage of CPU that a cloudlet will use when it starts executing
+    /// (in scale from 0 to 1, where 1 is 100%). For each cloudlet create, this
+    /// value is used as a base to define CPU usage.
+    ///
+    /// @see #createAndSubmitCloudlets(DatacenterBroker)
     private static final double CLOUDLET_INITIAL_CPU_USAGE_PERCENT = 0.6;
 
-    /**
-     * Defines the speed (in percentage) that CPU usage of a cloudlet will
-     * increase during the simulation time. (in scale from 0 to 1, where 1 is
-     * 100%).
-     *
-     * @see #createAndSubmitCloudletsWithDynamicCpuUsage(double, double,
-     * Vm, DatacenterBroker)
-     */
+    /// Defines the speed (in percentage) that CPU usage of a cloudlet will
+    /// increase during the simulation time. (in scale from 0 to 1, where 1 is
+    /// 100%).
+    ///
+    /// @see #createAndSubmitCloudletsWithDynamicCpuUsage(double, double,
+    /// Vm, DatacenterBroker)
     private static final double CLOUDLET_CPU_USAGE_INCREMENT_PER_SECOND = 0.05;
 
     private static final int HOSTS = 20;
@@ -104,9 +96,7 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     private final List<Vm> vmList = new ArrayList<>();
     private CloudSimPlus simulation;
 
-    /**
-     * The file containing the Customer's SLA Contract in JSON format.
-     */
+    /// The file containing the Customer's SLA Contract in JSON format.
     private static final String CUSTOMER_SLA_CONTRACT = "CustomerSLA.json";
 
     private SlaContract contract;
@@ -206,15 +196,13 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
         }
     }
 
-    /**
-     * Creates a {@link UtilizationModel} for a Cloudlet
-     * defines if CPU usage will be static or dynamic.
-     *
-     * @param initialCpuUsagePercent the percentage of CPU the Cloudlet will use initially
-     * @param maxCloudletCpuUsagePercent the maximum percentage of CPU the Cloudlet will use
-     * @param progressiveCpuUsage true if the CPU usage must increment along the time, false if it's static.
-     * @return the  {@link UtilizationModel} for a Cloudlet's CPU usage
-     */
+    /// Creates a [UtilizationModel] for a Cloudlet
+    /// defines if CPU usage will be static or dynamic.
+    ///
+    /// @param initialCpuUsagePercent the percentage of CPU the Cloudlet will use initially
+    /// @param maxCloudletCpuUsagePercent the maximum percentage of CPU the Cloudlet will use
+    /// @param progressiveCpuUsage true if the CPU usage must increment along the time, false if it's static.
+    /// @return the  [UtilizationModel] for a Cloudlet's CPU usage
     private UtilizationModelDynamic createUtilizationModel(
         double initialCpuUsagePercent,
         double maxCloudletCpuUsagePercent,
@@ -232,12 +220,10 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
         return um;
     }
 
-    /**
-     * Increments the CPU resource utilization, that is defined in percentage
-     * values.
-     *
-     * @return the new resource utilization after the increment
-     */
+    /// Increments the CPU resource utilization, that is defined in percentage
+    /// values.
+    ///
+    /// @return the new resource utilization after the increment
     private double getCpuUtilizationIncrement(final UtilizationModelDynamic um) {
         return um.getUtilization() + um.getTimeSpan() * CLOUDLET_CPU_USAGE_INCREMENT_PER_SECOND;
     }

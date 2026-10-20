@@ -46,20 +46,17 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example that uses an implementation of the {@link CloudletSchedulerCompletelyFair Completely Fair Scheduler}
- * used in the Linux Kernel for scheduling of Cloudlets execution inside a Vm.
- * It defines priority for some Cloudlets, so that they will have more time to use the CPU
- * than other Cloudlets.
- *
- * <p>It is strongly recommended to read the {@link CloudletSchedulerCompletelyFair} class documentation
- * to understand how this scheduler works.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @see <a href="https://en.wikipedia.org/wiki/Completely_Fair_Scheduler">Completely Fair Scheduler (CFS)</a>
- * @since CloudSim Plus 1.0
- *
- */
+/// An example that uses an implementation of the [Completely Fair Scheduler][CloudletSchedulerCompletelyFair]
+/// used in the Linux Kernel for scheduling of Cloudlets execution inside a Vm.
+/// It defines priority for some Cloudlets, so that they will have more time to use the CPU
+/// than other Cloudlets.
+///
+/// It is strongly recommended to read the [CloudletSchedulerCompletelyFair] class documentation
+/// to understand how this scheduler works.
+///
+/// @author Manoel Campos da Silva Filho
+/// @see <a href="https://en.wikipedia.org/wiki/Completely_Fair_Scheduler">Completely Fair Scheduler (CFS)</a>
+/// @since CloudSim Plus 1.0
 public class LinuxCompletelyFairSchedulerExample {
     private static final int HOSTS_NUMBER = 1;
     private static final long HOST_MIPS = 1000;
@@ -82,9 +79,7 @@ public class LinuxCompletelyFairSchedulerExample {
         new LinuxCompletelyFairSchedulerExample();
     }
 
-    /**
-     * Default constructor which builds and runs the simulation.
-     */
+    /// Default constructor which builds and runs the simulation.
     private LinuxCompletelyFairSchedulerExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/

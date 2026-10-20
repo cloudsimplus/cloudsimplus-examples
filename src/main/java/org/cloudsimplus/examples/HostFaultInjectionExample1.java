@@ -51,34 +51,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * Example showing how to inject random {@link Pe} faults into Hosts using
- * {@link HostFaultInjection} objects.
- *
- * <p>It's considered that we have multiple VMs from a given customer (broker),
- * where all VMs are running the same services for load balancing and fault tolerance.
- * If a VM fails, since they are providing the same service and there are other equal VMs running,
- * there is no need for recovery.
- * If the failures don't demand recovery, no new VMs need to be started up, since no service was stopped.
- * </p>
- *
- * <p>If you run this example multiple times, it will give the same results.
- * Check {@link #createFaultInjectionForHosts(Datacenter)} to set
- * a different seed for the fault injection random number generator
- * to get different results at each run.</p>
- *
- * @author raysaoliveira
- * @since CloudSim Plus 1.2.0
- */
+/// Example showing how to inject random [Pe] faults into Hosts using
+/// [HostFaultInjection] objects.
+///
+/// It's considered that we have multiple VMs from a given customer (broker),
+/// where all VMs are running the same services for load balancing and fault tolerance.
+/// If a VM fails, since they are providing the same service and there are other equal VMs running,
+/// there is no need for recovery.
+/// If the failures don't demand recovery, no new VMs need to be started up, since no service was stopped.
+///
+/// If you run this example multiple times, it will give the same results.
+/// Check [#createFaultInjectionForHosts(Datacenter)] to set
+/// a different seed for the fault injection random number generator
+/// to get different results at each run.
+///
+/// @author raysaoliveira
+/// @since CloudSim Plus 1.2.0
 public final class HostFaultInjectionExample1 {
     private static final int SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS = 0;
 
     private static final int BROKERS = 1;
 
-    /**
-     * Number of Hosts to create for each Datacenter. The number of elements in
-     * this array defines the number of Datacenters to be created.
-     */
+    /// Number of Hosts to create for each Datacenter. The number of elements in
+    /// this array defines the number of Datacenters to be created.
     private static final int HOSTS = 8;
     private static final int HOST_PES = 5;
     private static final int HOST_MIPS_BY_PE = 1000;
@@ -86,13 +81,12 @@ public final class HostFaultInjectionExample1 {
     private static final long HOST_STORAGE = 1000000; //host storage
     private static final long HOST_BW = 100000000L;
 
-    /**
-     * The average number of failures expected to happen each hour
-     * in a Poisson arrival process, which is also called event rate or rate parameter.
-     * @see PoissonDistr */
+    /// The average number of failures expected to happen each hour
+    /// in a Poisson arrival process, which is also called event rate or rate parameter.
+    /// @see PoissonDistr
     private static final double MEAN_FAILURE_NUMBER_PER_HOUR = 0.01;
 
-    /** @see HostFaultInjection#setMaxTimeToFailInHours(double) */
+    /// @see HostFaultInjection#setMaxTimeToFailInHours(double)
     private static final double MAX_TIME_TO_FAIL_IN_HOURS = TimeUtil.daysToHours(30);
 
     private final List<Host> hostList = new ArrayList<>();
@@ -107,10 +101,8 @@ public final class HostFaultInjectionExample1 {
     private static final int CLOUDLETS_BY_BROKER = 6;
     private static final int CLOUDLET_PES = 2;
 
-    /**
-     * The length has to be large to ensure the simulation will run for long enough,
-     * so that faults will affect all VMs from certain broker.
-     */
+    /// The length has to be large to ensure the simulation will run for long enough,
+    /// so that faults will affect all VMs from certain broker.
     private static final long CLOUDLET_LENGTH = 1_000_000_000L;
 
     private static final long CLOUDLET_FILESIZE = 300;
@@ -124,9 +116,7 @@ public final class HostFaultInjectionExample1 {
 
     private final HostFaultInjection fault;
 
-    /**
-     * The Poisson Random Number Generator used to generate failure times (in hours).
-     */
+    /// The Poisson Random Number Generator used to generate failure times (in hours).
     private PoissonDistr poisson;
 
     public static void main(String[] args) {
@@ -197,10 +187,8 @@ public final class HostFaultInjectionExample1 {
         return vm;
     }
 
-    /**
-     * Creates the number of Cloudlets defined in {@link #CLOUDLETS_BY_BROKER} and submits
-     * them to the created broker.
-     */
+    /// Creates the number of Cloudlets defined in [#CLOUDLETS_BY_BROKER] and submits
+    /// them to the created broker.
     public void createAndSubmitCloudlets(final DatacenterBroker broker) {
         final List<Cloudlet> cloudletList = new ArrayList<>(CLOUDLETS_BY_BROKER);
         final var utilizationModelDynamic = new UtilizationModelDynamic(0.1);
@@ -254,12 +242,10 @@ public final class HostFaultInjectionExample1 {
         return peList;
     }
 
-    /**
-     * Creates the fault injection for host
-     *
-     * @param datacenter
-     * @return
-     */
+    /// Creates the fault injection for host
+    ///
+    /// @param datacenter
+    /// @return
     private HostFaultInjection createFaultInjectionForHosts(final Datacenter datacenter) {
         //Use the system time to get random results every time you run the simulation
         //final long seed = System.currentTimeMillis();
@@ -276,15 +262,13 @@ public final class HostFaultInjectionExample1 {
         return fault;
     }
 
-    /**
-     * Clones a VM by creating another one with the same configurations of a
-     * given VM.
-     *
-     * @param vm the VM to be cloned
-     * @return the cloned (new) VM.
-     *
-     * @see #createFaultInjectionForHosts(Datacenter)
-     */
+    /// Clones a VM by creating another one with the same configurations of a
+    /// given VM.
+    ///
+    /// @param vm the VM to be cloned
+    /// @return the cloned (new) VM.
+    ///
+    /// @see #createFaultInjectionForHosts(Datacenter)
     private Vm cloneVm(final Vm vm) {
         final Vm clone = new VmSimple(vm.getMips(), vm.getPesNumber());
         /*It' not required to set an ID for the clone.
@@ -307,18 +291,16 @@ public final class HostFaultInjectionExample1 {
         return clone;
     }
 
-    /**
-     * Clones each Cloudlet associated to a given VM. The method is called when
-     * a VM is destroyed due to a Host failure and a snapshot from that VM (a
-     * clone) is started into another Host. In this case, all the Cloudlets
-     * which were running inside the destroyed VM will be recreated from scratch
-     * into the VM clone, re-starting their execution from the beginning.
-     *
-     * @param sourceVm the VM to clone its Cloudlets
-     * @return the List of cloned Cloudlets.
-     * @see
-     * #createFaultInjectionForHosts(Datacenter)
-     */
+    /// Clones each Cloudlet associated to a given VM. The method is called when
+    /// a VM is destroyed due to a Host failure and a snapshot from that VM (a
+    /// clone) is started into another Host. In this case, all the Cloudlets
+    /// which were running inside the destroyed VM will be recreated from scratch
+    /// into the VM clone, re-starting their execution from the beginning.
+    ///
+    /// @param sourceVm the VM to clone its Cloudlets
+    /// @return the List of cloned Cloudlets.
+    /// @see
+    /// #createFaultInjectionForHosts(Datacenter)
     private List<Cloudlet> cloneCloudlets(final Vm sourceVm) {
         final var sourceVmCloudletList = sourceVm.getCloudletScheduler().getCloudletList();
         final var clonedCloudletList = new ArrayList<Cloudlet>(sourceVmCloudletList.size());
@@ -333,12 +315,10 @@ public final class HostFaultInjectionExample1 {
         return clonedCloudletList;
     }
 
-    /**
-     * Creates a clone from a given Cloudlet.
-     *
-     * @param source the Cloudlet to be cloned.
-     * @return the cloned (new) cloudlet
-     */
+    /// Creates a clone from a given Cloudlet.
+    ///
+    /// @param source the Cloudlet to be cloned.
+    /// @return the cloned (new) cloudlet
     private Cloudlet cloneCloudlet(Cloudlet source) {
         final var clone = new CloudletSimple(source.getLength(), source.getPesNumber());
         /*It' not required to set an ID for the clone.

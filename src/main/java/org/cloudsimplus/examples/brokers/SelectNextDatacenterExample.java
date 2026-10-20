@@ -42,19 +42,17 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how the {@link DatacenterBrokerSimple}
- * selects the next {@link Datacenter} when the previous one
- * is not able to create all {@link Vm}s due to lack
- * of suitable Hosts.
- *
- * <p>Each created Datacenter has hosts with more PEs than the previous Datacenter.
- * This way, only the Datacenter 4 will have Hosts to place the
- * created VMs.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.8.0
- */
+/// An example showing how the [DatacenterBrokerSimple]
+/// selects the next [Datacenter] when the previous one
+/// is not able to create all [Vm]s due to lack
+/// of suitable Hosts.
+///
+/// Each created Datacenter has hosts with more PEs than the previous Datacenter.
+/// This way, only the Datacenter 4 will have Hosts to place the
+/// created VMs.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.8.0
 public class SelectNextDatacenterExample {
     private static final int DATACENTERS = 5;
     private static final int HOSTS = 5;
@@ -99,11 +97,9 @@ public class SelectNextDatacenterExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a List of Datacenters, each Datacenter having
-     * Hosts with a number of PEs higher than the previous Datacenter.
-     * @return
-     */
+    /// Creates a List of Datacenters, each Datacenter having
+    /// Hosts with a number of PEs higher than the previous Datacenter.
+    /// @return
     private List<Datacenter> createDatacenters(){
         final var datacenterList = new ArrayList<Datacenter>(DATACENTERS);
         for (int i = 1; i <= DATACENTERS; i++) {
@@ -113,10 +109,8 @@ public class SelectNextDatacenterExample {
         return datacenterList;
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     * @param hostsPes the number of PEs for the Hosts in the Datacenter created
-     */
+    /// Creates a Datacenter and its Hosts.
+    /// @param hostsPes the number of PEs for the Hosts in the Datacenter created
     private Datacenter createDatacenter(final int hostsPes) {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -149,9 +143,7 @@ public class SelectNextDatacenterExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -164,9 +156,7 @@ public class SelectNextDatacenterExample {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 

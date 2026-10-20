@@ -45,35 +45,32 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing the usage of the {@link VmSchedulerTimeShared}
- * which allows multiple VMs to use the same PEs from a Host,
- * provided those PEs have available MIPS capacity.
- *
- * <p>In this example we have 2 Hosts with 2 PEs each one.
- * Each PE having a capacity of 1000 MIPS (2000 MIPS by Host),
- * <b>totaling 4 PEs for those 2 Hosts (4000 MIPS at total)</b>.
- * Then we create 8 VMs, each one requiring a single PE.
- * <b>That would require a total of 8 PEs from existing PMs</b>,
- * which there aren't available.
- * </p>
- *
- * <p>Each VM requires just 500 MIPS and the MIPS required by all 8 VMs
- *  totals 4000 MIPS, which is the total capacity of the existing Hosts.
- *  Since we are using a {@link VmSchedulerTimeShared}, such an allocation is possible
- *  by sharing Hosts's PEs between running VMs. Each VM will use half of the MIPS capacity
- *  of the Host's PEs. Since the entire MIPS capacity required by each VM will
- *  be allocated to them, there is no performance degradation.
- *  Every Cloudlet will finish in 10 seconds, as if they weren't sharing any PE.</p>
- *
- *  <p>Using a {@link VmSchedulerSpaceShared}, the allocation of some
- *  VMs will just fail due to lack of PEs.
- *  For the current scenario with {@link VmSchedulerTimeShared}, some VMs will fail due to lack
- *  of MIPS capacity only if we increase the number of VMs.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 5.1.4
- */
+/// An example showing the usage of the [VmSchedulerTimeShared]
+/// which allows multiple VMs to use the same PEs from a Host,
+/// provided those PEs have available MIPS capacity.
+///
+/// In this example we have 2 Hosts with 2 PEs each one.
+/// Each PE having a capacity of 1000 MIPS (2000 MIPS by Host),
+/// **totaling 4 PEs for those 2 Hosts (4000 MIPS at total)**.
+/// Then we create 8 VMs, each one requiring a single PE.
+/// **That would require a total of 8 PEs from existing PMs**,
+/// which there aren't available.
+///
+/// Each VM requires just 500 MIPS and the MIPS required by all 8 VMs
+/// totals 4000 MIPS, which is the total capacity of the existing Hosts.
+/// Since we are using a [VmSchedulerTimeShared], such an allocation is possible
+/// by sharing Hosts's PEs between running VMs. Each VM will use half of the MIPS capacity
+/// of the Host's PEs. Since the entire MIPS capacity required by each VM will
+/// be allocated to them, there is no performance degradation.
+/// Every Cloudlet will finish in 10 seconds, as if they weren't sharing any PE.
+///
+/// Using a [VmSchedulerSpaceShared], the allocation of some
+/// VMs will just fail due to lack of PEs.
+/// For the current scenario with [VmSchedulerTimeShared], some VMs will fail due to lack
+/// of MIPS capacity only if we increase the number of VMs.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 5.1.4
 public class VmSchedulerTimeSharedExample {
     private static final int HOSTS     = 2;
     private static final int VMS       = 8;
@@ -143,13 +140,11 @@ public class VmSchedulerTimeSharedExample {
         }
     }
 
-    /**
-     * Prints the {@link Host#getStateHistory() state history} for a given Host.
-     * Realize that the state history is just collected if that is enabled before
-     * starting the simulation by calling {@link Host#setStateHistoryEnabled(boolean)}.
-     *
-     * @param host
-     */
+    /// Prints the [state history][Host#getStateHistory()] for a given Host.
+    /// Realize that the state history is just collected if that is enabled before
+    /// starting the simulation by calling [Host#setStateHistoryEnabled(boolean)].
+    ///
+    /// @param host
     private void printHostStateHistory(Host host) {
         System.out.printf("Host: %d%n", host.getId());
         System.out.println("-----------------------------------------------------------------------------------------------------");
@@ -173,9 +168,7 @@ public class VmSchedulerTimeSharedExample {
         return c.getVm().getStateHistory().get(c.getVm().getStateHistory().size()-1).getAllocatedMips();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private void createDatacenter() {
         for(int h = 0; h < HOSTS; h++) {
             final var host = createHost();
@@ -199,9 +192,7 @@ public class VmSchedulerTimeSharedExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs for the {@link #broker0}.
-     */
+    /// Creates a list of VMs for the [#broker0].
     private void createVms() {
         for (int i = 0; i < VMS; i++) {
             final var vm =
@@ -211,9 +202,7 @@ public class VmSchedulerTimeSharedExample {
         }
     }
 
-    /**
-     * Creates one Cloudlet for each VM belonging to {@link #broker0}.
-     */
+    /// Creates one Cloudlet for each VM belonging to [#broker0].
     private void createCloudlets() {
         for (final var vm : vmList) {
             final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);

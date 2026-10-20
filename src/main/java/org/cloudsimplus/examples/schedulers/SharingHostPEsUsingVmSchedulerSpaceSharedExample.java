@@ -44,57 +44,40 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example that execute exactly as the
- * {@link SharingHostPEsUsingVmSchedulerTimeSharedExample},
- * however the host uses an {@link VmSchedulerSpaceShared},
- * showing how half of the VMs will fail to be placed due to
- * lack of available Host PEs.
- *
- * Considering this scenario where we have 1 hosts with 2 PEs
- * and 4 VMs each one requesting these 2 PEs.
- * This CloudSim paper below states in the section 3.2 that when using a
- * VmSchedulerSpaceShared, one VM will execute first and after it finishes,
- * the other one will start executing.
- * However, the DatacenterBroker fails in allocating a host for 2 VMs
- * due to lack of available PEs.
- * Once each one of the 2 host PEs has a capacity of 1000 MIPS, even defining
- * that each one of the 4 VMs requires just 500 MIPS, the allocation
- * of 2 VMs fails.
- *
- * <ul>
- *  <li><a href="http://arxiv.org/abs/0903.2525">R. N. Calheiros, R. Ranjan, C. A. F. De Rose, and R. Buyya,
- * “CloudSim: A Novel Framework for Modeling and Simulation of Cloud Computing
- * Infrastructures and Services,” arXiv preprint arXiv:0903.2525. arXiv, p. 9, 2009</a>.</li>
- * </ul>
- *
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example that execute exactly as the
+/// [SharingHostPEsUsingVmSchedulerTimeSharedExample],
+/// however the host uses an [VmSchedulerSpaceShared],
+/// showing how half of the VMs will fail to be placed due to
+/// lack of available Host PEs.
+///
+/// Considering this scenario where we have 1 hosts with 2 PEs
+/// and 4 VMs each one requesting these 2 PEs.
+/// This CloudSim paper below states in the section 3.2 that when using a
+/// VmSchedulerSpaceShared, one VM will execute first and after it finishes,
+/// the other one will start executing.
+/// However, the DatacenterBroker fails in allocating a host for 2 VMs
+/// due to lack of available PEs.
+/// Once each one of the 2 host PEs has a capacity of 1000 MIPS, even defining
+/// that each one of the 4 VMs requires just 500 MIPS, the allocation
+/// of 2 VMs fails.
+///
+/// - [R. N. Calheiros, R. Ranjan, C. A. F. De Rose, and R. Buyya, “CloudSim: A Novel Framework for Modeling and Simulation of Cloud Computing Infrastructures and Services,” arXiv preprint arXiv:0903.2525. arXiv, p. 9, 2009](http://arxiv.org/abs/0903.2525).
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
-    /**
-     * Capacity of each CPU core (in Million Instructions per Second).
-     */
+    /// Capacity of each CPU core (in Million Instructions per Second).
     private static final long HOST_MIPS = 1000;
-    /**
-     * Number of processor elements (CPU cores) of each host.
-     */
+    /// Number of processor elements (CPU cores) of each host.
     private static final int HOST_PES_NUM = 2;
 
-    /**
-     * The total MIPS capacity across all the Host PEs.
-     */
+    /// The total MIPS capacity across all the Host PEs.
     private static final long HOST_TOTAL_MIPS_CAPACITY = HOST_MIPS*HOST_PES_NUM;
 
-    /**
-     * The length of each created cloudlet in Million Instructions (MI).
-     */
+    /// The length of each created cloudlet in Million Instructions (MI).
     private static final long CLOUDLET_LENGTH = 10000;
 
-    /**
-     * Number of VMs to create.
-     */
+    /// Number of VMs to create.
     private static final int NUMBER_OF_VMS = HOST_PES_NUM*2;
 
     private static final long VM_MIPS = HOST_TOTAL_MIPS_CAPACITY/NUMBER_OF_VMS;
@@ -111,9 +94,7 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
         new SharingHostPEsUsingVmSchedulerSpaceSharedExample();
     }
 
-    /**
-     * Default constructor where the simulation is built.
-     */
+    /// Default constructor where the simulation is built.
     private SharingHostPEsUsingVmSchedulerSpaceSharedExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/

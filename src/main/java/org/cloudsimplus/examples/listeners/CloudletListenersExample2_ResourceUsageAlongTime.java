@@ -47,36 +47,28 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a data center with 1 host and run
- * 1 cloudlet on it. The example uses the new Cloudlet listeners
- * to get notified every time a cloudlet has its processing updated
- * inside a Vm and then, the current cloudlet resource usage is shown.
- * The example uses the {@link UtilizationModelStochastic}
- * to define that the usage of CPU, RAM and Bandwidth is random.
- *
- * @see Cloudlet#addOnUpdateProcessingListener(EventListener)
- * @see EventListener
- *
- * @author Manoel Campos da Silva Filho
- *
- * @see org.cloudsimplus.examples.resourceusage.VmsCpuUsageExample
- * @see VmsRamAndBwUsageExample
- */
+/// A simple example showing how to create a data center with 1 host and run
+/// 1 cloudlet on it. The example uses the new Cloudlet listeners
+/// to get notified every time a cloudlet has its processing updated
+/// inside a Vm and then, the current cloudlet resource usage is shown.
+/// The example uses the [UtilizationModelStochastic]
+/// to define that the usage of CPU, RAM and Bandwidth is random.
+///
+/// @see Cloudlet#addOnUpdateProcessingListener(EventListener)
+/// @see EventListener
+///
+/// @author Manoel Campos da Silva Filho
+///
+/// @see org.cloudsimplus.examples.resourceusage.VmsCpuUsageExample
+/// @see VmsRamAndBwUsageExample
 public class CloudletListenersExample2_ResourceUsageAlongTime {
-    /**
-     * Number of Processor Elements (CPU Cores) of each Host.
-     */
+    /// Number of Processor Elements (CPU Cores) of each Host.
     private static final int HOST_PES_NUMBER = 1;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-     */
+    /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
     private static final int VM_PES_NUMBER = HOST_PES_NUMBER;
 
-    /**
-     * Number of Cloudlets to create.
-     */
+    /// Number of Cloudlets to create.
     private static final int NUMBER_OF_CLOUDLETS = 2;
 
     private static final double DATACENTER_SCHEDULING_INTERVAL = 1;
@@ -88,19 +80,15 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new CloudletListenersExample2_ResourceUsageAlongTime();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private CloudletListenersExample2_ResourceUsageAlongTime() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -122,13 +110,11 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * A Listener function that will be called everytime when a the processing of a cloudlet
-     * is updated into a VM. All cloudlets will use this same listener.
-     *
-     * @param eventInfo information about the happened event
-     * @see #createCloudlet(long, Vm, long)
-     */
+    /// A Listener function that will be called everytime when a the processing of a cloudlet
+    /// is updated into a VM. All cloudlets will use this same listener.
+    ///
+    /// @param eventInfo information about the happened event
+    /// @see #createCloudlet(long, Vm, long)
     private void onUpdateCloudletProcessingListener(CloudletVmEventInfo eventInfo) {
         final var c = eventInfo.getCloudlet();
         double cpuUsage = c.getUtilizationModelCpu().getUtilization(eventInfo.getTime())*100;
@@ -149,12 +135,10 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates cloudlets and submit them to the broker.
-     * @param vm Vm to run the cloudlets to be created
-     *
-     * @see #createCloudlet(long, Vm, long)
-     */
+    /// Creates cloudlets and submit them to the broker.
+    /// @param vm Vm to run the cloudlets to be created
+    ///
+    /// @see #createCloudlet(long, Vm, long)
     private void createAndSubmitCloudlets(Vm vm) {
         long cloudletId;
         long length = 10000;
@@ -167,21 +151,17 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         this.broker.submitCloudletList(cloudletList);
     }
 
-    /**
-     * Creates VMs and submit them to the broker.
-     */
+    /// Creates VMs and submit them to the broker.
     private void createAndSubmitVms() {
         final var vm0 = createVm(0);
         this.vmList.add(vm0);
         this.broker.submitVmList(vmList);
     }
 
-    /**
-     * Creates a VM with pre-defined configuration.
-     *
-     * @param id the VM id
-     * @return the created VM
-     */
+    /// Creates a VM with pre-defined configuration.
+    ///
+    /// @param id the VM id
+    /// @return the created VM
     private Vm createVm(int id) {
         final int mips = 1000;
         final long size = 10000; // image size (Megabyte)
@@ -194,14 +174,12 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         return vm;
     }
 
-    /**
-     * Creates a cloudlet with pre-defined configuration.
-     *
-     * @param id Cloudlet id
-     * @param vm vm to run the cloudlet
-     * @param length the cloudlet length in number of Million Instructions (MI)
-     * @return the created cloudlet
-     */
+    /// Creates a cloudlet with pre-defined configuration.
+    ///
+    /// @param id Cloudlet id
+    /// @param vm vm to run the cloudlet
+    /// @param length the cloudlet length in number of Million Instructions (MI)
+    /// @return the created cloudlet
     private Cloudlet createCloudlet(long id, Vm vm, long length) {
         final long fileSize = 300;
         final long outputSize = 300;
@@ -225,11 +203,9 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         return cloudlet;
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
@@ -238,12 +214,10 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
                      .setSchedulingInterval(DATACENTER_SCHEDULING_INTERVAL);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         final long mips = 1000;

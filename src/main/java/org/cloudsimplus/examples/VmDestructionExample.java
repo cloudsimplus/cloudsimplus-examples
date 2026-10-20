@@ -49,38 +49,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Shows how to destroy an overloaded VM during simulation runtime,
- * after its CPU usage reaches a defined threshold.
- *
- * <p>The example uses the {@link UtilizationModelDynamic} to
- * increase VM CPU usage over time (in seconds).
- * This {@link UtilizationModelDynamic} relies on a {@link Function}
- * to increase resource usage. Such a Function is defined using a Lambda Expression.</p>
- *
- * <p>It shows Host CPU utilization every second, so that when the overloaded VM
- * is destroyed, we can check the Host CPU utilization reduces.</p>
- *
- * <p><b>Lambda Expressions and Functional Interfaces are Java 8+ features.</b>
- * If you don't know what these features are, I suggest checking out this
- * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">tutorial</a></p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.3.0
- */
+/// Shows how to destroy an overloaded VM during simulation runtime,
+/// after its CPU usage reaches a defined threshold.
+///
+/// The example uses the [UtilizationModelDynamic] to
+/// increase VM CPU usage over time (in seconds).
+/// This [UtilizationModelDynamic] relies on a [Function]
+/// to increase resource usage. Such a Function is defined using a Lambda Expression.
+///
+/// It shows Host CPU utilization every second, so that when the overloaded VM
+/// is destroyed, we can check the Host CPU utilization reduces.
+///
+/// **Lambda Expressions and Functional Interfaces are Java 8+ features.**
+/// If you don't know what these features are, I suggest checking out this
+/// [tutorial](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html)
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.3.0
 public class VmDestructionExample {
-    /**
-     * Defines, between other things, the time intervals
-     * to update the processing of simulation events.
-     * This way, simulation clock increases according to this time.
-     * Since a {@link UtilizationModelDynamic} is being used to define CPU usage of VMs,
-     * the utilization is updated at this time interval.
-     *
-     * Setting the Datacenter scheduling interval is required to allow
-     * the CPU utilization to increase along the simulation execution.
-     *
-     * @see Datacenter#setSchedulingInterval(double)
-     */
+    /// Defines, between other things, the time intervals
+    /// to update the processing of simulation events.
+    /// This way, simulation clock increases according to this time.
+    /// Since a [UtilizationModelDynamic] is being used to define CPU usage of VMs,
+    /// the utilization is updated at this time interval.
+    ///
+    /// Setting the Datacenter scheduling interval is required to allow
+    /// the CPU utilization to increase along the simulation execution.
+    ///
+    /// @see Datacenter#setSchedulingInterval(double)
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 1;
@@ -133,15 +129,13 @@ public class VmDestructionExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Tracks the update of execution for a VM.
-     * If that VM is overloaded then destroys it.
-     * In this example, this {@link EventListener} is just
-     * attached for VM 1, therefore, just such a VM will be destroyed
-     * if overloaded.
-     *
-     * @param info event information, including the VM that was updated
-     */
+    /// Tracks the update of execution for a VM.
+    /// If that VM is overloaded then destroys it.
+    /// In this example, this [EventListener] is just
+    /// attached for VM 1, therefore, just such a VM will be destroyed
+    /// if overloaded.
+    ///
+    /// @param info event information, including the VM that was updated
     private void vmProcessingUpdateListener(VmHostEventInfo info) {
         final Vm vm = info.getVm();
         //Destroys VM 1 when its CPU usage reaches 90%
@@ -155,9 +149,7 @@ public class VmDestructionExample {
         datacenter0.getHostList().forEach(h -> System.out.printf("# %.2f: %s CPU Utilization %.2f%%%n", info.getTime(), h, h.getCpuPercentUtilization()*100));
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -191,9 +183,7 @@ public class VmDestructionExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -208,9 +198,7 @@ public class VmDestructionExample {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelFull();
@@ -219,10 +207,8 @@ public class VmDestructionExample {
         * It is used to define the CPU usage of VMs dynamically.*/
         final var dynamicUtilization = new UtilizationModelDynamic();
 
-        /**
-         * Sets a {@link Function} that enables the utilization model to increment resource usage by 10% over time.
-         * This function is defined using a Lambda Expression.
-         */
+        /// Sets a [Function] that enables the utilization model to increment resource usage by 10% over time.
+        /// This function is defined using a Lambda Expression.
         dynamicUtilization.setUtilizationUpdateFunction(um -> um.getUtilization() + um.getTimeSpan()*0.1);
 
         for (int i = 0; i < CLOUDLETS; i++) {

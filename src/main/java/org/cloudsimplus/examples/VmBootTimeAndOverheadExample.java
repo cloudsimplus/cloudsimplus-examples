@@ -45,13 +45,11 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to define the time for VMs to boot up
- * and how the boot process will use resources.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 8.3.0
- */
+/// An example showing how to define the time for VMs to boot up
+/// and how the boot process will use resources.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 8.3.0
 public class VmBootTimeAndOverheadExample {
     private static final int  HOSTS = 1;
     private static final int  HOST_PES = 8;
@@ -67,14 +65,10 @@ public class VmBootTimeAndOverheadExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10_000; // Million Instructions (MI)
 
-    /**
-     * Defines the time (in seconds) each VM will take to boot up.
-     */
+    /// Defines the time (in seconds) each VM will take to boot up.
     private static final double VM_BOOT_DELAY = 5;
 
-    /**
-     * Defines the time (in seconds) each VM will take to shut down.
-     */
+    /// Defines the time (in seconds) each VM will take to shut down.
     private static final double VM_SHUTDOWN_DELAY = 2;
     private static final double SCHEDULING_INTERVAL = 1;
 
@@ -127,9 +121,7 @@ public class VmBootTimeAndOverheadExample {
         return vm.getRam().getPercentUtilization() * 100.0;
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -156,11 +148,9 @@ public class VmBootTimeAndOverheadExample {
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
     }
 
-    /**
-     * Creates a list of VMs setting a {@link BootModel}
-     * to indicate how the VM will use CPU and RAM during the boot process.
-     * @see BootModel#BootModel(UtilizationModel, UtilizationModel)
-     */
+    /// Creates a list of VMs setting a [BootModel]
+    /// to indicate how the VM will use CPU and RAM during the boot process.
+    /// @see BootModel#BootModel(UtilizationModel, UtilizationModel)
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         final var bootModelCpu = new UtilizationModelDynamic(0.5);
@@ -180,9 +170,7 @@ public class VmBootTimeAndOverheadExample {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 

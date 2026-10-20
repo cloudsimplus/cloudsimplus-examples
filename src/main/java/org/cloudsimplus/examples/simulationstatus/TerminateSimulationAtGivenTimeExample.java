@@ -42,17 +42,15 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to terminate the simulation at a given time, before its natural end.
- * The example creates 4 Cloudlets that will run sequentially using a {@link CloudletSchedulerSpaceShared}.
- * However, at the middle of the simulation, after just 2 of these 4 Cloudlets have finished,
- * the simulation will be interrupeted, avoiding the other 2 Cloudlets to run.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- *
- * @see CloudSimPlus#terminateAt(double)
- */
+/// An example showing how to terminate the simulation at a given time, before its natural end.
+/// The example creates 4 Cloudlets that will run sequentially using a [CloudletSchedulerSpaceShared].
+/// However, at the middle of the simulation, after just 2 of these 4 Cloudlets have finished,
+/// the simulation will be interrupeted, avoiding the other 2 Cloudlets to run.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
+///
+/// @see CloudSimPlus#terminateAt(double)
 public class TerminateSimulationAtGivenTimeExample {
     private static final int TIME_TO_FINISH_SIMULATION = 21;
 
@@ -66,9 +64,7 @@ public class TerminateSimulationAtGivenTimeExample {
         new TerminateSimulationAtGivenTimeExample();
     }
 
-    /**
-     * Default constructor that builds the simulation.
-     */
+    /// Default constructor that builds the simulation.
     private TerminateSimulationAtGivenTimeExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/

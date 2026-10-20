@@ -54,20 +54,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * An example showing how to implement a custom
- * {@link VmAllocationPolicy} that randomly
- * selects suitable Hosts to place submitted VMs.
- * Check the {@link #createDatacenter()} method for details.
- *
- * <p>Since CloudSim Plus provides functional
- * VmAllocationPolicy implementations, you don't
- * even need to create a new class to implement your own policy,
- * unless you really want to (to make reuse easy).</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.0.5
- */
+/// An example showing how to implement a custom
+/// [VmAllocationPolicy] that randomly
+/// selects suitable Hosts to place submitted VMs.
+/// Check the [#createDatacenter()] method for details.
+///
+/// Since CloudSim Plus provides functional
+/// VmAllocationPolicy implementations, you don't
+/// even need to create a new class to implement your own policy,
+/// unless you really want to (to make reuse easy).
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.0.5
 public class RandomVmAllocationPolicyExample {
     private static final int HOSTS = 10;
     private static final int HOST_PES = 8;
@@ -85,10 +83,9 @@ public class RandomVmAllocationPolicyExample {
     private List<Cloudlet> cloudletList;
     private Datacenter datacenter0;
 
-     /** A random number generator that returns values between [-1 .. 1],
-     * according to the {@link Comparator#compare(Object, Object)} method used
-     * to randomly sort Hosts to be allocated to VMs.
-     */
+     /// A random number generator that returns values between \[-1 .. 1\],
+     /// according to the [Comparator#compare(Object,Object)] method used
+     /// to randomly sort Hosts to be allocated to VMs.
     private final ContinuousDistribution random;
 
     public static void main(String[] args) {
@@ -121,11 +118,9 @@ public class RandomVmAllocationPolicyExample {
         System.out.println("Execution time: " + TimeUtil.secondsToStr(TimeUtil.elapsedSeconds(startSecs)));
     }
 
-    /**
-     * Creates a Datacenter and its Hosts, defining
-     * a {@link VmAllocationPolicy} that randomly selects suitable Hosts
-     * to place submitted VMs.
-     */
+    /// Creates a Datacenter and its Hosts, defining
+    /// a [VmAllocationPolicy] that randomly selects suitable Hosts
+    /// to place submitted VMs.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -141,16 +136,14 @@ public class RandomVmAllocationPolicyExample {
         return new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
     }
 
-    /**
-     * Define a specific policy to randomly select a suitable Host to place a given VM.
-     * It's a very efficient policy since it doesn't perform sorting
-     * in order to find a suitable Host.
-     *
-     * @param vmAllocationPolicy the {@link VmAllocationPolicy} containing Host allocation information
-     * @param vm the {@link Vm} to find a host to be placed
-     * @return an {@link Optional} that may contain a Host in which to place a Vm, or an {@link Optional#empty()}
-     *         {@link Optional} if not suitable Host was found.
-     */
+    /// Define a specific policy to randomly select a suitable Host to place a given VM.
+    /// It's a very efficient policy since it doesn't perform sorting
+    /// in order to find a suitable Host.
+    ///
+    /// @param vmAllocationPolicy the [VmAllocationPolicy] containing Host allocation information
+    /// @param vm the [Vm] to find a host to be placed
+    /// @return an [Optional] that may contain a Host in which to place a Vm, or an [Optional#empty()]
+    /// [Optional] if not suitable Host was found.
     private Optional<Host> findRandomSuitableHostForVm(final VmAllocationPolicy vmAllocationPolicy, final Vm vm) {
         final var hostList = vmAllocationPolicy.getHostList();
         /* Despite the loop is bound to the number of Hosts inside the List,
@@ -186,9 +179,7 @@ public class RandomVmAllocationPolicyExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -203,9 +194,7 @@ public class RandomVmAllocationPolicyExample {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelDynamic(0.2);

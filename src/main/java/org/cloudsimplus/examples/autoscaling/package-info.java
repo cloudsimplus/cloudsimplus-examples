@@ -21,13 +21,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Examples showing how to enable horizontal and vertical
- * VM scaling using the {@link org.cloudsimplus.autoscaling.HorizontalVmScaling}
- * and {@link org.cloudsimplus.autoscaling.VerticalVmScaling}.
- *
- * @author Manoel Campos da Silva Filho
- */
+/// Examples showing how to enable horizontal and vertical
+/// VM scaling using the [org.cloudsimplus.autoscaling.HorizontalVmScaling]
+/// and [org.cloudsimplus.autoscaling.VerticalVmScaling].
+///
+/// @author Manoel Campos da Silva Filho
 @NullMarked
 package org.cloudsimplus.examples.autoscaling;
 

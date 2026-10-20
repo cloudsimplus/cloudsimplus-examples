@@ -51,14 +51,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example showing how CloudSim Plus
- * is flexible in managing logs of different entities.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 5.3.0
- * @see #configureLogs()
- */
+/// An example showing how CloudSim Plus
+/// is flexible in managing logs of different entities.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 5.3.0
+/// @see #configureLogs()
 public class LoggingExample {
     private static final int SCHEDULING_INTERVAL_SECS = 10;
     private static final double HOST_OVER_UTILIZATION_MIGRATION_THRESHOLD = 0.7;
@@ -136,19 +134,15 @@ public class LoggingExample {
         Log.setLevel(CloudletScheduler.LOGGER, Level.WARN);
     }
 
-    /**
-     * Creates a UtilizationModel that starts the resource utilization at a given percentage
-     * and keeps increasing along the time.
-     */
+    /// Creates a UtilizationModel that starts the resource utilization at a given percentage
+    /// and keeps increasing along the time.
     private UtilizationModelDynamic createDynamicUtilizationModel() {
         final var utilizationModel = new UtilizationModelDynamic(0.5);
         utilizationModel.setUtilizationUpdateFunction(model -> model.getUtilization() + model.getTimeSpan()*0.1);
         return utilizationModel;
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOST_PES.length);
         for (int pes : HOST_PES) {
@@ -185,9 +179,7 @@ public class LoggingExample {
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -200,19 +192,15 @@ public class LoggingExample {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     * @param utilizationModel the UtilizationModel to be used for all Cloudlet resources (CPU, RAM and BW).
-     */
+    /// Creates a list of Cloudlets.
+    /// @param utilizationModel the UtilizationModel to be used for all Cloudlet resources (CPU, RAM and BW).
     private List<Cloudlet> createCloudlets(final UtilizationModel utilizationModel) {
         return createCloudlets(utilizationModel, 0);
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     * @param utilizationModel the UtilizationModel to be used for all Cloudlet resources (CPU, RAM and BW).
-     * @param submissionDelay the delay to submit Cloudlets to the broker
-     */
+    /// Creates a list of Cloudlets.
+    /// @param utilizationModel the UtilizationModel to be used for all Cloudlet resources (CPU, RAM and BW).
+    /// @param submissionDelay the delay to submit Cloudlets to the broker
     private List<Cloudlet> createCloudlets(final UtilizationModel utilizationModel, final double submissionDelay) {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 

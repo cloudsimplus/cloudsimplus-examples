@@ -55,18 +55,16 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toCollection;
 
-/**
- * An example showing how the {@link UtilizationModelFull} increases simulation performance
- * and reduces memory utilization.
- *
- * <p>There are a set of constants you can change to see how the simulation
- * is impacted. The most impacting ones are {@link #CLOUDLETS},
- * {@link #CLOUDLET_LENGTH} and {@link #SCHEDULING_INTERVAL}.
- * Just play with these values to see the results.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.4.1
- */
+/// An example showing how the [UtilizationModelFull] increases simulation performance
+/// and reduces memory utilization.
+///
+/// There are a set of constants you can change to see how the simulation
+/// is impacted. The most impacting ones are [#CLOUDLETS],
+/// [#CLOUDLET_LENGTH] and [#SCHEDULING_INTERVAL].
+/// Just play with these values to see the results.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.4.1
 public class UtilizationModelFullPerformance {
     private static final int HOSTS = 20_000;
     private static final int HOST_PES = 16;
@@ -122,11 +120,9 @@ public class UtilizationModelFullPerformance {
             HOSTS, VMS, CLOUDLETS, CLOUDLET_LENGTH, SCHEDULING_INTERVAL);
     }
 
-    /**
-     * Gets the maximum number of GB ever used by the application's heap.
-     * @return the max heap utilization in GB
-     * @see <a href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html">Java Garbage Collection Basics (for information about heap space)</a>
-     */
+    /// Gets the maximum number of GB ever used by the application's heap.
+    /// @return the max heap utilization in GB
+    /// @see <a href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html">Java Garbage Collection Basics (for information about heap space)</a>
     private double getMaxHeapUtilizationGB() {
         final double memoryBytes =
             ManagementFactory.getMemoryPoolMXBeans()

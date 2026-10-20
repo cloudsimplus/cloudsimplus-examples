@@ -33,24 +33,22 @@ import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.vms.VmSimple;
 
-/**
- * An example showing the very minimal code required to create
- * a simulation scenario in CloudSim Plus.
- *
- * <p><b>NOTICE: This example is not intended to be reused and we strongly advise
- * against doing that. Since all the code is inside a single method,
- * that is completely inappropriate.</b></p>
- *
- * <p>This code is only intended to show how it's simpler
- * and easier to create cloud computing simulations using CloudSim Plus.</p>
- *
- * <p>If you want a basic, but organized and reusable first example,
- * see the {@link BasicFirstExample}.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- * @see BasicFirstExample
- */
+/// An example showing the very minimal code required to create
+/// a simulation scenario in CloudSim Plus.
+///
+/// **NOTICE: This example is not intended to be reused and we strongly advise
+/// against doing that. Since all the code is inside a single method,
+/// that is completely inappropriate.**
+///
+/// This code is only intended to show how it's simpler
+/// and easier to create cloud computing simulations using CloudSim Plus.
+///
+/// If you want a basic, but organized and reusable first example,
+/// see the [BasicFirstExample].
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
+/// @see BasicFirstExample
 void main() {
     //tag::cloudsimplus-reduced-example[]
     //Enables just some level of log messages

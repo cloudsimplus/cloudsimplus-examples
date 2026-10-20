@@ -47,32 +47,24 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a data center with 1 host and run
- * cloudlets on it, and receive notifications when each cloudlet finishes executing.
- *
- * <p>The example uses the new Cloudlet listeners to get these
- * notifications while the simulation is running.</p>
- *
- * @see Cloudlet#addOnFinishListener(EventListener)
- * @see EventListener
- *
- * @author Manoel Campos da Silva Filho
- */
+/// A simple example showing how to create a data center with 1 host and run
+/// cloudlets on it, and receive notifications when each cloudlet finishes executing.
+///
+/// The example uses the new Cloudlet listeners to get these
+/// notifications while the simulation is running.
+///
+/// @see Cloudlet#addOnFinishListener(EventListener)
+/// @see EventListener
+///
+/// @author Manoel Campos da Silva Filho
 public class CloudletListenersExample1 {
-    /**
-     * Number of Processor Elements (CPU Cores) of each Host.
-     */
+    /// Number of Processor Elements (CPU Cores) of each Host.
     private static final int HOST_PES_NUMBER = 4;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-     */
+    /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
     private static final int VM_PES_NUMBER = 2;
 
-    /**
-     * Number of Cloudlets to create.
-     */
+    /// Number of Cloudlets to create.
     private static final int NUMBER_OF_CLOUDLETS = 4;
 
     private final List<Host> hostList;
@@ -82,19 +74,15 @@ public class CloudletListenersExample1 {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new CloudletListenersExample1();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private CloudletListenersExample1() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -116,26 +104,22 @@ public class CloudletListenersExample1 {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * A Listener function that will be called every time a cloudlet
-     * starts running into a VM. All cloudlets will use this same listener.
-     *
-     * @param eventInfo information about the happened event
-     * @see #createCloudlet(long, Vm, long)
-     */
+    /// A Listener function that will be called every time a cloudlet
+    /// starts running into a VM. All cloudlets will use this same listener.
+    ///
+    /// @param eventInfo information about the happened event
+    /// @see #createCloudlet(long, Vm, long)
     private void onCloudletStartListener(CloudletVmEventInfo eventInfo) {
         System.out.printf(
             "%n\t#EventListener: Cloudlet %d just started running at Vm %d at time %.2f%n",
             eventInfo.getCloudlet().getId(), eventInfo.getVm().getId(), eventInfo.getTime());
     }
 
-    /**
-     * A Listener function that will be called every time a cloudlet
-     * finishes running into a VM. All cloudlets will use this same listener.
-     *
-     * @param eventInfo information about the happened event
-     * @see #createCloudlet(long, Vm, long)
-     */
+    /// A Listener function that will be called every time a cloudlet
+    /// finishes running into a VM. All cloudlets will use this same listener.
+    ///
+    /// @param eventInfo information about the happened event
+    /// @see #createCloudlet(long, Vm, long)
     private void onCloudletFinishListener(CloudletVmEventInfo eventInfo) {
         System.out.printf(
                 "%n\t#EventListener: Cloudlet %d finished running at Vm %d at time %.2f%n",
@@ -149,12 +133,10 @@ public class CloudletListenersExample1 {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates cloudlets and submit them to the broker.
-     * @param vm Vm to run the cloudlets to be created
-     *
-     * @see #createCloudlet(long, Vm, long)
-     */
+    /// Creates cloudlets and submit them to the broker.
+    /// @param vm Vm to run the cloudlets to be created
+    ///
+    /// @see #createCloudlet(long, Vm, long)
     private void createAndSubmitCloudlets(Vm vm) {
         long cloudletId;
         long length = 10000;
@@ -167,21 +149,17 @@ public class CloudletListenersExample1 {
         this.broker.submitCloudletList(cloudletList);
     }
 
-    /**
-     * Creates VMs and submit them to the broker.
-     */
+    /// Creates VMs and submit them to the broker.
     private void createAndSubmitVms() {
         final var vm0 = createVm(0);
         this.vmList.add(vm0);
         this.broker.submitVmList(vmList);
     }
 
-    /**
-     * Creates a VM with pre-defined configuration.
-     *
-     * @param id the VM id
-     * @return the created VM
-     */
+    /// Creates a VM with pre-defined configuration.
+    ///
+    /// @param id the VM id
+    /// @return the created VM
     private Vm createVm(int id) {
         final int mips = 1000;
         final long size = 10000; // image size (Megabyte)
@@ -195,14 +173,12 @@ public class CloudletListenersExample1 {
         return vm;
     }
 
-    /**
-     * Creates a cloudlet with pre-defined configuration.
-     *
-     * @param id Cloudlet id
-     * @param vm vm to run the cloudlet
-     * @param length the cloudlet length in number of Million Instructions (MI)
-     * @return the created cloudlet
-     */
+    /// Creates a cloudlet with pre-defined configuration.
+    ///
+    /// @param id Cloudlet id
+    /// @param vm vm to run the cloudlet
+    /// @param length the cloudlet length in number of Million Instructions (MI)
+    /// @return the created cloudlet
     private Cloudlet createCloudlet(long id, Vm vm, long length) {
         final long fileSize = 300;
         final long outputSize = 300;
@@ -221,23 +197,19 @@ public class CloudletListenersExample1 {
         return cloudlet;
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         final long mips = 1000;

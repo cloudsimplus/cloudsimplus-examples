@@ -24,13 +24,11 @@ import java.util.List;
 
 import static org.cloudbus.cloudsim.examples.network.applications.NetworkVmExampleAbstract.getSwitchIndex;
 
-/**
- * A simple example simulating a distributed application.
- * It shows how 2 {@link NetworkCloudlet}'s communicate,
- * each one running inside VMs on different hosts.
- *
- * @author Manoel Campos da Silva Filho
- */
+/// A simple example simulating a distributed application.
+/// It shows how 2 [NetworkCloudlet]'s communicate,
+/// each one running inside VMs on different hosts.
+///
+/// @author Manoel Campos da Silva Filho
 public class NetworkVmsExampleSimpleApp {
     private static final int HOSTS = 2;
     private static final int HOST_MIPS = 1000;
@@ -53,17 +51,13 @@ public class NetworkVmsExampleSimpleApp {
     private final NetworkDatacenter datacenter;
     private final DatacenterBroker broker;
 
-    /**
-     * Starts the execution of the example.
-     * @param args
-     */
+    /// Starts the execution of the example.
+    /// @param args
     public static void main(String[] args) {
         new NetworkVmsExampleSimpleApp();
     }
 
-    /**
-     * Creates, starts, stops the simulation and shows results.
-     */
+    /// Creates, starts, stops the simulation and shows results.
     private NetworkVmsExampleSimpleApp() {
         System.out.println("Starting " + getClass().getSimpleName());
         simulation = new CloudSimPlus();
@@ -125,11 +119,9 @@ public class NetworkVmsExampleSimpleApp {
         return peList;
     }
 
-    /**
-     * Creates internal Datacenter network.
-     *
-     * @param datacenter Datacenter where the network will be created
-     */
+    /// Creates internal Datacenter network.
+    ///
+    /// @param datacenter Datacenter where the network will be created
     private void createNetwork(final NetworkDatacenter datacenter) {
         final var edgeSwitches = new EdgeSwitch[1];
         for (int i = 0; i < edgeSwitches.length; i++) {
@@ -143,13 +135,11 @@ public class NetworkVmsExampleSimpleApp {
         }
     }
 
-    /**
-     * Creates a list of virtual machines in a Datacenter for a given broker and
-     * submit the list to the broker.
-     *
-     * @param broker The broker that will own the created VMs
-     * @return the list of created VMs
-     */
+    /// Creates a list of virtual machines in a Datacenter for a given broker and
+    /// submit the list to the broker.
+    ///
+    /// @param broker The broker that will own the created VMs
+    /// @return the list of created VMs
     private List<NetworkVm> createAndSubmitVMs(DatacenterBroker broker) {
         final var netVmList = new ArrayList<NetworkVm>();
         for (int i = 0; i < HOSTS; i++) {
@@ -171,12 +161,10 @@ public class NetworkVmsExampleSimpleApp {
         return vm;
     }
 
-    /**
-     * Creates a list of {@link NetworkCloudlet} that together represents the
-     * distributed processes of a given fictitious application.
-     *
-     * @return the list of create NetworkCloudlets
-     */
+    /// Creates a list of [NetworkCloudlet] that together represents the
+    /// distributed processes of a given fictitious application.
+    ///
+    /// @return the list of create NetworkCloudlets
     private List<NetworkCloudlet> createNetworkCloudlets() {
         final int cloudletsNumber = 2;
         final var netCloudletList = new ArrayList<NetworkCloudlet>(cloudletsNumber);
@@ -196,12 +184,10 @@ public class NetworkVmsExampleSimpleApp {
         return netCloudletList;
     }
 
-    /**
-     * Creates a {@link NetworkCloudlet}.
-     *
-     * @param vm the VM that will run the created {@link NetworkCloudlet)
-     * @return
-     */
+    /// Creates a [NetworkCloudlet].
+    ///
+    /// @param vm the VM that will run the created [NetworkCloudlet]
+    /// @return
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm) {
         final var netCloudlet = new NetworkCloudlet(HOST_PES);
         netCloudlet
@@ -214,24 +200,20 @@ public class NetworkVmsExampleSimpleApp {
         return netCloudlet;
     }
 
-    /**
-     * Adds an execution-task to the list of tasks of the given
-     * {@link NetworkCloudlet}.
-     *
-     * @param cloudlet the {@link NetworkCloudlet} the task will belong to
-     */
+    /// Adds an execution-task to the list of tasks of the given
+    /// [NetworkCloudlet].
+    ///
+    /// @param cloudlet the [NetworkCloudlet] the task will belong to
     private static void addExecutionTask(NetworkCloudlet cloudlet) {
         final var task = new CloudletExecutionTask(cloudlet.getTasks().size(), TASK_LENGTH);
         task.setMemory(TASK_RAM);
         cloudlet.addTask(task);
     }
 
-    /**
-     * Adds a send-task to the list of tasks of the given {@link NetworkCloudlet}.
-     *
-     * @param sourceCloudlet the {@link NetworkCloudlet} from which packets will be sent
-     * @param destinationCloudlet the destination {@link NetworkCloudlet} to send packets to
-     */
+    /// Adds a send-task to the list of tasks of the given [NetworkCloudlet].
+    ///
+    /// @param sourceCloudlet the [NetworkCloudlet] from which packets will be sent
+    /// @param destinationCloudlet the destination [NetworkCloudlet] to send packets to
     private void addSendTask(final NetworkCloudlet sourceCloudlet, final NetworkCloudlet destinationCloudlet) {
         final var task = new CloudletSendTask(sourceCloudlet.getTasks().size());
         task.setMemory(TASK_RAM);
@@ -241,13 +223,11 @@ public class NetworkVmsExampleSimpleApp {
         }
     }
 
-    /**
-     * Adds a receive-task to the list of tasks of the given
-     * {@link NetworkCloudlet}.
-     *
-     * @param cloudlet the {@link NetworkCloudlet} the task will belong to
-     * @param sourceCloudlet the {@link NetworkCloudlet} expected to receive packets from
-     */
+    /// Adds a receive-task to the list of tasks of the given
+    /// [NetworkCloudlet].
+    ///
+    /// @param cloudlet the [NetworkCloudlet] the task will belong to
+    /// @param sourceCloudlet the [NetworkCloudlet] expected to receive packets from
     private void addReceiveTask(final NetworkCloudlet cloudlet, final NetworkCloudlet sourceCloudlet) {
         final var task = new CloudletReceiveTask(cloudlet.getTasks().size(), sourceCloudlet.getVm());
         task.setMemory(TASK_RAM);

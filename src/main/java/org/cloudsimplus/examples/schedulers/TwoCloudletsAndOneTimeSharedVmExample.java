@@ -45,29 +45,25 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a data center with 1 host, 1 vm and
- * run 2 cloudlets on it that will compete for the VM's CPU.
- * The VM's CPU is shared among the cloudlets using a time-shared scheduler,
- * that performs a preemptive scheduling. By this way, all the 2 cloudlets
- * will have a quantum to use the VM's CPU. As they have the same length,
- * they start and finish together. Thus, the execution time is the double
- * compared to running each cloudlet in its own VM or using a space shared
- * scheduler.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// A simple example showing how to create a data center with 1 host, 1 vm and
+/// run 2 cloudlets on it that will compete for the VM's CPU.
+/// The VM's CPU is shared among the cloudlets using a time-shared scheduler,
+/// that performs a preemptive scheduling. By this way, all the 2 cloudlets
+/// will have a quantum to use the VM's CPU. As they have the same length,
+/// they start and finish together. Thus, the execution time is the double
+/// compared to running each cloudlet in its own VM or using a space shared
+/// scheduler.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class TwoCloudletsAndOneTimeSharedVmExample {
     private List<Cloudlet> cloudletList;
     private List<Vm> vmlist;
     private CloudSimPlus simulation;
 
-    /**
-     * Creates main() to run this example.
-     *
-     * @param args the args
-     */
+    /// Creates main() to run this example.
+    ///
+    /// @param args the args
     public static void main(String[] args) {
         new TwoCloudletsAndOneTimeSharedVmExample();
     }
@@ -142,11 +138,9 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * Creates the Datacenter.
-     *
-     * @return the Datacenter
-     */
+    /// Creates the Datacenter.
+    ///
+    /// @return the Datacenter
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
         final var peList = new ArrayList<Pe>();

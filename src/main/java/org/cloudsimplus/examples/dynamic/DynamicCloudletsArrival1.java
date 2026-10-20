@@ -46,32 +46,24 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to delay the submission of cloudlets.
- * Although there is enough resources to run all cloudlets simultaneously,
- * the example delays the creation and execution of some cloudlets inside a VM,
- * simulating the dynamic arrival of cloudlets.
- * It first creates a set of cloudlets without delay and
- * another set of cloudlets all with the same submission delay.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example showing how to delay the submission of cloudlets.
+/// Although there is enough resources to run all cloudlets simultaneously,
+/// the example delays the creation and execution of some cloudlets inside a VM,
+/// simulating the dynamic arrival of cloudlets.
+/// It first creates a set of cloudlets without delay and
+/// another set of cloudlets all with the same submission delay.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class DynamicCloudletsArrival1 {
-    /**
-     * Number of Processor Elements (CPU Cores) of each Host.
-     */
+    /// Number of Processor Elements (CPU Cores) of each Host.
     private static final int HOST_PES_NUMBER = 8;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-     */
+    /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
     private static final int VM_PES_NUMBER = HOST_PES_NUMBER/2;
 
-    /**
-     * Number of Cloudlets to create simultaneously.
-     * Other cloudlets will be enqueued.
-     */
+    /// Number of Cloudlets to create simultaneously.
+    /// Other cloudlets will be enqueued.
     private static final int NUMBER_OF_CLOUDLETS = VM_PES_NUMBER*2;
 
     private final List<Host> hostList;
@@ -81,19 +73,15 @@ public class DynamicCloudletsArrival1 {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new DynamicCloudletsArrival1();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private DynamicCloudletsArrival1() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -134,15 +122,13 @@ public class DynamicCloudletsArrival1 {
             .build();
     }
 
-    /**
-     * Creates cloudlets and submit them to the broker, applying
-     * a submission delay for each one (simulating the dynamic cloudlet arrival).
-     *
-     * @param vm Vm to run the cloudlets to be created
-     * @param submissionDelay the delay the broker has to include when submitting the Cloudlets
-     *
-     * @see #createCloudlet(Vm)
-     */
+    /// Creates cloudlets and submit them to the broker, applying
+    /// a submission delay for each one (simulating the dynamic cloudlet arrival).
+    ///
+    /// @param vm Vm to run the cloudlets to be created
+    /// @param submissionDelay the delay the broker has to include when submitting the Cloudlets
+    ///
+    /// @see #createCloudlet(Vm)
     private void createAndSubmitCloudlets(Vm vm, double submissionDelay) {
         final var newCloudletList = new ArrayList<Cloudlet>(NUMBER_OF_CLOUDLETS);
         for(int i = 0; i < NUMBER_OF_CLOUDLETS; i++){
@@ -154,11 +140,9 @@ public class DynamicCloudletsArrival1 {
         cloudletList.addAll(newCloudletList);
     }
 
-    /**
-     * Creates one Vm and a group of cloudlets to run inside it,
-     * and submit the Vm and its cloudlets to the broker.
-     * @see #createVm()
-     */
+    /// Creates one Vm and a group of cloudlets to run inside it,
+    /// and submit the Vm and its cloudlets to the broker.
+    /// @see #createVm()
     private void createAndSubmitVmAndCloudlets(final double submissionDelay) {
         final var newVmList = new ArrayList<Vm>();
         final var vm = createVm();
@@ -182,12 +166,10 @@ public class DynamicCloudletsArrival1 {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    /**
-     * Creates a cloudlet with pre-defined configuration.
-     *
-     * @param vm vm to run the cloudlet
-     * @return the created cloudlet
-     */
+    /// Creates a cloudlet with pre-defined configuration.
+    ///
+    /// @param vm vm to run the cloudlet
+    /// @return the created cloudlet
     private Cloudlet createCloudlet(Vm vm) {
         final long fileSize = 300;
         final long outputSize = 300;
@@ -207,23 +189,19 @@ public class DynamicCloudletsArrival1 {
         return cloudlet;
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         final long mips = 1000;

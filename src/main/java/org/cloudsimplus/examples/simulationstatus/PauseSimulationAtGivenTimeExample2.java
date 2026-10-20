@@ -47,54 +47,50 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to pause the simulation at a given time in order to collect
- * some partial results. In this example, such results are the cloudlets that have finished so far.
- * The example creates 4 Cloudlets that will run sequentially using a {@link CloudletSchedulerSpaceShared}.
- *
- * <p>The pause is scheduled after the simulation starts, by adding an
- * {@link Simulation#addOnEventProcessingListener(EventListener) OnEventProcessingListener}
- * that will be notified every time a simulation event is processed.</p>
- *
- * <p>This example uses CloudSim Plus Listener features to intercept when
- * the simulation was paused, allowing to collect the desired data.
- * This example uses the Java 8+ Lambda Functions features
- * to pass a listener to a {@link CloudSimPlus} instance, by means of the
- * {@link CloudSimPlus#addOnSimulationPauseListener(EventListener)} method.
- * However, the same feature can be used for Java 7 passing an anonymous class
- * that implements {@code EventListener<EventInfo>}.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- *
- * @see CloudSimPlus#pause(double)
- * @see CloudSimPlus#addOnSimulationPauseListener(EventListener)
- * @see EventListener
- */
+/// An example showing how to pause the simulation at a given time in order to collect
+/// some partial results. In this example, such results are the cloudlets that have finished so far.
+/// The example creates 4 Cloudlets that will run sequentially using a [CloudletSchedulerSpaceShared].
+///
+/// The pause is scheduled after the simulation starts, by adding an
+/// [OnEventProcessingListener][Simulation#addOnEventProcessingListener(EventListener)]
+/// that will be notified every time a simulation event is processed.
+///
+/// This example uses CloudSim Plus Listener features to intercept when
+/// the simulation was paused, allowing to collect the desired data.
+/// This example uses the Java 8+ Lambda Functions features
+/// to pass a listener to a [CloudSimPlus] instance, by means of the
+/// [CloudSimPlus#addOnSimulationPauseListener(EventListener)] method.
+/// However, the same feature can be used for Java 7 passing an anonymous class
+/// that implements `EventListener<EventInfo>`.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
+///
+/// @see CloudSimPlus#pause(double)
+/// @see CloudSimPlus#addOnSimulationPauseListener(EventListener)
+/// @see EventListener
 public class PauseSimulationAtGivenTimeExample2 {
-    /**
-     * The interval in which the Datacenter will schedule events.
-     * As lower is this interval, sooner the processing of Cloudlets inside VMs
-     * is updated and you will get more notifications about the simulation execution.
-     * However, it can affect the simulation performance.
-     *
-     * <p>For this example, a large schedule interval such as 15 will make that just
-     * at every 15 seconds the processing of Cloudlets is updated.
-     * Consider that each Cloudlet takes 10 seconds to finish and that
-     * the simulation is paused at time 22. With a scheduling interval of 15 seconds,
-     * at the time 22, the Cloudlets execution will be updated just 1 time, that means
-     * if we get the list of finished cloudlets at time 22, it will not be updated yet with
-     * the second Cloudlet that finished at time 20.</p>
-     *
-     * <p><b>Realise that changing this value, the method {@link #pauseSimulationAtSpecificTime(SimEvent)}
-     * may not be called at the expected time, doesn't making the simulation to pause.
-     * If you want to change this value, the number used inside the method mentioned above
-     * has to be a multiple of this value.</b></p>
-     *
-     * <p>Considering this characteristics, the scheduling interval
-     * was set to a lower value to get updates as soon as possible.
-     * For more details, see {@link Datacenter#getSchedulingInterval()}.</p>
-     */
+    /// The interval in which the Datacenter will schedule events.
+    /// As lower is this interval, sooner the processing of Cloudlets inside VMs
+    /// is updated and you will get more notifications about the simulation execution.
+    /// However, it can affect the simulation performance.
+    ///
+    /// For this example, a large schedule interval such as 15 will make that just
+    /// at every 15 seconds the processing of Cloudlets is updated.
+    /// Consider that each Cloudlet takes 10 seconds to finish and that
+    /// the simulation is paused at time 22. With a scheduling interval of 15 seconds,
+    /// at the time 22, the Cloudlets execution will be updated just 1 time, that means
+    /// if we get the list of finished cloudlets at time 22, it will not be updated yet with
+    /// the second Cloudlet that finished at time 20.
+    ///
+    /// **Realise that changing this value, the method [#pauseSimulationAtSpecificTime(SimEvent)]
+    /// may not be called at the expected time, doesn't making the simulation to pause.
+    /// If you want to change this value, the number used inside the method mentioned above
+    /// has to be a multiple of this value.**
+    ///
+    /// Considering this characteristics, the scheduling interval
+    /// was set to a lower value to get updates as soon as possible.
+    /// For more details, see [Datacenter#getSchedulingInterval()].
     public static final int SCHEDULING_INTERVAL = 1;
 
     private final CloudSimPlus simulation;
@@ -106,9 +102,7 @@ public class PauseSimulationAtGivenTimeExample2 {
         new PauseSimulationAtGivenTimeExample2();
     }
 
-    /**
-     * Default constructor that builds the simulation.
-     */
+    /// Default constructor that builds the simulation.
     private PauseSimulationAtGivenTimeExample2() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -139,13 +133,11 @@ public class PauseSimulationAtGivenTimeExample2 {
 
         this.broker.submitCloudletList(cloudletList);
 
-        /**
-         * Sets a Listener that will be notified when any {@link SimEvent} is processed during the simulation
-         * execution.
-         * Realise that it is being used Java 8 Lambda Expressions to define a Listener
-         * that will be executed only when a simulation event happens.
-         * See the {@link #pauseSimulationAtSpecificTime(SimEvent)} method for more details.
-         */
+        /// Sets a Listener that will be notified when any [SimEvent] is processed during the simulation
+        /// execution.
+        /// Realise that it is being used Java 8 Lambda Expressions to define a Listener
+        /// that will be executed only when a simulation event happens.
+        /// See the [#pauseSimulationAtSpecificTime(SimEvent)] method for more details.
         this.simulation.addOnEventProcessingListener(this::pauseSimulationAtSpecificTime);
 
         /*
@@ -166,9 +158,7 @@ public class PauseSimulationAtGivenTimeExample2 {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * Pauses the simulation when any event occurs at the a defined time.
-     */
+    /// Pauses the simulation when any event occurs at the a defined time.
     private void pauseSimulationAtSpecificTime(SimEvent simEvent) {
         if(Math.floor(simEvent.getTime()) == 22){
             simulation.pause();
