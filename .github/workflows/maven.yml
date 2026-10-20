@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 25
-          distribution: 'adopt'
+          distribution: 'corretto'
           cache: 'maven'
       - name: Maven Build
         run: mvn -B package
