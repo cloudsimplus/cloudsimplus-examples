@@ -48,16 +48,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * An example showing how to use the new {@link Cloudlet#setLifeTime(double)} to
- * define the maximum time the Cloudlet is allowed to execute.
- * After this time is reached, the Cloudlet is finished as soon as possible.</p>
- *
- * @author Sun Lingyu
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 7.2.1
- * @see CloudletAndVmLifeTimeExample
- */
+/// An example showing how to use the new [Cloudlet#setLifeTime(double)] to
+/// define the maximum time the Cloudlet is allowed to execute.
+/// After this time is reached, the Cloudlet is finished as soon as possible.
+///
+/// @author Sun Lingyu
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 7.2.1
+/// @see CloudletAndVmLifeTimeExample
 public class CloudletLifeTimeExample {
     private static final int HOSTS = 3;
     private static final int HOST_PES = 10;
@@ -70,17 +68,13 @@ public class CloudletLifeTimeExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10_000;
 
-    /**
-     * If the scheduling interval is not multiple of the VM/Cloudlet lifetime,
-     * Cloudlets may execute more than you desire.
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// If the scheduling interval is not multiple of the VM/Cloudlet lifetime,
+    /// Cloudlets may execute more than you desire.
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 2;
 
-    /**
-     * Maximum time (in seconds) Cloudlets are allowed to execute.
-     * @see Lifetimed#setLifeTime(double)
-     */
+    /// Maximum time (in seconds) Cloudlets are allowed to execute.
+    /// @see Lifetimed#setLifeTime(double)
     private static final double CLOUDLET_LIFE_TIME = 5;
 
     private final CloudSimPlus simulation;

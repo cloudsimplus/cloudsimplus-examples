@@ -47,30 +47,25 @@ import org.cloudsimplus.vms.VmSimple;
 
 import java.util.*;
 
-/**
- * Shows how to use the {@link Simulation#addOnClockTickListener(EventListener) onClockTick Listener}
- * to keep track os simulation clock and store VM's RAM and BW utilization along the time.
- * CloudSim Plus already has built-in features to obtain VM's CPU utilization.
- * Check {@link org.cloudsimplus.examples.power.PowerExample}.
- *
- * <p>The example uses the CloudSim Plus {@link EventListener} feature
- * to enable monitoring the simulation and dynamically collect RAM and BW usage.
- * It relies on
- * <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">Java 8 Method References</a>
- * to set a method to be called for {@link Simulation#addOnClockTickListener(EventListener) onClockTick events}.
- * It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.1.2
- *
- * @see VmsCpuUsageExample
- * @see org.cloudsimplus.examples.power.PowerExample
- */
+/// Shows how to use the [onClockTick Listener][Simulation#addOnClockTickListener(EventListener)]
+/// to keep track os simulation clock and store VM's RAM and BW utilization along the time.
+/// CloudSim Plus already has built-in features to obtain VM's CPU utilization.
+/// Check [org.cloudsimplus.examples.power.PowerExample].
+///
+/// The example uses the CloudSim Plus [EventListener] feature
+/// to enable monitoring the simulation and dynamically collect RAM and BW usage.
+/// It relies on
+/// [Java 8 Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html)
+/// to set a method to be called for [onClockTick events][Simulation#addOnClockTickListener(EventListener)].
+/// It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.1.2
+///
+/// @see VmsCpuUsageExample
+/// @see org.cloudsimplus.examples.power.PowerExample
 public class VmsRamAndBwUsageExample {
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 4;
@@ -89,18 +84,16 @@ public class VmsRamAndBwUsageExample {
     private final List<Cloudlet> cloudletList;
     private final Datacenter datacenter0;
 
-    /**
-     * A map to store RAM utilization history for every VM.
-     * Each key is a VM and each value is another map.
-     * This entire data structure is usually called a multimap.
-     *
-     * <p>Such an internal map stores RAM utilization for a VM.
-     * The keys of this internal map are the time the utilization was collected (in seconds)
-     * and the value the utilization percentage (from 0 to 1).</p>
-     */
+    /// A map to store RAM utilization history for every VM.
+    /// Each key is a VM and each value is another map.
+    /// This entire data structure is usually called a multimap.
+    ///
+    /// Such an internal map stores RAM utilization for a VM.
+    /// The keys of this internal map are the time the utilization was collected (in seconds)
+    /// and the value the utilization percentage (from 0 to 1).
     private final Map<Vm, Map<Double, Double>> allVmsRamUtilizationHistory;
 
-    /** @see #allVmsRamUtilizationHistory */
+    /// @see #allVmsRamUtilizationHistory
     private final Map<Vm, Map<Double, Double>> allVmsBwUtilizationHistory;
 
     public static void main(String[] args) {
@@ -134,9 +127,7 @@ public class VmsRamAndBwUsageExample {
         printVmListResourceUtilizationHistory();
     }
 
-    /**
-     * Prints the RAM and BW utilization history of every Vm.
-     */
+    /// Prints the RAM and BW utilization history of every Vm.
     private void printVmListResourceUtilizationHistory() {
         System.out.println();
         for (final var vm : vmList) {
@@ -144,9 +135,7 @@ public class VmsRamAndBwUsageExample {
         }
     }
 
-    /**
-     * Prints the RAM and BW utilization history of a given Vm.
-     */
+    /// Prints the RAM and BW utilization history of a given Vm.
     private void printVmUtilizationHistory(Vm vm) {
         System.out.println(vm + " RAM and BW utilization history");
         System.out.println("----------------------------------------------------------------------------------");
@@ -169,14 +158,12 @@ public class VmsRamAndBwUsageExample {
     }
 
 
-    /**
-     * Initializes a map that will store utilization history for
-     * some resource (such as RAM or BW) of every VM.
-     * It also creates an empty internal map to store
-     * the resource utilization for every VM along the simulation execution.
-     * The internal map for every VM will be empty.
-     * They are filled inside the {@link #onClockTickListener(EventInfo)}.
-     */
+    /// Initializes a map that will store utilization history for
+    /// some resource (such as RAM or BW) of every VM.
+    /// It also creates an empty internal map to store
+    /// the resource utilization for every VM along the simulation execution.
+    /// The internal map for every VM will be empty.
+    /// They are filled inside the [#onClockTickListener(EventInfo)].
     private Map<Vm, Map<Double, Double>> initializeUtilizationHistory() {
         //TreeMap sorts entries based on the key
         final Map<Vm, Map<Double, Double>> map = new HashMap<>(VMS);
@@ -188,28 +175,24 @@ public class VmsRamAndBwUsageExample {
         return map;
     }
 
-    /**
-     * Keeps track of simulation clock.
-     * Every time the clock changes, this method is called.
-     * To enable this method to be called at a defined
-     * interval, you need to set the {@link Datacenter#setSchedulingInterval(double) scheduling interval}.
-     *
-     * @param evt information about the clock tick event
-     * @see #SCHEDULING_INTERVAL
-     */
+    /// Keeps track of simulation clock.
+    /// Every time the clock changes, this method is called.
+    /// To enable this method to be called at a defined
+    /// interval, you need to set the [scheduling interval][Datacenter#setSchedulingInterval(double)].
+    ///
+    /// @param evt information about the clock tick event
+    /// @see #SCHEDULING_INTERVAL
     private void onClockTickListener(final EventInfo evt) {
         collectVmResourceUtilization(this.allVmsRamUtilizationHistory, Ram.class);
         collectVmResourceUtilization(this.allVmsBwUtilizationHistory, Bandwidth.class);
     }
 
-    /**
-     * Collects the utilization percentage of a given VM resource for every VM.
-     * CloudSim Plus already has built-in features to obtain VM's CPU utilization.
-     * Check {@link org.cloudsimplus.examples.power.PowerExample}.
-     *
-     * @param allVmsUtilizationHistory the map where the collected utilization for every VM will be stored
-     * @param resourceClass the kind of resource to collect its utilization (usually {@link Ram} or {@link Bandwidth}).
-     */
+    /// Collects the utilization percentage of a given VM resource for every VM.
+    /// CloudSim Plus already has built-in features to obtain VM's CPU utilization.
+    /// Check [org.cloudsimplus.examples.power.PowerExample].
+    ///
+    /// @param allVmsUtilizationHistory the map where the collected utilization for every VM will be stored
+    /// @param resourceClass the kind of resource to collect its utilization (usually [Ram] or [Bandwidth]).
     private void collectVmResourceUtilization(final Map<Vm, Map<Double, Double>> allVmsUtilizationHistory, Class<? extends ResourceManageable> resourceClass) {
         for (final var vm : vmList) {
             /*Gets the internal resource utilization map for the current VM.
@@ -220,9 +203,7 @@ public class VmsRamAndBwUsageExample {
         }
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -250,9 +231,7 @@ public class VmsRamAndBwUsageExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -267,9 +246,7 @@ public class VmsRamAndBwUsageExample {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
@@ -279,11 +256,9 @@ public class VmsRamAndBwUsageExample {
         return newCloudletList;
     }
 
-    /**
-     * Creates a Cloudlet with specific {@link UtilizationModel} for RAM, BW and CPU.
-     * You can change the method to use any {@link UtilizationModel} you want.
-     * @return
-     */
+    /// Creates a Cloudlet with specific [UtilizationModel] for RAM, BW and CPU.
+    /// You can change the method to use any [UtilizationModel] you want.
+    /// @return
     private Cloudlet createCloudlet() {
         final var ramUtilizationModel = new UtilizationModelDynamic(0.2);
         final var bwUtilizationModel = new UtilizationModelDynamic(0.1);
@@ -299,11 +274,9 @@ public class VmsRamAndBwUsageExample {
             .setUtilizationModelBw(bwUtilizationModel);
     }
 
-    /**
-     * Defines how the Cloudlet's utilization of RAM and BW will increase along the simulation time.
-     * @return the updated utilization for RAM or BW
-     * @see #createCloudlet()
-     */
+    /// Defines how the Cloudlet's utilization of RAM and BW will increase along the simulation time.
+    /// @return the updated utilization for RAM or BW
+    /// @see #createCloudlet()
     private double utilizationUpdate(UtilizationModelDynamic utilizationModel) {
         return utilizationModel.getUtilization() + utilizationModel.getTimeSpan() * 0.01;
     }

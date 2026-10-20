@@ -44,19 +44,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example that show the usage of the {@link VmAllocationPolicyRoundRobin},
- * that cyclically places VMs into Hosts. This way, it places a VM into a Host
- * and moves to the next Host.
- * All hosts are not powered-on when created. As VMs need to be placed,
- * Hosts are activated on demand, as can be checked in the logs.
- *
- * <p>Keep in mind that such a policy is very naive and increases the number of active Hosts,
- * leading to higher power consumption.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.4.2
- */
+/// An example that show the usage of the [VmAllocationPolicyRoundRobin],
+/// that cyclically places VMs into Hosts. This way, it places a VM into a Host
+/// and moves to the next Host.
+/// All hosts are not powered-on when created. As VMs need to be placed,
+/// Hosts are activated on demand, as can be checked in the logs.
+///
+/// Keep in mind that such a policy is very naive and increases the number of active Hosts,
+/// leading to higher power consumption.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.4.2
 public class VmAllocationPolicyRoundRobinExample {
     private static final int HOSTS = 4;
     private static final int HOST_PES = 8;
@@ -101,9 +99,7 @@ public class VmAllocationPolicyRoundRobinExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -133,9 +129,7 @@ public class VmAllocationPolicyRoundRobinExample {
         return new HostSimple(ram, bw, storage, peList, false);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -148,9 +142,7 @@ public class VmAllocationPolicyRoundRobinExample {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 

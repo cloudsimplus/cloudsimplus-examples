@@ -51,32 +51,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * An example showing how to create Hosts from a Google Machine Events Trace
- * using a {@link GoogleMachineEventsTraceReader}. The trace is located in
- * resources/workload/google-traces/machine-events-sample-1.csv It has some
- * records that defines the addition and removal of Hosts to the Datacenters.
- *
- * <p>
- * The removal is used to simulate maintenance or failure but the trace doesn't
- * provide information about the cause of the removal. This way, CloudSim Plus
- * considers that any Host removal is due to a failure and injects that failure
- * for the Host at the specified timestamp. The same Host can fail and recover
- * as specified in the trace. CloudSim Plus accordingly process such events. You
- * can confirm in the logs that Host 3 is added and removed multiple times.
- * </p>
- *
- * <p>
- * Check important details at {@link TraceReaderAbstract}. To better understand
- * the structure of trace files, check the google-cluster-data-samples.xlsx
- * spreadsheet inside the docs dir.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.0.0
- *
- * TODO {@link MachineEventType#UPDATE} events are not being processed yet.
- */
+/// An example showing how to create Hosts from a Google Machine Events Trace
+/// using a [GoogleMachineEventsTraceReader]. The trace is located in
+/// resources/workload/google-traces/machine-events-sample-1.csv It has some
+/// records that defines the addition and removal of Hosts to the Datacenters.
+///
+/// The removal is used to simulate maintenance or failure but the trace doesn't
+/// provide information about the cause of the removal. This way, CloudSim Plus
+/// considers that any Host removal is due to a failure and injects that failure
+/// for the Host at the specified timestamp. The same Host can fail and recover
+/// as specified in the trace. CloudSim Plus accordingly process such events. You
+/// can confirm in the logs that Host 3 is added and removed multiple times.
+///
+/// Check important details at [TraceReaderAbstract]. To better understand
+/// the structure of trace files, check the google-cluster-data-samples.xlsx
+/// spreadsheet inside the docs dir.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.0.0
+///
+/// TODO [MachineEventType#UPDATE] events are not being processed yet.
 public class GoogleMachineEventsExample1 {
     private static final String TRACE_FILENAME = "workload/google-traces/machine-events-sample-1.csv";
     private static final int HOST_BW = 10;
@@ -125,29 +119,23 @@ public class GoogleMachineEventsExample1 {
         return cloudlet.getVm().getHost().getStartTime();
     }
 
-    /**
-     * Method called every time a new Host becomes available during simulation runtime
-     * for the second Datacenter. It creates a VM and a Cloudlet, submitting them when there is a new Host available.
-     *
-     * @param info event information (that includes the simulation time and the new available host)
-     */
+    /// Method called every time a new Host becomes available during simulation runtime
+    /// for the second Datacenter. It creates a VM and a Cloudlet, submitting them when there is a new Host available.
+    ///
+    /// @param info event information (that includes the simulation time and the new available host)
     private void onHostAvailableListener(HostEventInfo info) {
         final Vm vm = createVm(info.getHost());
         broker0.submitVm(vm);
         broker0.submitCloudlet(createCloudlet(vm));
     }
 
-    /**
-     * Creates the Datacenters and Hosts, where Hosts's specification is read from a
-     * "machine events" Google Cluster Data trace file
-     *
-     * <p>
-     * A {@link GoogleMachineEventsTraceReader} instance is used to read the file.
-     * It requires a {@link Function}
-     * that will be called internally to actually create the Hosts.
-     * This function is the {@link #createHost(MachineEvent)}.
-     * </p>
-     */
+    /// Creates the Datacenters and Hosts, where Hosts's specification is read from a
+    /// "machine events" Google Cluster Data trace file
+    ///
+    /// A [GoogleMachineEventsTraceReader] instance is used to read the file.
+    /// It requires a [Function]
+    /// that will be called internally to actually create the Hosts.
+    /// This function is the [#createHost(MachineEvent)].
     private void createDatacenters() {
         datacenters = new ArrayList<>(DATACENTERS_NUMBER);
 
@@ -176,14 +164,12 @@ public class GoogleMachineEventsExample1 {
         datacenters.get(0).addHostList(hostList);
     }
 
-    /**
-     * A method that is used to actually create each Host defined in the trace file.
-     * The researcher can write his/her own code inside this method to define
-     * how he/she wants to create the Hosts based on the trace data.
-     *
-     * @param event an object containing the trace line read, used to create the Host.
-     * @return
-     */
+    /// A method that is used to actually create each Host defined in the trace file.
+    /// The researcher can write his/her own code inside this method to define
+    /// how he/she wants to create the Hosts based on the trace data.
+    ///
+    /// @param event an object containing the trace line read, used to create the Host.
+    /// @return
     private Host createHost(final MachineEvent event) {
         final Host host = new HostSimple(event.getRam(), HOST_BW, HOST_STORAGE, createPesList(event.getCpuCores()));
         host.setId(event.getMachineId());
@@ -199,9 +185,7 @@ public class GoogleMachineEventsExample1 {
         return cpuCoresList;
     }
 
-    /**
-     * Creates a list of VMs and Cloudlets in a given Datacenter.
-     */
+    /// Creates a list of VMs and Cloudlets in a given Datacenter.
     private List<Vm> createAndSubmitVms(Datacenter datacenter) {
         final var list = new ArrayList<Vm>(datacenter.getHostList().size());
         /* Creates 1 VM for each available Host of the datacenter.
@@ -214,21 +198,17 @@ public class GoogleMachineEventsExample1 {
         return list;
     }
 
-    /**
-     * Creates a VM with the same capacity of a given Host.
-     * This way, it will run one VM by Host.
-     * @param host
-     * @return
-     */
+    /// Creates a VM with the same capacity of a given Host.
+    /// This way, it will run one VM by Host.
+    /// @param host
+    /// @return
     private Vm createVm(final Host host) {
         return new VmSimple(1000, host.getPesNumber())
             .setRam(host.getRam().getCapacity()).setBw(HOST_BW).setSize(HOST_STORAGE)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
     }
 
-    /**
-     * Creates a list of Cloudlets for the given VMs.
-     */
+    /// Creates a list of Cloudlets for the given VMs.
     private void createAndSubmitCloudlets(final List<Vm> vmList) {
         final var list = new ArrayList<Cloudlet>(vmList.size());
         for (final var vm : vmList) {

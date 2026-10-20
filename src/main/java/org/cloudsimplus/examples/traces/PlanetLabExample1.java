@@ -50,14 +50,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * An example showing how to use the {@link UtilizationModelPlanetLab} class
- * to define Cloudlets' CPU utilization based on <a href="https://www.planet-lab.org">PlanetLab's</a> trace files.
- * Check the {@link #createCloudlets()} method.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.0.0
- */
+/// An example showing how to use the [UtilizationModelPlanetLab] class
+/// to define Cloudlets' CPU utilization based on [PlanetLab's](https://www.planet-lab.org) trace files.
+/// Check the [#createCloudlets()] method.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.0.0
 public class PlanetLabExample1 {
     private static final int HOSTS = 3;
     private static final int HOST_PES = 10;
@@ -72,16 +70,14 @@ public class PlanetLabExample1 {
 
     private static final String TRACE_FILE = "workload/planetlab/20110303/75-130-96-12_static_oxfr_ma_charter_com_irisaple_wup";
 
-    /**
-     * The time interval in which precise values can be got from
-     * the PlanetLab {@link #TRACE_FILE}.
-     * Such a value must be also defined as the Datacenter
-     * scheduling interval to ensure that Cloudlets' processing
-     * is updated with the values read from the trace file
-     * at the given interval.
-     *
-     * @see UtilizationModelPlanetLab#getSchedulingInterval()
-     */
+    /// The time interval in which precise values can be got from
+    /// the PlanetLab [#TRACE_FILE].
+    /// Such a value must be also defined as the Datacenter
+    /// scheduling interval to ensure that Cloudlets' processing
+    /// is updated with the values read from the trace file
+    /// at the given interval.
+    ///
+    /// @see UtilizationModelPlanetLab#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 300;
 
     private final CloudSimPlus simulation;
@@ -119,9 +115,7 @@ public class PlanetLabExample1 {
         System.out.printf("Simulation finished at %s. Execution time: %.2f seconds%n", LocalTime.now(), TimeUtil.elapsedSeconds(startSecs));
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -150,9 +144,7 @@ public class PlanetLabExample1 {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -167,11 +159,9 @@ public class PlanetLabExample1 {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets setting their CPU UtilizationModel as
-     * a {@link UtilizationModelPlanetLab} that read CPU utilization from
-     * a PlanetLab trace file.
-     */
+    /// Creates a list of Cloudlets setting their CPU UtilizationModel as
+    /// a [UtilizationModelPlanetLab] that read CPU utilization from
+    /// a PlanetLab trace file.
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilizationCpu = UtilizationModelPlanetLab.getInstance(TRACE_FILE, SCHEDULING_INTERVAL);

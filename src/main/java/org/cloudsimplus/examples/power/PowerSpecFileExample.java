@@ -50,39 +50,35 @@ import java.util.List;
 
 import static java.util.Comparator.comparingLong;
 
-/**
- * An example to show power consumption of Hosts
- * using the specifications from a file created based on
- * <a href="https://www.specs.org">www.specs.org</a> website public data.
- * Realize that for this goal, you define a {@link PowerModelHostSpec}
- * for each Host by calling {@code host.setPowerModel(powerModel)}.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 8.1.0
- *
- * @see #POWER_SPEC_FILE
- * @see #createPowerHost(int)
- * @see PowerExample
- */
+/// An example to show power consumption of Hosts
+/// using the specifications from a file created based on
+/// [www.specs.org](https://www.specs.org) website public data.
+/// Realize that for this goal, you define a [PowerModelHostSpec]
+/// for each Host by calling `host.setPowerModel(powerModel)`.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 8.1.0
+///
+/// @see #POWER_SPEC_FILE
+/// @see #createPowerHost(int)
+/// @see PowerExample
 public class PowerSpecFileExample {
-    /**
-     * Defines, between other things, the time intervals
-     * to keep Hosts CPU utilization history records.
-     */
+    /// Defines, between other things, the time intervals
+    /// to keep Hosts CPU utilization history records.
     private static final int SCHEDULING_INTERVAL = 10;
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
 
-    /** Indicates the time (in seconds) the Host takes to start up. */
+    /// Indicates the time (in seconds) the Host takes to start up.
     private static final double HOST_START_UP_DELAY = 5;
 
-    /** Indicates the time (in seconds) the Host takes to shut down. */
+    /// Indicates the time (in seconds) the Host takes to shut down.
     private static final double HOST_SHUT_DOWN_DELAY = 3;
 
-    /** Indicates Host power consumption (in Watts) during startup. */
+    /// Indicates Host power consumption (in Watts) during startup.
     private static final double HOST_START_UP_POWER = 5;
 
-    /** Indicates Host power consumption (in Watts) during shutdown. */
+    /// Indicates Host power consumption (in Watts) during shutdown.
     private static final double HOST_SHUT_DOWN_POWER = 3;
 
     private static final int VMS = 4;
@@ -92,9 +88,7 @@ public class PowerSpecFileExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 50000;
 
-    /**
-     * The path to the file containing host power utilization specs.
-     */
+    /// The path to the file containing host power utilization specs.
     private static final String POWER_SPEC_FILE = "power-specs/PowerModelSpecPowerHpProLiantMl110G3PentiumD930.txt";
 
     private final CloudSimPlus simulation;
@@ -104,12 +98,10 @@ public class PowerSpecFileExample {
     private Datacenter datacenter0;
     private final List<Host> hostList;
 
-    /**
-     * Indicates how hosts consume power according to CPU utilization percentage
-     * (based on data from a power spec file).
-     * This attribute is used just to ensure the same data will be read just once
-     * and used for all created Hosts.
-     */
+    /// Indicates how hosts consume power according to CPU utilization percentage
+    /// (based on data from a power spec file).
+    /// This attribute is used just to ensure the same data will be read just once
+    /// and used for all created Hosts.
     private final PowerModelHostSpec DEF_POWER_MODEL = PowerModelHostSpec.getInstance(POWER_SPEC_FILE);
 
     public static void main(String[] args) {
@@ -143,11 +135,9 @@ public class PowerSpecFileExample {
         printHostsCpuUtilizationAndPowerConsumption();
     }
 
-    /**
-     * The Host CPU Utilization History is only computed
-     * if VMs utilization history is enabled by calling
-     * {@code vm.getUtilizationHistory().enable()}.
-     */
+    /// The Host CPU Utilization History is only computed
+    /// if VMs utilization history is enabled by calling
+    /// `vm.getUtilizationHistory().enable()`.
     private void printHostsCpuUtilizationAndPowerConsumption() {
         System.out.println();
         for (final Host host : hostList) {
@@ -167,9 +157,7 @@ public class PowerSpecFileExample {
             host.getId(), utilizationPercentMean * 100, watts);
     }
 
-    /**
-     * Creates a {@link Datacenter} and its {@link Host}s.
-     */
+    /// Creates a [Datacenter] and its [Host]s.
     private Datacenter createDatacenter() {
         for(int i = 0; i < HOSTS; i++) {
             final var host = createPowerHost(i);
@@ -211,9 +199,7 @@ public class PowerSpecFileExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -225,9 +211,7 @@ public class PowerSpecFileExample {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelDynamic(0.2);

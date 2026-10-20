@@ -49,64 +49,52 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Shows how to keep the simulation running, even
- * when there is no event to be processed anymore.
- * It calls the {@link Simulation#terminateAt(double)} to define
- * the time the simulation must be terminated.
- *
- * <p>The example is useful when you want to run a simulation
- * for a specific amount of time.
- * For instance, if you want to run a simulation for 24 hours,
- * you just need to call {@code simulation.terminateAt(60*60*24)} (realize the value is in seconds).</p>
- *
- * <p>It creates 4 Cloudlets and 2 VMs statically.
- * These Cloudlets will take 10 seconds to finish, but
- * the simulation is set to terminate
- * only after the time defined in {@link #TIME_TO_TERMINATE_SIMULATION}.
- *
- * This way, the simulation keeps waiting for dynamically
- * arrived events. Then, at a {@link #TIME_TO_CREATE_NEW_CLOUDLET defined time},
- * new Cloudlets are created.
- * </p>
- *
- * <p>The example uses the CloudSim Plus {@link EventListener} feature
- * to enable monitoring the simulation and dynamically creating Cloudlets and VMs at runtime.
- * It relies on
- * <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">Java 8 Method References</a>
- * to set a method to be called for {@link Simulation#addOnClockTickListener(EventListener) onClockTick events}.
- * It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
- * </p>
- *
- * <p>Since the simulation was set to keep waiting for new events
- * until a defined time, the clock will be updated
- * even if no event arrives, to simulate time passing.
- * Check the {@link Simulation#terminateAt(double)} for details.
- * </p>
- *
- * <p>At the time defined in {@link #TIME_TO_CREATE_NEW_CLOUDLET},
- * 1 Cloudlet and 1 VM is created, so the results will show 5 Cloudlets.
- * The simulation will just end at the specified time.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 2.3.0
- * @see RandomCloudletsArrivalExample
- */
+/// Shows how to keep the simulation running, even
+/// when there is no event to be processed anymore.
+/// It calls the [Simulation#terminateAt(double)] to define
+/// the time the simulation must be terminated.
+///
+/// The example is useful when you want to run a simulation
+/// for a specific amount of time.
+/// For instance, if you want to run a simulation for 24 hours,
+/// you just need to call `simulation.terminateAt(60*60*24)` (realize the value is in seconds).
+///
+/// It creates 4 Cloudlets and 2 VMs statically.
+/// These Cloudlets will take 10 seconds to finish, but
+/// the simulation is set to terminate
+/// only after the time defined in [#TIME_TO_TERMINATE_SIMULATION].
+///
+/// This way, the simulation keeps waiting for dynamically
+/// arrived events. Then, at a [defined time][#TIME_TO_CREATE_NEW_CLOUDLET],
+/// new Cloudlets are created.
+///
+/// The example uses the CloudSim Plus [EventListener] feature
+/// to enable monitoring the simulation and dynamically creating Cloudlets and VMs at runtime.
+/// It relies on
+/// [Java 8 Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html)
+/// to set a method to be called for [onClockTick events][Simulation#addOnClockTickListener(EventListener)].
+/// It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
+///
+/// Since the simulation was set to keep waiting for new events
+/// until a defined time, the clock will be updated
+/// even if no event arrives, to simulate time passing.
+/// Check the [Simulation#terminateAt(double)] for details.
+///
+/// At the time defined in [#TIME_TO_CREATE_NEW_CLOUDLET],
+/// 1 Cloudlet and 1 VM is created, so the results will show 5 Cloudlets.
+/// The simulation will just end at the specified time.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 2.3.0
+/// @see RandomCloudletsArrivalExample
 public class KeepSimulationRunningExample {
-    /**
-     * @see #createDynamicCloudletAndVm(EventInfo)
-     */
+    /// @see #createDynamicCloudletAndVm(EventInfo)
     private static final double TIME_TO_CREATE_NEW_CLOUDLET = 15;
 
-    /**
-     * @see Simulation#terminateAt(double)
-     */
+    /// @see Simulation#terminateAt(double)
     private static final double TIME_TO_TERMINATE_SIMULATION = TIME_TO_CREATE_NEW_CLOUDLET*2;
 
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 3;
@@ -158,9 +146,7 @@ public class KeepSimulationRunningExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -191,9 +177,7 @@ public class KeepSimulationRunningExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private void createVms() {
         for (int i = 0; i < VMS; i++) {
             vmList.add(createVm(VM_PES));
@@ -206,9 +190,7 @@ public class KeepSimulationRunningExample {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private void createCloudlets() {
         for (int i = 0; i < CLOUDLETS; i++) {
             cloudletList.add(createCloudlet());
@@ -225,10 +207,8 @@ public class KeepSimulationRunningExample {
             .setUtilizationModelBw(um);
     }
 
-    /**
-     * Simulates the dynamic arrival of a Cloudlet and a VM during simulation runtime.
-     * @param evt
-     */
+    /// Simulates the dynamic arrival of a Cloudlet and a VM during simulation runtime.
+    /// @param evt
     private void createDynamicCloudletAndVm(final EventInfo evt) {
         if((int)evt.getTime() == TIME_TO_CREATE_NEW_CLOUDLET){
             System.out.printf("%n# Dynamically creating 1 Cloudlet and 1 VM at time %.2f%n", evt.getTime());

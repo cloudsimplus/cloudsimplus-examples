@@ -45,21 +45,19 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example that runs 2 Cloudlets into a VM where its number
- * of PEs is just half of the total PEs required by all Cloudlets.
- * The Vm uses a {@link CloudletSchedulerTimeShared}.
- * Since there are enough PEs for all Cloudlets, this scheduler
- * shares existing PEs among all Cloudlets, so that there aren't
- * waiting Cloudlets.
- * They start at the same time and also considering they have the same length,
- * they finish together too.
- * However, each Cloudlet will take the double of the time
- * it would take if there were enough PEs for all of them.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.2.1
- */
+/// An example that runs 2 Cloudlets into a VM where its number
+/// of PEs is just half of the total PEs required by all Cloudlets.
+/// The Vm uses a [CloudletSchedulerTimeShared].
+/// Since there are enough PEs for all Cloudlets, this scheduler
+/// shares existing PEs among all Cloudlets, so that there aren't
+/// waiting Cloudlets.
+/// They start at the same time and also considering they have the same length,
+/// they finish together too.
+/// However, each Cloudlet will take the double of the time
+/// it would take if there were enough PEs for all of them.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.2.1
 public class CloudletSchedulerTimeSharedExample1 {
     private static final int HOSTS = 1;
     private static final int HOST_PES = 4;
@@ -103,9 +101,7 @@ public class CloudletSchedulerTimeSharedExample1 {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int h = 0; h < HOSTS; h++) {
@@ -132,9 +128,7 @@ public class CloudletSchedulerTimeSharedExample1 {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int v = 0; v < VMS; v++) {
@@ -149,9 +143,7 @@ public class CloudletSchedulerTimeSharedExample1 {
         return newVmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int c = 0; c < CLOUDLETS; c++) {

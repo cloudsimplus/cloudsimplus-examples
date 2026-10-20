@@ -53,40 +53,35 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example showing how the {@link Simulation#getMinTimeBetweenEvents()} may affect the processing
- * of events in your simulation.
- * This way, it may affect simulation accuracy, regarding the execution time of Cloudlets.
- *
- * <p>These issues happen when the time between some events is smaller than the
- * {@link Simulation#getMinTimeBetweenEvents()} (for instance, some Cloudlets are finishing
- * in a time interval smaller than the mentioned simulation attribute).
- * Therefore, you may need to fine tune such attribute according to your simulation.</p>
- *
- * <p>This example reproduces the configuration
- * <a href="https://github.com/cloudsimplus/cloudsimplus/issues/163">Issue #163</a>.
- * The documentation of the {@link #MIN_TIME_BETWEEN_EVENTS} constant below shows how
- * to configure the attribute to make CloudSim Plus process all events
- * accurately in this scenario and then all submitted Cloudlets be finished.
- * </p>
- *
- * @author Natthasak Vechprasit
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.0.7
- */
+/// An example showing how the [Simulation#getMinTimeBetweenEvents()] may affect the processing
+/// of events in your simulation.
+/// This way, it may affect simulation accuracy, regarding the execution time of Cloudlets.
+///
+/// These issues happen when the time between some events is smaller than the
+/// [Simulation#getMinTimeBetweenEvents()] (for instance, some Cloudlets are finishing
+/// in a time interval smaller than the mentioned simulation attribute).
+/// Therefore, you may need to fine tune such attribute according to your simulation.
+///
+/// This example reproduces the configuration
+/// [Issue #163](https://github.com/cloudsimplus/cloudsimplus/issues/163).
+/// The documentation of the [#MIN_TIME_BETWEEN_EVENTS] constant below shows how
+/// to configure the attribute to make CloudSim Plus process all events
+/// accurately in this scenario and then all submitted Cloudlets be finished.
+///
+/// @author Natthasak Vechprasit
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.0.7
 public class MinTimeBetweenEventsExample {
-    /**
-     * The minimum time between an event and the previous one to get the current event to be processed.
-     *
-     * <p>If events happen in a time interval smaller than this value, that will
-     * impact results accuracy. The created Cloudlets take about 0.1 second to finish,
-     * but with the current MIN_TIME_BETWEEN_EVENTS, you'll see the ExecTime is greater than
-     * that.</p>
-     *
-     * <p>You can fix that by changing this constant to 0.01, for instance.</p>
-     *
-     * @see CloudSimPlus#getMinTimeBetweenEvents()
-     */
+    /// The minimum time between an event and the previous one to get the current event to be processed.
+    ///
+    /// If events happen in a time interval smaller than this value, that will
+    /// impact results accuracy. The created Cloudlets take about 0.1 second to finish,
+    /// but with the current MIN_TIME_BETWEEN_EVENTS, you'll see the ExecTime is greater than
+    /// that.
+    ///
+    /// You can fix that by changing this constant to 0.01, for instance.
+    ///
+    /// @see CloudSimPlus#getMinTimeBetweenEvents()
     private static final double MIN_TIME_BETWEEN_EVENTS = 0.5;
 
     private static final int HOST_PES_NUMBER = 4;
@@ -174,10 +169,8 @@ public class MinTimeBetweenEventsExample {
         return vm;
     }
 
-    /**
-     * Creates a list of Cloudlets to be run inside a given VM
-     * @param vm the VM to run the Cloudlets
-     */
+    /// Creates a list of Cloudlets to be run inside a given VM
+    /// @param vm the VM to run the Cloudlets
     private void createAndSubmitCloudlets(final Vm vm) {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
@@ -189,11 +182,9 @@ public class MinTimeBetweenEventsExample {
         cloudletList.addAll(list);
     }
 
-    /**
-     * Creates a cloudlet with random submission delay for a given VM.
-     * @param vm the VM to run the Cloudlet
-     * @return the created Cloudlet
-     */
+    /// Creates a cloudlet with random submission delay for a given VM.
+    /// @param vm the VM to run the Cloudlet
+    /// @return the created Cloudlet
     private Cloudlet createCloudlet(final Vm vm) {
         final long fileSize = 300;   //in bytes
         final long outputSize = 300; //in bytes

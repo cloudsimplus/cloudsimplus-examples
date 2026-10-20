@@ -63,33 +63,27 @@ import java.util.stream.IntStream;
 import static org.cloudsimplus.util.BytesConversion.megaBytesToBytes;
 import static org.cloudsimplus.util.MathUtil.positive;
 
-/**
- * An example showing how to use <a href="https://github.com/google/cluster-data">Google Cluster Data</a> trace files.
- * The example creates Cloudlets (tasks) from a Google Task Events
- * Trace using a {@link GoogleTaskEventsTraceReader}. Then it uses a
- * {@link GoogleTaskUsageTraceReader} to read "task usage" trace files that
- * define how created Cloudlets will use resources along the time.
- *
- * <p>
- * The traces are located in resources/workload/google-traces/. Each line in the
- * "task events" trace defines the scheduling of tasks (Cloudlets) inside a
- * Datacenter.
- * </p>
- *
- * <p>
- * Check important details at {@link TraceReaderAbstract}. To better understand
- * the structure of trace files, check the google-cluster-data-samples.xlsx
- * spreadsheet inside the docs dir.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.0.0
- *
- * TODO A joint example that creates Hosts and Cloudlets from trace files will be useful.
- * TODO See https://github.com/manoelcampos/cloudsimplus/issues/151
- * TODO {@link CloudSimTag#CLOUDLET_FAIL} events aren't been processed.
- * TODO It has to be checked how to make the Cloudlet to be executed in the Host specified in the trace file.
- */
+/// An example showing how to use [Google Cluster Data](https://github.com/google/cluster-data) trace files.
+/// The example creates Cloudlets (tasks) from a Google Task Events
+/// Trace using a [GoogleTaskEventsTraceReader]. Then it uses a
+/// [GoogleTaskUsageTraceReader] to read "task usage" trace files that
+/// define how created Cloudlets will use resources along the time.
+///
+/// The traces are located in resources/workload/google-traces/. Each line in the
+/// "task events" trace defines the scheduling of tasks (Cloudlets) inside a
+/// Datacenter.
+///
+/// Check important details at [TraceReaderAbstract]. To better understand
+/// the structure of trace files, check the google-cluster-data-samples.xlsx
+/// spreadsheet inside the docs dir.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.0.0
+///
+/// TODO A joint example that creates Hosts and Cloudlets from trace files will be useful.
+/// TODO See https://github.com/manoelcampos/cloudsimplus/issues/151
+/// TODO [CloudSimTag#CLOUDLET_FAIL] events aren't been processed.
+/// TODO It has to be checked how to make the Cloudlet to be executed in the Host specified in the trace file.
 public class GoogleTaskEventsExample1 {
     private static final String TASK_EVENTS_FILE = "workload/google-traces/task-events-sample-1.csv";
     private static final String TASK_USAGE_FILE = "workload/google-traces/task-usage-sample-1.csv";
@@ -102,18 +96,14 @@ public class GoogleTaskEventsExample1 {
     private static final long HOST_STORAGE = 1000000; //in Megabytes
     private static final double HOST_MIPS = 1000;
 
-    /**
-     * Defines a negative length for Cloudlets created from the Google Task Events Trace file,
-     * so that they can run indefinitely until a {@link CloudSimTag#CLOUDLET_FINISH}
-     * event is received by the {@link DatacenterBroker}.
-     * Check out {@link Cloudlet#setLength(long)} for details.
-     */
+    /// Defines a negative length for Cloudlets created from the Google Task Events Trace file,
+    /// so that they can run indefinitely until a [CloudSimTag#CLOUDLET_FINISH]
+    /// event is received by the [DatacenterBroker].
+    /// Check out [Cloudlet#setLength(long)] for details.
     private static final int  CLOUDLET_LENGTH = -10_000;
 
-    /**
-     * Max number of Cloudlets to create from the Google Task Events trace file.
-     * @see GoogleTaskEventsTraceReader#setMaxCloudletsToCreate(int)
-     */
+    /// Max number of Cloudlets to create from the Google Task Events trace file.
+    /// @see GoogleTaskEventsTraceReader#setMaxCloudletsToCreate(int)
     private static final int MAX_CLOUDLETS = 8;
 
     private static final long VM_PES = 4;
@@ -162,26 +152,21 @@ public class GoogleTaskEventsExample1 {
         return brokers.stream().mapToInt(b -> b.getCloudletCreatedList().size()).sum();
     }
 
-    /**
-     * Creates a list of Cloudlets from a "task events" Google Cluster Data trace file.
-     * The brokers that own each Cloudlet are defined by the username field
-     * in the file. For each distinct username, a broker is created
-     * and its name is defined based on the username.
-     *
-     * <p>
-     * A {@link GoogleTaskEventsTraceReader} instance is used to read the file.
-     * It requires a {@link Function}
-     * that will be called internally to actually create the Cloudlets.
-     * This function is the {@link #createCloudlet(TaskEvent)}.*
-     * </p>
-     *
-     * <p>
-     * If you want to improve simulation performance and use the same broker
-     * for all created cloudlets, avoiding the reader to create brokers based on the
-     * username field of the trace file, call {@link BrokerManager#setDefaultBroker(DatacenterBroker)}.
-     * </p>
-     * @see GoogleTaskEventsTraceReader#getBrokerManager()
-     */
+    /// Creates a list of Cloudlets from a "task events" Google Cluster Data trace file.
+    /// The brokers that own each Cloudlet are defined by the username field
+    /// in the file. For each distinct username, a broker is created
+    /// and its name is defined based on the username.
+    ///
+    /// A [GoogleTaskEventsTraceReader] instance is used to read the file.
+    /// It requires a [Function]
+    /// that will be called internally to actually create the Cloudlets.
+    /// This function is the [#createCloudlet(TaskEvent)].*
+    ///
+    /// If you want to improve simulation performance and use the same broker
+    /// for all created cloudlets, avoiding the reader to create brokers based on the
+    /// username field of the trace file, call [BrokerManager#setDefaultBroker(DatacenterBroker)].
+    ///
+    /// @see GoogleTaskEventsTraceReader#getBrokerManager()
     private void createCloudletsAndBrokersFromTraceFile() {
         taskEventsReader =
             GoogleTaskEventsTraceReader
@@ -196,15 +181,13 @@ public class GoogleTaskEventsExample1 {
             cloudlets.size(), brokers.size(), TASK_EVENTS_FILE);
     }
 
-    /**
-     * A method called by a {@link GoogleTaskEventsTraceReader} to actually create each Cloudlet
-     * defined as a task in the trace file.
-     * You can write your own code inside this method to define
-     * how you want to create the Cloudlet based on the trace data.
-     *
-     * @param event an object containing the trace line read, used to create the Cloudlet.
-     * @return
-     */
+    /// A method called by a [GoogleTaskEventsTraceReader] to actually create each Cloudlet
+    /// defined as a task in the trace file.
+    /// You can write your own code inside this method to define
+    /// how you want to create the Cloudlet based on the trace data.
+    ///
+    /// @param event an object containing the trace line read, used to create the Cloudlet.
+    /// @return
     private Cloudlet createCloudlet(final TaskEvent event) {
         /*
         The trace doesn't define the actual number of CPU cores (PEs) a Cloudlet will require,
@@ -228,16 +211,12 @@ public class GoogleTaskEventsExample1 {
             .setUtilizationModelRam(utilizationRam);
     }
 
-    /**
-     * Process a "task usage" trace file from the Google Cluster Data that
-     * defines the resource usage for Cloudlets (tasks) along the time.
-     * The reader is just considering data about RAM and CPU utilization.
-     *
-     * <p>
-     * You are encouraged to check {@link GoogleTaskUsageTraceReader#process()}
-     * documentation to understand the details.
-     * </p>
-     */
+    /// Process a "task usage" trace file from the Google Cluster Data that
+    /// defines the resource usage for Cloudlets (tasks) along the time.
+    /// The reader is just considering data about RAM and CPU utilization.
+    ///
+    /// You are encouraged to check [GoogleTaskUsageTraceReader#process()]
+    /// documentation to understand the details.
     private void readTaskUsageTraceFile() {
         final var reader = GoogleTaskUsageTraceReader.getInstance(taskEventsReader, TASK_USAGE_FILE);
         final var cloudletsCollection = reader.process();

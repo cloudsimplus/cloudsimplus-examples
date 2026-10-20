@@ -46,27 +46,21 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example showing how to submit {@link VmGroup groups of VMs} to a broker
- * to try placing all VMs belonging to a group into the same Host.
- * It creates two groups but there is no Host
- * with enough capacity to place all VMs from the second group.
- * This way, only VMs from the first group are created.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.6.0
- */
+/// An example showing how to submit [groups of VMs][VmGroup] to a broker
+/// to try placing all VMs belonging to a group into the same Host.
+/// It creates two groups but there is no Host
+/// with enough capacity to place all VMs from the second group.
+/// This way, only VMs from the first group are created.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.6.0
 public class VmGroupPlacementExample1 {
     private static final int HOSTS = 4;
 
-    /**
-     * Number of {@link VmGroup} to create.
-     */
+    /// Number of [VmGroup] to create.
     private static final int GROUPS = 2;
 
-    /**
-     * Number of {@link Vm}s in each {@link VmGroup}.
-     */
+    /// Number of [Vm]s in each [VmGroup].
     private static final int VMS_BY_GROUP = 2;
 
 
@@ -85,9 +79,7 @@ public class VmGroupPlacementExample1 {
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
 
-    /**
-     * A {@link VmGroup} containing a List of VM to try to place them into the same Host.
-     */
+    /// A [VmGroup] containing a List of VM to try to place them into the same Host.
     private final List<VmGroup> vmGroupList;
     private final List<Cloudlet> cloudletList;
     private final Datacenter datacenter0;
@@ -126,9 +118,7 @@ public class VmGroupPlacementExample1 {
             .build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 1; i <= HOSTS; i++) {
@@ -162,10 +152,8 @@ public class VmGroupPlacementExample1 {
         return host;
     }
 
-    /**
-     * Creates a list of {@link VmGroup}s.
-     * Each group contains a List of VMs to try to place them into the same Host.
-     */
+    /// Creates a list of [VmGroup]s.
+    /// Each group contains a List of VMs to try to place them into the same Host.
     private List<VmGroup> createVmGroupList() {
         final var vmGroupList = new ArrayList<VmGroup>(GROUPS);
         for (int i = 0; i < GROUPS; i++) {
@@ -187,10 +175,8 @@ public class VmGroupPlacementExample1 {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets for a given group of VMs.
-     * @param group
-     */
+    /// Creates a list of Cloudlets for a given group of VMs.
+    /// @param group
     private void createCloudlets(final VmGroup group) {
         //UtilizationModel defining the Cloudlets use only 10% of RAM and BW all the time
         final var utilizationModelRamBw = new UtilizationModelDynamic(0.1);

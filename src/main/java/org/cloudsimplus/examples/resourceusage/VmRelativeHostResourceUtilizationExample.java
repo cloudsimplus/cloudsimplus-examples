@@ -45,17 +45,13 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing the relative percentage of each resource
- * every VM is using from its Host.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.4.2
- */
+/// An example showing the relative percentage of each resource
+/// every VM is using from its Host.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.4.2
 public class VmRelativeHostResourceUtilizationExample {
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int  SCHEDULING_INTERVAL = 2;
 
     private static final int  HOSTS = 1;

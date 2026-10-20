@@ -46,27 +46,25 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to terminate the simulation when a condition is met, before its natural end.
- * The example creates 4 Cloudlets that will run sequentially using a {@link CloudletSchedulerSpaceShared}.
- * However, when the last Cloudlet reaches 50% of its execution,
- * the simulation will be interrupted. By this way, just 3 Cloudlets will finish.
- *
- * <p>This example uses CloudSim Plus Listener features to intercept when
- * the second Cloudlet reaches 50% of its execution to then request
- * the simulation termination. This example uses the Java 8+ Lambda Functions features
- * to pass a listener to the mentioned Cloudlet, by means of the
- * {@link Cloudlet#addOnUpdateProcessingListener(EventListener)} method.
- * However, the same feature can be used for Java 7 passing an anonymous class
- * that implements {@code EventListener<CloudletVmEventInfo>}.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- *
- * @see CloudSimPlus#terminate()
- * @see Cloudlet#addOnUpdateProcessingListener(EventListener)
- * @see EventListener
- */
+/// An example showing how to terminate the simulation when a condition is met, before its natural end.
+/// The example creates 4 Cloudlets that will run sequentially using a [CloudletSchedulerSpaceShared].
+/// However, when the last Cloudlet reaches 50% of its execution,
+/// the simulation will be interrupted. By this way, just 3 Cloudlets will finish.
+///
+/// This example uses CloudSim Plus Listener features to intercept when
+/// the second Cloudlet reaches 50% of its execution to then request
+/// the simulation termination. This example uses the Java 8+ Lambda Functions features
+/// to pass a listener to the mentioned Cloudlet, by means of the
+/// [Cloudlet#addOnUpdateProcessingListener(EventListener)] method.
+/// However, the same feature can be used for Java 7 passing an anonymous class
+/// that implements `EventListener<CloudletVmEventInfo>`.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
+///
+/// @see CloudSimPlus#terminate()
+/// @see Cloudlet#addOnUpdateProcessingListener(EventListener)
+/// @see EventListener
 public class TerminateSimulationAtGivenConditionExample {
     private final CloudSimPlus simulation;
     private List<Cloudlet> cloudletList;
@@ -79,9 +77,7 @@ public class TerminateSimulationAtGivenConditionExample {
         new TerminateSimulationAtGivenConditionExample();
     }
 
-    /**
-     * Default constructor that builds the simulation.
-     */
+    /// Default constructor that builds the simulation.
     private TerminateSimulationAtGivenConditionExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -125,11 +121,9 @@ public class TerminateSimulationAtGivenConditionExample {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * Checks if the Cloudlet that had its processing updated reached 50% of execution.
-     * If so, request the simulation interruption.
-     * @param event object containing data about the happened event
-     */
+    /// Checks if the Cloudlet that had its processing updated reached 50% of execution.
+    /// If so, request the simulation interruption.
+    /// @param event object containing data about the happened event
     private void onClouletProcessingUpdate(CloudletVmEventInfo event) {
         if(event.getCloudlet().getFinishedLengthSoFar() >= event.getCloudlet().getLength()/2.0){
             System.out.printf(

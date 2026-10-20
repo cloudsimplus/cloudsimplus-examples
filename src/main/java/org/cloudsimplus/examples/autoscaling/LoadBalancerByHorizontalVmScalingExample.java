@@ -58,58 +58,49 @@ import java.util.function.Predicate;
 
 import static java.util.Comparator.comparingDouble;
 
-/**
- * An example that balances load by dynamically creating VMs,
- * according to the arrival of Cloudlets.
- * Cloudlets are {@link #createNewCloudlets(EventInfo) dynamically created and submitted to the broker
- * at specific time intervals}.
- *
- * <p>A {@link HorizontalVmScalingSimple}
- * is set to each {@link #createListOfScalableVms(int) initially created VM},
- * that will check at {@link #SCHEDULING_INTERVAL specific time intervals}
- * if the VM {@link #isVmOverloaded(Vm) is overloaded or not} to then
- * request the creation of a new VM to attend arriving Cloudlets.</p>
- *
- * <p>The example uses CloudSim Plus {@link EventListener} feature
- * to enable monitoring the simulation and dynamically creating objects such as Cloudlets and VMs.
- * It relies on
- * <a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html">Java 8 Lambda Expressions</a>
- * to set a Listener for the {@link Simulation#addOnClockTickListener(EventListener) onClockTick event}.
- * That Listener gets notified every time the simulation clock advances and then creates and submits new Cloudlets.
- * </p>
- *
- * <p>The {@link DatacenterBroker} is accountable to perform horizontal down scaling.
- * The down scaling is enabled by setting a {@link Function} using the {@link DatacenterBroker#setVmDestructionDelayFunction(Function)}.
- * This Function defines the time the broker has to wait to destroy a VM after it becomes idle.
- * If no Function is set, the broker just destroys VMs after all running Cloudlets are finished
- * and there is no Cloudlet waiting to be created.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example that balances load by dynamically creating VMs,
+/// according to the arrival of Cloudlets.
+/// Cloudlets are [dynamically created and submitted to the broker at specific time intervals][#createNewCloudlets(EventInfo)].
+///
+/// A [HorizontalVmScalingSimple]
+/// is set to each [initially created VM][#createListOfScalableVms(int)],
+/// that will check at [specific time intervals][#SCHEDULING_INTERVAL]
+/// if the VM [is overloaded or not][#isVmOverloaded(Vm)] to then
+/// request the creation of a new VM to attend arriving Cloudlets.
+///
+/// The example uses CloudSim Plus [EventListener] feature
+/// to enable monitoring the simulation and dynamically creating objects such as Cloudlets and VMs.
+/// It relies on
+/// [Java 8 Lambda Expressions](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html)
+/// to set a Listener for the [onClockTick event][Simulation#addOnClockTickListener(EventListener)].
+/// That Listener gets notified every time the simulation clock advances and then creates and submits new Cloudlets.
+///
+/// The [DatacenterBroker] is accountable to perform horizontal down scaling.
+/// The down scaling is enabled by setting a [Function] using the [DatacenterBroker#setVmDestructionDelayFunction(Function)].
+/// This Function defines the time the broker has to wait to destroy a VM after it becomes idle.
+/// If no Function is set, the broker just destroys VMs after all running Cloudlets are finished
+/// and there is no Cloudlet waiting to be created.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class LoadBalancerByHorizontalVmScalingExample {
-    /**
-     * The interval in which the Datacenter will schedule events.
-     * As lower is this interval, sooner the processing of VMs and Cloudlets
-     * is updated and you will get more notifications about the simulation execution.
-     * However, that also affect the simulation performance.
-     *
-     * <p>A large schedule interval, such as 15, will make that just
-     * at every 15 seconds the processing of VMs is updated. If a VM is overloaded, just
-     * after this time the creation of a new one will be requested
-     * by the VM's {@link HorizontalVmScaling Horizontal Scaling} mechanism.</p>
-     *
-     * <p>If this interval is defined using a small value, you may get
-     * more dynamically created VMs than expected.
-     * Accordingly, this value has to be trade-off.
-     * For more details, see {@link Datacenter#getSchedulingInterval()}.</p>
-    */
+    /// The interval in which the Datacenter will schedule events.
+    /// As lower is this interval, sooner the processing of VMs and Cloudlets
+    /// is updated and you will get more notifications about the simulation execution.
+    /// However, that also affect the simulation performance.
+    ///
+    /// A large schedule interval, such as 15, will make that just
+    /// at every 15 seconds the processing of VMs is updated. If a VM is overloaded, just
+    /// after this time the creation of a new one will be requested
+    /// by the VM's [Horizontal Scaling][HorizontalVmScaling] mechanism.
+    ///
+    /// If this interval is defined using a small value, you may get
+    /// more dynamically created VMs than expected.
+    /// Accordingly, this value has to be trade-off.
+    /// For more details, see [Datacenter#getSchedulingInterval()].
     private static final int SCHEDULING_INTERVAL = 5;
 
-    /**
-     * The interval to request the creation of new Cloudlets.
-     */
+    /// The interval to request the creation of new Cloudlets.
     private static final int CLOUDLETS_CREATION_INTERVAL = SCHEDULING_INTERVAL * 2;
 
     private static final int HOSTS = 50;
@@ -123,9 +114,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
     private final List<Vm> vmList;
     private final List<Cloudlet> cloudletList;
 
-    /**
-     * Different lengths that will be randomly assigned to created Cloudlets.
-     */
+    /// Different lengths that will be randomly assigned to created Cloudlets.
     private static final long[] CLOUDLET_LENGTHS = {2000, 4000, 10000, 16000, 2000, 30000, 20000};
     private final ContinuousDistribution rand;
 
@@ -136,9 +125,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
         new LoadBalancerByHorizontalVmScalingExample();
     }
 
-    /**
-     * Default constructor that builds the simulation scenario and starts the simulation.
-     */
+    /// Default constructor that builds the simulation scenario and starts the simulation.
     private LoadBalancerByHorizontalVmScalingExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -158,14 +145,12 @@ public class LoadBalancerByHorizontalVmScalingExample {
         dc0 = createDatacenter();
         broker0 = new DatacenterBrokerSimple(simulation);
 
-        /**
-         * Defines the Vm Destruction Delay Function as a lambda expression
-         * so that the broker will wait 10 seconds before destroying any idle VM.
-         * By commenting this line, no down scaling will be performed
-         * and idle VMs will be destroyed just after all running Cloudlets
-         * are finished and there is no waiting Cloudlet.
-         * @see DatacenterBroker#setVmDestructionDelayFunction(Function)
-         * */
+        /// Defines the Vm Destruction Delay Function as a lambda expression
+        /// so that the broker will wait 10 seconds before destroying any idle VM.
+        /// By commenting this line, no down scaling will be performed
+        /// and idle VMs will be destroyed just after all running Cloudlets
+        /// are finished and there is no waiting Cloudlet.
+        /// @see DatacenterBroker#setVmDestructionDelayFunction(Function)
         broker0.setVmDestructionDelay(10.0);
 
         vmList.addAll(createListOfScalableVms(VMS));
@@ -194,14 +179,12 @@ public class LoadBalancerByHorizontalVmScalingExample {
         }
     }
 
-    /**
-     * Creates new Cloudlets at every {@link #CLOUDLETS_CREATION_INTERVAL} seconds, up to the 50th simulation second.
-     * A reference to this method is set as the {@link EventListener}
-     * to the {@link Simulation#addOnClockTickListener(EventListener)}.
-     * The method is called every time the simulation clock advances.
-     *
-     * @param info the information about the OnClockTick event that has happened
-     */
+    /// Creates new Cloudlets at every [#CLOUDLETS_CREATION_INTERVAL] seconds, up to the 50th simulation second.
+    /// A reference to this method is set as the [EventListener]
+    /// to the [Simulation#addOnClockTickListener(EventListener)].
+    /// The method is called every time the simulation clock advances.
+    ///
+    /// @param info the information about the OnClockTick event that has happened
     private void createNewCloudlets(final EventInfo info) {
         final long time = (long) info.getTime();
         if (time % CLOUDLETS_CREATION_INTERVAL == 0 && time <= 50) {
@@ -218,9 +201,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
         }
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         for (int i = 0; i < HOSTS; i++) {
             hostList.add(createHost());
@@ -244,14 +225,12 @@ public class LoadBalancerByHorizontalVmScalingExample {
             .setVmScheduler(new VmSchedulerTimeShared());
     }
 
-    /**
-     * Creates a list of initial VMs in which each VM is able to scale horizontally
-     * when it is overloaded.
-     *
-     * @param vmsNumber number of VMs to create
-     * @return the list of scalable VMs
-     * @see #createHorizontalVmScaling(Vm)
-     */
+    /// Creates a list of initial VMs in which each VM is able to scale horizontally
+    /// when it is overloaded.
+    ///
+    /// @param vmsNumber number of VMs to create
+    /// @return the list of scalable VMs
+    /// @see #createHorizontalVmScaling(Vm)
     private List<Vm> createListOfScalableVms(final int vmsNumber) {
         final var newVmList = new ArrayList<Vm>(vmsNumber);
         for (int i = 0; i < vmsNumber; i++) {
@@ -263,12 +242,10 @@ public class LoadBalancerByHorizontalVmScalingExample {
         return newVmList;
     }
 
-    /**
-     * Creates a {@link HorizontalVmScaling} object for a given VM.
-     *
-     * @param vm the VM for which the Horizontal Scaling will be created
-     * @see #createListOfScalableVms(int)
-     */
+    /// Creates a [HorizontalVmScaling] object for a given VM.
+    ///
+    /// @param vm the VM for which the Horizontal Scaling will be created
+    /// @see #createListOfScalableVms(int)
     private void createHorizontalVmScaling(final Vm vm) {
         final var horizontalScaling = new HorizontalVmScalingSimple();
         horizontalScaling
@@ -277,24 +254,20 @@ public class LoadBalancerByHorizontalVmScalingExample {
         vm.setHorizontalScaling(horizontalScaling);
     }
 
-    /**
-     * A {@link Predicate} that checks if a given VM is overloaded or not,
-     * based on upper CPU utilization threshold.
-     * A reference to this method is assigned to each {@link HorizontalVmScaling} created.
-     *
-     * @param vm the VM to check if it is overloaded
-     * @return true if the VM is overloaded, false otherwise
-     * @see #createHorizontalVmScaling(Vm)
-     */
+    /// A [Predicate] that checks if a given VM is overloaded or not,
+    /// based on upper CPU utilization threshold.
+    /// A reference to this method is assigned to each [HorizontalVmScaling] created.
+    ///
+    /// @param vm the VM to check if it is overloaded
+    /// @return true if the VM is overloaded, false otherwise
+    /// @see #createHorizontalVmScaling(Vm)
     private boolean isVmOverloaded(final Vm vm) {
         return vm.getCpuPercentUtilization() > 0.7;
     }
 
-    /**
-     * Creates a Vm object.
-     *
-     * @return the created Vm
-     */
+    /// Creates a Vm object.
+    ///
+    /// @return the created Vm
     private Vm createVm() {
         final int id = createsVms++;
         return new VmSimple(id, 1000, 2)

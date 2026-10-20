@@ -46,34 +46,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * An example showing how to create VMs and Cloudlets
- * for multiple customers, each one represented
- * by a {@link DatacenterBroker} object.
- *
- * <p>It creates Cloudlets with different lengths to enable
- * them to finish in different times.
- * It also uses the {@link DatacenterBroker#setVmDestructionDelayFunction(Function)}
- * method to define a {@link Function} which will be used
- * to get the time delay a VM will be destroyed after becoming idle.
- * Setting a delay before destroying an idle VM
- * gives dynamically arrived Cloudltes the opportunity to possibly
- * run inside such a VM. In this case, the VM stays idle for a
- * period of time to balance the load of arrived Cloudlets
- * or even to enable fault tolerance.</p>
- *
- * <p>See the {@link DatacenterBroker#DEF_VM_DESTRUCTION_DELAY}
- * for details about the default behaviour.</p>
- *
- * <p>For details about Fault Injection, check the {@link org.cloudsimplus.faultinjection} package.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.2.2
- */
+/// An example showing how to create VMs and Cloudlets
+/// for multiple customers, each one represented
+/// by a [DatacenterBroker] object.
+///
+/// It creates Cloudlets with different lengths to enable
+/// them to finish in different times.
+/// It also uses the [DatacenterBroker#setVmDestructionDelayFunction(Function)]
+/// method to define a [Function] which will be used
+/// to get the time delay a VM will be destroyed after becoming idle.
+/// Setting a delay before destroying an idle VM
+/// gives dynamically arrived Cloudltes the opportunity to possibly
+/// run inside such a VM. In this case, the VM stays idle for a
+/// period of time to balance the load of arrived Cloudlets
+/// or even to enable fault tolerance.
+///
+/// See the [DatacenterBroker#DEF_VM_DESTRUCTION_DELAY]
+/// for details about the default behaviour.
+///
+/// For details about Fault Injection, check the [org.cloudsimplus.faultinjection] package.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.2.2
 public class MultipleBrokers1 {
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 5;
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -114,9 +110,7 @@ public class MultipleBrokers1 {
         printResults();
     }
 
-    /**
-     * Creates VMs and Cloudlets for each DatacenterBroker.
-     */
+    /// Creates VMs and Cloudlets for each DatacenterBroker.
     private void createVmsAndCloudlets() {
         int i = 0;
         for (var broker : brokers) {
@@ -141,17 +135,15 @@ public class MultipleBrokers1 {
         System.out.println();
     }
 
-    /**
-     * Creates the list of {@link DatacenterBroker}s.
-     * It enables you to define when a broker should destroy
-     * an idle VM, according to a given
-     * {@link DatacenterBroker#setVmDestructionDelayFunction(Function) VM Destruction Delay Function}.
-     *
-     * <p>See <a href="https://github.com/cloudsimplus/cloudsimplus/issues/99">Issue #99</a> for more details.</p>
-     *
-     * @see DatacenterBroker#setVmDestructionDelayFunction(Function)
-     * @return the List of created brokers
-     */
+    /// Creates the list of [DatacenterBroker]s.
+    /// It enables you to define when a broker should destroy
+    /// an idle VM, according to a given
+    /// [VM Destruction Delay Function][DatacenterBroker#setVmDestructionDelayFunction(Function)].
+    ///
+    /// See [Issue #99](https://github.com/cloudsimplus/cloudsimplus/issues/99) for more details.
+    ///
+    /// @see DatacenterBroker#setVmDestructionDelayFunction(Function)
+    /// @return the List of created brokers
     private List<DatacenterBroker> createBrokers() {
         final var brokerList = new ArrayList<DatacenterBroker>(BROKERS);
         for(int i = 0; i < BROKERS; i++) {
@@ -169,9 +161,7 @@ public class MultipleBrokers1 {
         return brokerList;
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -205,9 +195,7 @@ public class MultipleBrokers1 {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createAndSubmitVms(DatacenterBroker broker) {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -223,9 +211,7 @@ public class MultipleBrokers1 {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createAndSubmitCloudlets(DatacenterBroker broker, final int initialLength) {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 1; i <= CLOUDLETS; i++) {

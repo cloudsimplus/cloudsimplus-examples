@@ -47,19 +47,17 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
- /**
-  * An example of how to define a {@link SanStorage Storage Area Network (SAN)}
-  * for a Datacenter, add files to this SAN and make Cloudlets
-  * require files from that SAN.
-  *
-  * <p>Cloudlets' finish time is delayed due to transfer of required files
-  * from the SAN to the VM.
-  * The transfer time is computed based on the SAN's bandwidth and
-  * size of the required files.</p>
-  *
-  * @author Manoel Campos da Silva Filho
-  * @since CloudSim Plus 1.2.6
-  */
+ /// An example of how to define a [Storage Area Network (SAN)][SanStorage]
+ /// for a Datacenter, add files to this SAN and make Cloudlets
+ /// require files from that SAN.
+ ///
+ /// Cloudlets' finish time is delayed due to transfer of required files
+ /// from the SAN to the VM.
+ /// The transfer time is computed based on the SAN's bandwidth and
+ /// size of the required files.
+ ///
+ /// @author Manoel Campos da Silva Filho
+ /// @since CloudSim Plus 1.2.6
  public class StorageAreaNetworkExample1 {
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -75,12 +73,9 @@ import java.util.List;
     private static long SAN_BANDWIDTH_Mbps = 1;
     private static long SAN_CAPACITY_MB = 1024 * 1024 * 10;
 
-    /**
-     * A matrix of two rows each one containing an array of sizes
-     * for different files to be added to a SAN storage.
-     * Each row contains the sizes of the files for a SAN.
-     *
-     */
+    /// A matrix of two rows each one containing an array of sizes
+    /// for different files to be added to a SAN storage.
+    /// Each row contains the sizes of the files for a SAN.
     private static int FILE_SIZES_MATRIX_MB[][] = {{1000, 10000, 5000, 25000}, {250000, 35000, 12000, 10000}};
 
     private static int SAN_COUNT = FILE_SIZES_MATRIX_MB.length;
@@ -129,11 +124,9 @@ import java.util.List;
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a {@link SanStorage Storage Area Network (SAN)} array for a Datacenter.
-     * @return the List of storage devices (the SAN array)
-     * @see <a href="https://en.wikipedia.org/wiki/Disk_array">Disk Array</a>
-     */
+    /// Creates a [Storage Area Network (SAN)][SanStorage] array for a Datacenter.
+    /// @return the List of storage devices (the SAN array)
+    /// @see <a href="https://en.wikipedia.org/wiki/Disk_array">Disk Array</a>
     private List<SanStorage> createSanArray() {
         final var sanStorageList = new ArrayList<SanStorage>(SAN_COUNT);
         int initialFileNumber = 0;
@@ -147,15 +140,13 @@ import java.util.List;
         return sanStorageList;
     }
 
-    /**
-     * Adds a list of files, whose sizes are defined in a given array,
-     * to a {@link SanStorage}.
-     * The name of the files will be defined incrementally.
-     *
-     * @param san the  {@link SanStorage} to add files to
-     * @param fileSizesMB the array containing the sizes (in MB) of the files.
-     * @param initialFileNumber the initial number to be used to compute the file numbered name
-     */
+    /// Adds a list of files, whose sizes are defined in a given array,
+    /// to a [SanStorage].
+    /// The name of the files will be defined incrementally.
+    ///
+    /// @param san the  [SanStorage] to add files to
+    /// @param fileSizesMB the array containing the sizes (in MB) of the files.
+    /// @param initialFileNumber the initial number to be used to compute the file numbered name
     private void addFilesToSanStorage(SanStorage san, int[] fileSizesMB, int initialFileNumber) {
         File file;
         for (int i = 0; i < fileSizesMB.length; i++) {
@@ -165,18 +156,14 @@ import java.util.List;
         }
     }
 
-    /**
-     * Generates a name to be used to a file.
-     * @param fileNumber the integer index to be appended to a file
-     * @return the generated filename
-     */
+    /// Generates a name to be used to a file.
+    /// @param fileNumber the integer index to be appended to a file
+    /// @return the generated filename
     private String getFileName(int fileNumber) {
         return "file"+fileNumber+".txt";
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -203,9 +190,7 @@ import java.util.List;
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -220,11 +205,9 @@ import java.util.List;
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets, binding it one to a specific VM,
-     * since the {@link #CLOUDLETS number of Cloudlets}
-     * is equal to {@link #VMS number of VMs}.
-     */
+    /// Creates a list of Cloudlets, binding it one to a specific VM,
+    /// since the [number of Cloudlets][#CLOUDLETS]
+    /// is equal to [number of VMs][#VMS].
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelFull();

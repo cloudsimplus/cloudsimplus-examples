@@ -45,31 +45,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example showing how to run the simulation synchronously,
- * (by calling {@link CloudSimPlus#startSync()}).
- * This way, the researcher can interact with the simulation,
- * for instance to collect data.
- *
- * <p>A synchronous simulation is similar to setting a {@link Datacenter#setSchedulingInterval(double) scheduling interval}:
- * the simulation clock will be increased at the pace of the given interval.
- * However, using the {@link CloudSimPlus#startSync()} we can collect
- * simulation data inside a loop,
- * without requiring to use {@link org.cloudsimplus.listeners.EventListener}s for that.
- * </p>
- *
- * <p>In this example, we are collecting VMs' CPU utilization inside a loop,
- * after each call of the {@link CloudSimPlus#runFor(double)} method.</p>
- *
- * @author Pawel Koperek
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.5.0
- */
+/// An example showing how to run the simulation synchronously,
+/// (by calling [CloudSimPlus#startSync()]).
+/// This way, the researcher can interact with the simulation,
+/// for instance to collect data.
+///
+/// A synchronous simulation is similar to setting a [scheduling interval][Datacenter#setSchedulingInterval(double)]:
+/// the simulation clock will be increased at the pace of the given interval.
+/// However, using the [CloudSimPlus#startSync()] we can collect
+/// simulation data inside a loop,
+/// without requiring to use [org.cloudsimplus.listeners.EventListener]s for that.
+///
+/// In this example, we are collecting VMs' CPU utilization inside a loop,
+/// after each call of the [CloudSimPlus#runFor(double)] method.
+///
+/// @author Pawel Koperek
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.5.0
 public class SynchronousSimulationExample1 {
-    /**
-     * Defines the time (in seconds) to run the simulation for.
-     * The clock is increased in the interval defined here.
-     */
+    /// Defines the time (in seconds) to run the simulation for.
+    /// The clock is increased in the interval defined here.
     private static final double INTERVAL = 2;
     private static final int HOSTS = 2;
     private static final int HOST_PES = 4;
@@ -144,9 +139,7 @@ public class SynchronousSimulationExample1 {
         System.out.printf("%n%n");
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -177,9 +170,7 @@ public class SynchronousSimulationExample1 {
         return new HostSimple(ram, bw, storage, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -192,9 +183,7 @@ public class SynchronousSimulationExample1 {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets with different submission delays.
-     */
+    /// Creates a list of Cloudlets with different submission delays.
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 

@@ -43,48 +43,36 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to create 1 host and place multiple VMs at the same
- * {@link Pe Processor Element (CPU core)} of it,
- * using a VmSchedulerTimeShared policy at the Host.
- *
- * <p>The number of VMs to be created will be the double of the Host PEs number.
- * For each Host PE, two VMs requiring half the MIPS capacity of the PE will be
- * created. Each VM will have just one cloudlet that will use
- * all VM PEs and MIPS capacity.</p>
- *
- * <p>Thus, considering that each cloudlet has a length of 10000 MI and
- * each VM has a PE of 1000 MIPS, the cloudlet will spend 10 seconds to finish.
- * However, as each Host PE will be shared between two VMs using a time shared
- * scheduler, the cloudlet will spend the double of the time to finish,
- * as can be seen in the simulation results after running the example.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example showing how to create 1 host and place multiple VMs at the same
+/// [Processor Element (CPU core)][Pe] of it,
+/// using a VmSchedulerTimeShared policy at the Host.
+///
+/// The number of VMs to be created will be the double of the Host PEs number.
+/// For each Host PE, two VMs requiring half the MIPS capacity of the PE will be
+/// created. Each VM will have just one cloudlet that will use
+/// all VM PEs and MIPS capacity.
+///
+/// Thus, considering that each cloudlet has a length of 10000 MI and
+/// each VM has a PE of 1000 MIPS, the cloudlet will spend 10 seconds to finish.
+/// However, as each Host PE will be shared between two VMs using a time shared
+/// scheduler, the cloudlet will spend the double of the time to finish,
+/// as can be seen in the simulation results after running the example.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
-    /**
-     * Capacity of each CPU core (in Million Instructions per Second).
-     */
+    /// Capacity of each CPU core (in Million Instructions per Second).
     private static final long HOST_MIPS = 1000;
-    /**
-     * Number of processor elements (CPU cores) of each host.
-     */
+    /// Number of processor elements (CPU cores) of each host.
     private static final int HOST_PES_NUM = 2;
 
-    /**
-     * The total MIPS capacity across all the Host PEs.
-     */
+    /// The total MIPS capacity across all the Host PEs.
     private static final long HOST_TOTAL_MIPS_CAPACITY = HOST_MIPS*HOST_PES_NUM;
 
-    /**
-     * The length of each created cloudlet in Million Instructions (MI).
-     */
+    /// The length of each created cloudlet in Million Instructions (MI).
     private static final long CLOUDLET_LENGTH = 10000;
 
-    /**
-     * Number of VMs to create.
-     */
+    /// Number of VMs to create.
     private static final int NUMBER_OF_VMS = HOST_PES_NUM*2;
 
     private static final long VM_MIPS = HOST_TOTAL_MIPS_CAPACITY/NUMBER_OF_VMS;
@@ -100,9 +88,7 @@ public class SharingHostPEsUsingVmSchedulerTimeSharedExample {
         new SharingHostPEsUsingVmSchedulerTimeSharedExample();
     }
 
-    /**
-     * Default constructor where the simulation is built.
-     */
+    /// Default constructor where the simulation is built.
     private SharingHostPEsUsingVmSchedulerTimeSharedExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/

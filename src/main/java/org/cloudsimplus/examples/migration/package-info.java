@@ -21,13 +21,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Examples showing how to enable VM migration
- * using a {@link org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigration}.
- * Such policies define the conditions when VM migration should be fired.
- *
- * @author Manoel Campos da Silva Filho
- */
+/// Examples showing how to enable VM migration
+/// using a [org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigration].
+/// Such policies define the conditions when VM migration should be fired.
+///
+/// @author Manoel Campos da Silva Filho
 @NullMarked
 package org.cloudsimplus.examples.migration;
 

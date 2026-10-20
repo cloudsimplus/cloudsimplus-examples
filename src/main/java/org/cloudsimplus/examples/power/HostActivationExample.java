@@ -52,68 +52,60 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * An example showing how to create a Datacenter with all Hosts powered off
- * and let the {@link VmAllocationPolicy} to power Hosts on and off according to demand.
- * For this simulation, the {@link VmAllocationPolicyBestFit} is used.
- *
- * <p>The dynamic demand for Hosts is simulated
- * by creating VMs during simulation runtime.
- * To enable this, it's required to define
- * a {@link Datacenter#setSchedulingInterval(double)} scheduling interval}.
- * It's also used a Event Listener to track the simulation clock.
- * This way, when the clock increases according to the scheduling interval,
- * a new VM is created, up to the total VMs defined in {@link #MAX_VMS}.</p>
- *
- * <p>It creates one Cloudlet for each VM and the Cloudlets are created with different lengths.
- * This enables VMs to become idle in different times.
- * To ensure idle VMs are destroyed as soon as they become idle
- * (so that we can quickly check that the number of VMs into a Host has reduced),
- * a {@link DatacenterBroker#setVmDestructionDelayFunction(Function)} is
- * set. Check the {@link #createBroker()} method for details.
- *
- * <p>Since the total number of PEs requested by all VMs is equal to 24
- * and each Host has 8 PEs, it's only used 3 Hosts to meet the demand.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.2.0
- */
+/// An example showing how to create a Datacenter with all Hosts powered off
+/// and let the [VmAllocationPolicy] to power Hosts on and off according to demand.
+/// For this simulation, the [VmAllocationPolicyBestFit] is used.
+///
+/// The dynamic demand for Hosts is simulated
+/// by creating VMs during simulation runtime.
+/// To enable this, it's required to define
+/// a [Datacenter#setSchedulingInterval(double)] scheduling interval}.
+/// It's also used a Event Listener to track the simulation clock.
+/// This way, when the clock increases according to the scheduling interval,
+/// a new VM is created, up to the total VMs defined in [#MAX_VMS].
+///
+/// It creates one Cloudlet for each VM and the Cloudlets are created with different lengths.
+/// This enables VMs to become idle in different times.
+/// To ensure idle VMs are destroyed as soon as they become idle
+/// (so that we can quickly check that the number of VMs into a Host has reduced),
+/// a [DatacenterBroker#setVmDestructionDelayFunction(Function)] is
+/// set. Check the [#createBroker()] method for details.
+///
+/// Since the total number of PEs requested by all VMs is equal to 24
+/// and each Host has 8 PEs, it's only used 3 Hosts to meet the demand.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.2.0
 public class HostActivationExample {
-    /**
-     * Defines, between other things, the time intervals
-     * to keep Hosts CPU utilization history records.
-     */
+    /// Defines, between other things, the time intervals
+    /// to keep Hosts CPU utilization history records.
     private static final int SCHEDULING_INTERVAL = 2;
 
     private static final int HOSTS = 5;
     private static final int HOST_PES = 8;
 
-    /**
-     * Defines the power a Host uses, even if it's idle (in Watts).
-     */
+    /// Defines the power a Host uses, even if it's idle (in Watts).
     private static final double STATIC_POWER = 35;
 
-    /**
-     * The max power a Host uses (in Watts).
-     */
+    /// The max power a Host uses (in Watts).
     private static final int MAX_POWER = 50;
 
-    /** Indicates the time (in seconds) the Host takes to start up.
-     * Setting a value larger than 0 makes the VM placement to wait for the Host initialization. */
+    /// Indicates the time (in seconds) the Host takes to start up.
+    /// Setting a value larger than 0 makes the VM placement to wait for the Host initialization.
     private static final double HOST_START_UP_DELAY = 20;
 
-    /** Indicates the time (in seconds) the Host takes to shut down. */
+    /// Indicates the time (in seconds) the Host takes to shut down.
     private static final double HOST_SHUT_DOWN_DELAY = 10;
 
-    /** Indicates the power (in watts) the Host consumes for starting up. */
+    /// Indicates the power (in watts) the Host consumes for starting up.
     private static final double HOST_START_UP_POWER = 40;
 
-    /** Indicates the power (in watts) the Host consumes for shutting up. */
+    /// Indicates the power (in watts) the Host consumes for shutting up.
     private static final double HOST_SHUT_DOWN_POWER = 15;
 
-    /** The deadline (in seconds) after the Host becoming idle that it will be shutdown
-     * automatically.
-     * @see Host#setIdleShutdownDeadline(double) */
+    /// The deadline (in seconds) after the Host becoming idle that it will be shutdown
+    /// automatically.
+    /// @see Host#setIdleShutdownDeadline(double)
     private static final int HOST_IDLE_SECONDS_TO_SHUTDOWN = 5;
     private static final int HOST_MIPS = 1000;
 
@@ -162,12 +154,10 @@ public class HostActivationExample {
         printHostsUpTime();
     }
 
-    /**
-     * After a Host is shutdown, send new VMs to force a new Host activation.
-     * This way, we can see the total power consumed during host startup and shutdown
-     * is larger for those Hosts which have started more than once.
-     * @param info
-     */
+    /// After a Host is shutdown, send new VMs to force a new Host activation.
+    /// This way, we can see the total power consumed during host startup and shutdown
+    /// is larger for those Hosts which have started more than once.
+    /// @param info
     private void hostShutdownListener(final HostEventInfo info) {
         final var createVmList = createAndSubmitVmsAndCloudlets(MIN_VMS*2);
         final var host = info.getHost();
@@ -213,13 +203,11 @@ public class HostActivationExample {
         return broker;
     }
 
-    /**
-     * Event listener which is called every time the simulation clock advances.
-     * Then, if the time defined in the {@link #SCHEDULING_INTERVAL} has passed,
-     * it created another VM.
-     *
-     * @param info information about the event happened.
-     */
+    /// Event listener which is called every time the simulation clock advances.
+    /// Then, if the time defined in the [#SCHEDULING_INTERVAL] has passed,
+    /// it created another VM.
+    ///
+    /// @param info information about the event happened.
     private void clockTickListener(final EventInfo info) {
         final double time = Math.floor(info.getTime());
         final double retryDelay = broker0.getVmCreation().getRetryDelay();
@@ -263,11 +251,9 @@ public class HostActivationExample {
         return dc;
     }
 
-    /**
-     * Creates a Host and doesn't power it on (it will be powered on according to demand).
-     * @return a new powered-off Host
-     * @param id
-     */
+    /// Creates a Host and doesn't power it on (it will be powered on according to demand).
+    /// @return a new powered-off Host
+    /// @param id
     private Host createHost(final long id) {
         final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
@@ -292,11 +278,9 @@ public class HostActivationExample {
         return host;
     }
 
-    /**
-     * Creates a Cloudlet
-     * @param vm the VM to run the Cloudlet
-     * @return
-     */
+    /// Creates a Cloudlet
+    /// @param vm the VM to run the Cloudlet
+    /// @return
     private Cloudlet createCloudlet(Vm vm) {
         final var utilizationModel = new UtilizationModelDynamic(0.4);
         /* Reduces the length to let the firstly created Cloudlets to run longer,

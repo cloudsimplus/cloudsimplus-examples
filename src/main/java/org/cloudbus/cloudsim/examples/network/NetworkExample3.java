@@ -28,10 +28,8 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create 2 datacenters with 1 host each and run
- * cloudlets of 2 users. It also sets a network topology.
- */
+/// A simple example showing how to create 2 datacenters with 1 host each and run
+/// cloudlets of 2 users. It also sets a network topology.
 public class NetworkExample3 {
     private static final int VM_PES = 1;
 
@@ -135,9 +133,7 @@ public class NetworkExample3 {
         brokerList.get(1).submitVmList(vmList2);
     }
 
-    /**
-     * Creates the network topology from a brite file.
-     */
+    /// Creates the network topology from a brite file.
     private void createNetwork() {
         //load the network topology file
         final var networkTopology = BriteNetworkTopology.getInstance("topology.brite");

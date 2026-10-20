@@ -45,22 +45,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * An example showing how to change the policy
- * used by a {@link DatacenterBroker} to map Cloudlets to VMs.
- *
- * <p>The example uses the CloudSim Plus
- * Functional DatacenterBroker that enables
- * changing the method used for that goal,
- * without requiring to create a subclass to accomplish that.</p>
- *
- * <p>The example uses the class {@link DatacenterBrokerBestFit} that performs
- * an optimal mapping of Cloudlets to VMs based on the free Pes in VMs.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.3.0
- */
+/// An example showing how to change the policy
+/// used by a [DatacenterBroker] to map Cloudlets to VMs.
+///
+/// The example uses the CloudSim Plus
+/// Functional DatacenterBroker that enables
+/// changing the method used for that goal,
+/// without requiring to create a subclass to accomplish that.
+///
+/// The example uses the class [DatacenterBrokerBestFit] that performs
+/// an optimal mapping of Cloudlets to VMs based on the free Pes in VMs.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.3.0
 public class CloudletToVmMappingBestFit {
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -103,9 +100,7 @@ public class CloudletToVmMappingBestFit {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -133,11 +128,9 @@ public class CloudletToVmMappingBestFit {
         return host;
     }
 
-    /**
-     * Creates a list of VMs with decreasing number of PEs.
-     * The IDs of the VMs aren't defined and will be set when
-     * they are submitted to the broker.
-     */
+    /// Creates a list of VMs with decreasing number of PEs.
+    /// The IDs of the VMs aren't defined and will be set when
+    /// they are submitted to the broker.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = VMS-1; i >= 0; i--) {
@@ -152,11 +145,9 @@ public class CloudletToVmMappingBestFit {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets with increasing number of required PEs.
-     * The IDs of the Cloudlets aren't defined and will be set when
-     * they are submitted to the broker.
-     */
+    /// Creates a list of Cloudlets with increasing number of required PEs.
+    /// The IDs of the Cloudlets aren't defined and will be set when
+    /// they are submitted to the broker.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelFull();

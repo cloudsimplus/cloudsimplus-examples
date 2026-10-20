@@ -46,35 +46,27 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a data center with 1 host and place 2 VMs
- * to run 1 cloudlet each one, and receive notifications when a Host is allocated or
- * deallocated to each Vm.
- *
- * The example uses the new Vm listeners to get these
- * notifications while the simulation is running. It also shows how to
- * reuse the same listener object to different VMs.
- *
- * @see Vm#addOnHostAllocationListener(EventListener)
- * @see Vm#addOnHostDeallocationListener(EventListener)
- * @see EventListener
- *
- * @author Manoel Campos da Silva Filho
- */
+/// A simple example showing how to create a data center with 1 host and place 2 VMs
+/// to run 1 cloudlet each one, and receive notifications when a Host is allocated or
+/// deallocated to each Vm.
+///
+/// The example uses the new Vm listeners to get these
+/// notifications while the simulation is running. It also shows how to
+/// reuse the same listener object to different VMs.
+///
+/// @see Vm#addOnHostAllocationListener(EventListener)
+/// @see Vm#addOnHostDeallocationListener(EventListener)
+/// @see EventListener
+///
+/// @author Manoel Campos da Silva Filho
 public class VmListenersExample2 {
-    /**
-     * Number of VMs to create.
-     */
+    /// Number of VMs to create.
     private static final int NUMBER_OF_VMS = 4;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each Host.
-     */
+    /// Number of Processor Elements (CPU Cores) of each Host.
     private static final int HOST_PES_NUMBER = NUMBER_OF_VMS;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-     */
+    /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
     private static final int VM_PES_NUMBER = 1;
 
     private final List<Host> hostList;
@@ -84,33 +76,25 @@ public class VmListenersExample2 {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * The listener object that will be created in order to be notified when
-     * a host is allocated for a VM. The same listener is used for all created VMs.
-     * @see #createVmListeners()
-     */
+    /// The listener object that will be created in order to be notified when
+    /// a host is allocated for a VM. The same listener is used for all created VMs.
+    /// @see #createVmListeners()
     private EventListener<VmHostEventInfo> onHostAllocationListener;
 
-    /**
-     * The listener object that will be created in order to be notified when
-     * a host is deallocated for a VM. The same listener is used for all created VMs.
-     * @see #createVmListeners()
-     */
+    /// The listener object that will be created in order to be notified when
+    /// a host is deallocated for a VM. The same listener is used for all created VMs.
+    /// @see #createVmListeners()
     private EventListener<VmHostEventInfo> onHostDeallocationListener;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new VmListenersExample2();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private VmListenersExample2() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -131,12 +115,10 @@ public class VmListenersExample2 {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * Creates VMs and the cloudlets for each one, submitting
-     * the list of VMs and Cloudlets to the broker.
-     *
-     * @see #createVm(int)
-     */
+    /// Creates VMs and the cloudlets for each one, submitting
+    /// the list of VMs and Cloudlets to the broker.
+    ///
+    /// @see #createVm(int)
     private void createAndSubmitVmsAndCloudlets() {
         for(int i = 0; i < NUMBER_OF_VMS; i++){
             final var vm = createVm(i);
@@ -150,11 +132,9 @@ public class VmListenersExample2 {
         this.broker.submitCloudletList(cloudletList);
     }
 
-    /**
-     * Creates all VM listeners to be used by every VM created.
-     *
-     * @see #createVm(int)
-     */
+    /// Creates all VM listeners to be used by every VM created.
+    ///
+    /// @see #createVm(int)
     private void createVmListeners() {
         /*
         Creates the listener object that will be notified when a host is allocated to a VM.
@@ -175,12 +155,10 @@ public class VmListenersExample2 {
                 evt.getVm().getId(), evt.getHost().getId(), evt.getTime());
     }
 
-    /**
-     * Creates a VM with pre-defined configuration.
-     *
-     * @param id the VM id
-     * @return the created VM
-     */
+    /// Creates a VM with pre-defined configuration.
+    ///
+    /// @param id the VM id
+    /// @return the created VM
     private Vm createVm(int id) {
         final int mips = 1000;
         final long size = 10000; // image size (Megabyte)
@@ -200,13 +178,11 @@ public class VmListenersExample2 {
         return vm;
     }
 
-    /**
-     * Creates a cloudlet with pre-defined configuration.
-     *
-     * @param id Cloudlet id
-     * @param vm vm to run the cloudlet
-     * @return the created cloudlet
-     */
+    /// Creates a cloudlet with pre-defined configuration.
+    ///
+    /// @param id Cloudlet id
+    /// @param vm vm to run the cloudlet
+    /// @return the created cloudlet
     private Cloudlet createCloudlet(int id, Vm vm) {
         final long length = 400000;  //in MI (Million Instructions)
         final long fileSize = 300;
@@ -219,11 +195,9 @@ public class VmListenersExample2 {
             .setVm(vm);
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
@@ -231,12 +205,10 @@ public class VmListenersExample2 {
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         long mips = 1000;

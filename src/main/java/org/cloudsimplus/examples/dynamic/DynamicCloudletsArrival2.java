@@ -45,36 +45,28 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to delay the submission of cloudlets.
- * Although there is enough resources to run all cloudlets simultaneously,
- * the example delays the creation of each cloudlet inside a VM,
- * simulating the dynamic arrival of cloudlets.
- * For each instantiated cloudlet will be defined a different
- * submission delay.
- * Even there is enough resources to run all cloudlets simultaneously,
- * it is used a CloudletSchedulerTimeShared, analyzing the output
- * you can see that each cloudlet starts in a different time,
- * simulating different arrivals.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example showing how to delay the submission of cloudlets.
+/// Although there is enough resources to run all cloudlets simultaneously,
+/// the example delays the creation of each cloudlet inside a VM,
+/// simulating the dynamic arrival of cloudlets.
+/// For each instantiated cloudlet will be defined a different
+/// submission delay.
+/// Even there is enough resources to run all cloudlets simultaneously,
+/// it is used a CloudletSchedulerTimeShared, analyzing the output
+/// you can see that each cloudlet starts in a different time,
+/// simulating different arrivals.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class DynamicCloudletsArrival2 {
-    /**
-     * Number of Processor Elements (CPU Cores) of each Host.
-     */
+    /// Number of Processor Elements (CPU Cores) of each Host.
     private static final int HOST_PES_NUMBER = 4;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-     */
+    /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
     private static final int VM_PES_NUMBER = HOST_PES_NUMBER;
 
-    /**
-     * Number of Cloudlets to create simultaneously.
-     * Other cloudlets will be enqueued.
-     */
+    /// Number of Cloudlets to create simultaneously.
+    /// Other cloudlets will be enqueued.
     private static final int NUMBER_OF_CLOUDLETS = VM_PES_NUMBER;
 
     private final List<Host> hostList;
@@ -84,19 +76,15 @@ public class DynamicCloudletsArrival2 {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new DynamicCloudletsArrival2();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private DynamicCloudletsArrival2() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -123,14 +111,12 @@ public class DynamicCloudletsArrival2 {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates cloudlets and submit them to the broker, applying
-     * a different submission delay for each one (simulating the dynamic cloudlet arrival).
-     *
-     * @param vm Vm to run the cloudlets to be created
-     *
-     * @see #createCloudlet(int, Vm, DatacenterBroker)
-     */
+    /// Creates cloudlets and submit them to the broker, applying
+    /// a different submission delay for each one (simulating the dynamic cloudlet arrival).
+    ///
+    /// @param vm Vm to run the cloudlets to be created
+    ///
+    /// @see #createCloudlet(int, Vm, DatacenterBroker)
     private void createAndSubmitCloudlets(Vm vm) {
         int cloudletId = cloudletList.size();
         double submissionDelay = 0;
@@ -146,12 +132,10 @@ public class DynamicCloudletsArrival2 {
         cloudletList.addAll(newCloudletList);
     }
 
-    /**
-     * Creates one Vm and a group of cloudlets to run inside it,
-     * and submit the Vm and its cloudlets to the broker.
-     *
-     * @see #createVm(int, DatacenterBroker)
-     */
+    /// Creates one Vm and a group of cloudlets to run inside it,
+    /// and submit the Vm and its cloudlets to the broker.
+    ///
+    /// @see #createVm(int, DatacenterBroker)
     private void createAndSubmitVmAndCloudlets() {
         final var newVmList = new ArrayList<Vm>();
         final var vm = createVm(this.vmList.size(), broker);
@@ -163,14 +147,11 @@ public class DynamicCloudletsArrival2 {
         createAndSubmitCloudlets(vm);
     }
 
-    /**
-     * Creates a VM with pre-defined configuration.
-     *
-     * @param id the VM id
-     * @param broker the broker that will be submit the VM
-     * @return the created VM
-     *
-     */
+    /// Creates a VM with pre-defined configuration.
+    ///
+    /// @param id the VM id
+    /// @param broker the broker that will be submit the VM
+    /// @return the created VM
     private Vm createVm(int id, DatacenterBroker broker) {
         final int mips = 1000;
         final long size = 10000; // image size (Megabyte)
@@ -182,14 +163,12 @@ public class DynamicCloudletsArrival2 {
                 .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
 
-    /**
-     * Creates a cloudlet with pre-defined configuration.
-     *
-     * @param id Cloudlet id
-     * @param vm vm to run the cloudlet
-     * @param broker the broker that will submit the cloudlets
-     * @return the created cloudlet
-     */
+    /// Creates a cloudlet with pre-defined configuration.
+    ///
+    /// @param id Cloudlet id
+    /// @param vm vm to run the cloudlet
+    /// @param broker the broker that will submit the cloudlets
+    /// @return the created cloudlet
     private Cloudlet createCloudlet(int id, Vm vm, DatacenterBroker broker) {
         final long fileSize = 300;
         final long outputSize = 300;
@@ -205,11 +184,9 @@ public class DynamicCloudletsArrival2 {
             .setVm(vm);
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
@@ -217,12 +194,10 @@ public class DynamicCloudletsArrival2 {
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         final long mips = 1000;

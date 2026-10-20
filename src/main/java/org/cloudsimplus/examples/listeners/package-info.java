@@ -21,15 +21,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Examples showing how to use the CloudSim Plus {@link org.cloudsimplus.listeners.EventListener}
- * features to track simulation events and perform some actions in response.
- * These Listeners enable all sorts of features to be implemented, such as logging
- * resource usage along simulation execution, creation of Cloudlets and VMs
- * at defined simulation intervals, etc.
- *
- * @author Manoel Campos da Silva Filho
- */
+/// Examples showing how to use the CloudSim Plus [org.cloudsimplus.listeners.EventListener]
+/// features to track simulation events and perform some actions in response.
+/// These Listeners enable all sorts of features to be implemented, such as logging
+/// resource usage along simulation execution, creation of Cloudlets and VMs
+/// at defined simulation intervals, etc.
+///
+/// @author Manoel Campos da Silva Filho
 @NullMarked
 package org.cloudsimplus.examples.listeners;
 

@@ -45,24 +45,22 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to dynamically create VMs and Cloudlets during simulation
- * executing using the exclusive CloudSim Plus {@link DatacenterBroker} implementations
- * and Listener features. Using such features, <b>it is not required to create DatacenterBrokers in runtime
- * in order to allow dynamic submission of VMs and Cloudlets.</b>
- *
- * <p>This example uses CloudSim Plus Listener features to intercept when
- * the first Cloudlet finishes its execution to then request
- * the creation of new VMs and Cloudlets. It uses the Java 8+ Lambda Functions features
- * to pass a listener to the mentioned Cloudlet, by means of the
- * {@link Cloudlet#addOnFinishListener(EventListener)} method.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- *
- * @see Cloudlet#addOnFinishListener(EventListener)
- * @see EventListener
- */
+/// An example showing how to dynamically create VMs and Cloudlets during simulation
+/// executing using the exclusive CloudSim Plus [DatacenterBroker] implementations
+/// and Listener features. Using such features, **it is not required to create DatacenterBrokers in runtime
+/// in order to allow dynamic submission of VMs and Cloudlets.**
+///
+/// This example uses CloudSim Plus Listener features to intercept when
+/// the first Cloudlet finishes its execution to then request
+/// the creation of new VMs and Cloudlets. It uses the Java 8+ Lambda Functions features
+/// to pass a listener to the mentioned Cloudlet, by means of the
+/// [Cloudlet#addOnFinishListener(EventListener)] method.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
+///
+/// @see Cloudlet#addOnFinishListener(EventListener)
+/// @see EventListener
 public class DynamicCreationOfVmsAndCloudletsExample {
     private final CloudSimPlus simulation;
     private final DatacenterBrokerSimple broker0;
@@ -75,9 +73,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         new DynamicCreationOfVmsAndCloudletsExample();
     }
 
-    /**
-     * Default constructor that builds the simulation.
-     */
+    /// Default constructor that builds the simulation.
     private DynamicCreationOfVmsAndCloudletsExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -132,11 +128,9 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         broker0.submitCloudletList(newCloudletList);
     }
 
-    /**
-     * Dynamically creates and submits a set of VMs to the broker when
-     * the first cloudlet finishes.
-     * @param eventInfo information about the fired event
-     */
+    /// Dynamically creates and submits a set of VMs to the broker when
+    /// the first cloudlet finishes.
+    /// @param eventInfo information about the fired event
     private void submitNewVmsAndCloudletsToBroker(CloudletVmEventInfo eventInfo) {
         final int numberOfNewVms = 2;
         final int numberOfCloudletsByVm = 4;

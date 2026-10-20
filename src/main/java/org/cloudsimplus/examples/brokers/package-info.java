@@ -21,22 +21,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Examples showing how to use the full-featured CloudSim Plus
- * {@link org.cloudsimplus.brokers.DatacenterBroker} implementations.
- *
- * <p>
- * Some examples include the utilization of multiple brokers
- * to represent multiple cloud customers, the utilization
- * of a {@link org.cloudsimplus.examples.brokers.DatacenterBrokerHeuristicExample}
- * that maps Cloudlets to VMs based on the Simulated Annealing Heuristic,
- * and other example showing how to dynamically change the policy used
- * to map Cloudlets to VMs without requiring to subclass the
- * {@link org.cloudsimplus.brokers.DatacenterBrokerSimple}.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- */
+/// Examples showing how to use the full-featured CloudSim Plus
+/// [org.cloudsimplus.brokers.DatacenterBroker] implementations.
+///
+/// Some examples include the utilization of multiple brokers
+/// to represent multiple cloud customers, the utilization
+/// of a [org.cloudsimplus.examples.brokers.DatacenterBrokerHeuristicExample]
+/// that maps Cloudlets to VMs based on the Simulated Annealing Heuristic,
+/// and other example showing how to dynamically change the policy used
+/// to map Cloudlets to VMs without requiring to subclass the
+/// [org.cloudsimplus.brokers.DatacenterBrokerSimple].
+///
+/// @author Manoel Campos da Silva Filho
 @NullMarked
 package org.cloudsimplus.examples.brokers;
 

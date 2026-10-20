@@ -55,25 +55,21 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toCollection;
 import static org.cloudsimplus.util.TimeUtil.secondsToStr;
 
-/**
- * An example that enables you to play with different parameters to
- * check how they may drastically impact simulation performance.
- * That includes the constants provided in this example
- * (mainly the {@link #SCHEDULING_INTERVAL}),
- * and the type of {@link VmAllocationPolicy} and {@link CloudletScheduler}
- * created.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 6.5.0
- */
+/// An example that enables you to play with different parameters to
+/// check how they may drastically impact simulation performance.
+/// That includes the constants provided in this example
+/// (mainly the [#SCHEDULING_INTERVAL]),
+/// and the type of [VmAllocationPolicy] and [CloudletScheduler]
+/// created.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 6.5.0
 public class PerformanceExample1 {
-    /**
-     * Setting the scheduling interval as -1 drastically reduces simulation time,
-     * but cloudlets processing is just updated when a cloudlet finishes,
-     * which may reduce simulation accuracy.
-     * This parameter is a trade-off between performance and accuracy.
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// Setting the scheduling interval as -1 drastically reduces simulation time,
+    /// but cloudlets processing is just updated when a cloudlet finishes,
+    /// which may reduce simulation accuracy.
+    /// This parameter is a trade-off between performance and accuracy.
+    /// @see Datacenter#getSchedulingInterval()
     private static final double SCHEDULING_INTERVAL = TimeUtil.hoursToSeconds(1);
     private static final int HOSTS = 50_000;
     private static final int HOST_PES = 64;
@@ -84,15 +80,11 @@ public class PerformanceExample1 {
     private static final int CLOUDLET_PES = 2;
     private static final long CLOUDLET_LENGTH = 10_000_000_000L;
 
-    /**
-     * The percentage of RAM and BW each Cloudlet will request during all simulation execution
-     * (in scale from 0 to 1).
-     */
+    /// The percentage of RAM and BW each Cloudlet will request during all simulation execution
+    /// (in scale from 0 to 1).
     private static final double RAM_BW_RESOURCE_UTILIZATION_PERCENT = 0.2;
 
-    /**
-     * A {@link Supplier} Function that returns a new instance of a specific {@link CloudletScheduler}.
-     */
+    /// A [Supplier] Function that returns a new instance of a specific [CloudletScheduler].
     private final Supplier<CloudletSchedulerTimeShared> cloudletSchedulerSupplier = CloudletSchedulerTimeShared::new;
 
     private final VmAllocationPolicyFirstFit vmAllocationPolicy = new VmAllocationPolicyFirstFit();

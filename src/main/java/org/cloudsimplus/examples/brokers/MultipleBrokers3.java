@@ -45,15 +45,13 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to create multiple VMs and Cloudlets for different customers,
- * each one represented by a {@link DatacenterBroker} object.
- * The example creates VMs and Cloudlets without defining an ID, which
- * are defined when such objects are submitted to their brokers.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.3.1
- */
+/// An example showing how to create multiple VMs and Cloudlets for different customers,
+/// each one represented by a [DatacenterBroker] object.
+/// The example creates VMs and Cloudlets without defining an ID, which
+/// are defined when such objects are submitted to their brokers.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.3.1
 public class MultipleBrokers3 {
     private static final int HOSTS = 2;
     private static final int HOST_PES = 8;
@@ -127,9 +125,7 @@ public class MultipleBrokers3 {
         return brokerList;
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {

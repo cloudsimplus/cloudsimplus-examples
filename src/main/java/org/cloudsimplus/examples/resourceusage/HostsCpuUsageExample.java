@@ -45,19 +45,17 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to create a Datacenter with two hosts,
- * with one Vm in each one, and run 1 cloudlet in each Vm.
- * At the end, it shows the total CPU utilization of hosts
- * into a Datacenter.
- *
- * <p>Cloudlets run in VMs with different MIPS requirements and will
- * take different times to complete the execution, depending on the requested VM
- * performance.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example showing how to create a Datacenter with two hosts,
+/// with one Vm in each one, and run 1 cloudlet in each Vm.
+/// At the end, it shows the total CPU utilization of hosts
+/// into a Datacenter.
+///
+/// Cloudlets run in VMs with different MIPS requirements and will
+/// take different times to complete the execution, depending on the requested VM
+/// performance.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class HostsCpuUsageExample {
     private List<Cloudlet> cloudletList;
     private List<Vm> vmlist;
@@ -132,13 +130,11 @@ public class HostsCpuUsageExample {
             .setUtilizationModel(utilizationModel);
     }
 
-    /**
-     * Creates a VM enabling the collection of CPU utilization history.
-     * This way, hosts can get the CPU utilization based on VM utilization.
-     * @param pesNumber
-     * @param mips
-     * @return
-     */
+    /// Creates a VM enabling the collection of CPU utilization history.
+    /// This way, hosts can get the CPU utilization based on VM utilization.
+    /// @param pesNumber
+    /// @param mips
+    /// @return
     private Vm createVm(final int pesNumber, final long mips) {
         final long size = 10000; //image size (Megabyte)
         final int ram = 2048; //vm memory (Megabyte)
@@ -150,9 +146,7 @@ public class HostsCpuUsageExample {
         return vm;
     }
 
-    /**
-     * Shows CPU utilization mean of all hosts into a given Datacenter.
-     */
+    /// Shows CPU utilization mean of all hosts into a given Datacenter.
     private void printCpuUtilizationForAllHosts() {
         for (final var host : hostList) {
             final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getPesNumber();
@@ -171,13 +165,11 @@ public class HostsCpuUsageExample {
         }
     }
 
-    /**
-     * Creates a datacenter setting the scheduling interval
-     * that, between other things, defines the times to collect
-     * VM CPU utilization.
-     *
-     * @return
-     */
+    /// Creates a datacenter setting the scheduling interval
+    /// that, between other things, defines the times to collect
+    /// VM CPU utilization.
+    ///
+    /// @return
     private Datacenter createDatacenter() {
         hostList = new ArrayList<>(NUMBER_OF_HOSTS);
         final int pesNumber = 1;

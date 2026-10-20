@@ -45,20 +45,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * A simple example showing how to define datacenter resource utilization
- * and individual VM's costs ($).
- * It creates VMs that run some cloudlets,
- * while other VMs will just be idle all the time.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 6.2.7
- */
+/// A simple example showing how to define datacenter resource utilization
+/// and individual VM's costs ($).
+/// It creates VMs that run some cloudlets,
+/// while other VMs will just be idle all the time.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 6.2.7
 public class CostsExample1 {
-    /**
-     * Datacenter scheduling interval (in seconds)
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// Datacenter scheduling interval (in seconds)
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 4;
@@ -113,10 +109,8 @@ public class CostsExample1 {
         printTotalVmsCost();
     }
 
-    /**
-     * Creates a broker which is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets.
-     * It disables VM creation retry, so that VMs that can't be placed are just added to the {@link DatacenterBroker#getVmFailedList()}.
-     */
+    /// Creates a broker which is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets.
+    /// It disables VM creation retry, so that VMs that can't be placed are just added to the [DatacenterBroker#getVmFailedList()].
     private DatacenterBroker createBroker() {
         final var broker = new DatacenterBrokerSimple(simulation);
         //Disables VM creation retry, so that VMs that can't be placed are just added to the broker's failed VM list
@@ -127,9 +121,7 @@ public class CostsExample1 {
         return broker;
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -164,9 +156,7 @@ public class CostsExample1 {
         return new HostSimple(ram, bw, storage, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int id = 0; id < VMS; id++) {
@@ -179,9 +169,7 @@ public class CostsExample1 {
         return vmList;
     }
 
-    /**
-     * Creates Cloudlets only for some VMs.
-     */
+    /// Creates Cloudlets only for some VMs.
     private List<Cloudlet> createCloudlets() {
         final var newCloudletList = new ArrayList<Cloudlet>(VMS * CLOUDLET_BY_VM);
 
@@ -203,10 +191,8 @@ public class CostsExample1 {
         return newCloudletList;
     }
 
-    /**
-     * Computes and print the cost ($) of resources (processing, bw, memory, storage)
-     * for each VM inside the datacenter.
-     */
+    /// Computes and print the cost ($) of resources (processing, bw, memory, storage)
+    /// for each VM inside the datacenter.
     private void printTotalVmsCost() {
         System.out.println();
         double totalCost = 0.0;

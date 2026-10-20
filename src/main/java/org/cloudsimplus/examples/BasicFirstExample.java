@@ -42,17 +42,15 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A minimal but organized, structured and re-usable CloudSim Plus example
- * which shows good coding practices for creating simulation scenarios.
- *
- * <p>It defines a set of constants that enables a developer
- * to change the number of Hosts, VMs and Cloudlets to create
- * and the number of {@link Pe}s for Hosts, VMs and Cloudlets.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// A minimal but organized, structured and re-usable CloudSim Plus example
+/// which shows good coding practices for creating simulation scenarios.
+///
+/// It defines a set of constants that enables a developer
+/// to change the number of Hosts, VMs and Cloudlets to create
+/// and the number of [Pe]s for Hosts, VMs and Cloudlets.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class BasicFirstExample {
     private static final int  HOSTS = 1;
     private static final int  HOST_PES = 8;
@@ -100,9 +98,7 @@ public class BasicFirstExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -129,9 +125,7 @@ public class BasicFirstExample {
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -144,9 +138,7 @@ public class BasicFirstExample {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 

@@ -47,41 +47,31 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a data center with 1 host that has
- * capacity to run just one Vm at a time. The example thus shows
- * how to parallelize the execution of multiple VMs.
- * By this way, it creates one Vm a time and enqueue the creation of
- * the next VMs.
- * It uses the new VM listeners to be notified when a host
- * is deallocated for a VM (in this case meaning that the VM has finished
- * executing) in order to place the next VM to run inside the host.
- *
- * @see Vm#addOnHostDeallocationListener(EventListener)
- * @see EventListener
- *
- * @author Manoel Campos da Silva Filho
- */
+/// A simple example showing how to create a data center with 1 host that has
+/// capacity to run just one Vm at a time. The example thus shows
+/// how to parallelize the execution of multiple VMs.
+/// By this way, it creates one Vm a time and enqueue the creation of
+/// the next VMs.
+/// It uses the new VM listeners to be notified when a host
+/// is deallocated for a VM (in this case meaning that the VM has finished
+/// executing) in order to place the next VM to run inside the host.
+///
+/// @see Vm#addOnHostDeallocationListener(EventListener)
+/// @see EventListener
+///
+/// @author Manoel Campos da Silva Filho
 public class VmListenersExample3_DynamicVmCreation {
-    /**
-     * Number of Processor Elements (CPU Cores) of each Host.
-     */
+    /// Number of Processor Elements (CPU Cores) of each Host.
     private static final int HOST_PES_NUMBER = 2;
 
-    /**
-     * Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-     */
+    /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
     private static final int VM_PES_NUMBER = HOST_PES_NUMBER;
 
-    /**
-     * Number of Cloudlets to create simultaneously.
-     * Other cloudlets will be enqueued.
-     */
+    /// Number of Cloudlets to create simultaneously.
+    /// Other cloudlets will be enqueued.
     private static final int NUMBER_OF_CLOUDLETS = VM_PES_NUMBER;
 
-    /**
-     * Total number of VMs to create along the simulation.
-     */
+    /// Total number of VMs to create along the simulation.
     private static final int TOTAL_NUMBER_OF_VMS = 3;
 
     private final List<Host> hostList;
@@ -91,24 +81,18 @@ public class VmListenersExample3_DynamicVmCreation {
     private final Datacenter datacenter;
     private final CloudSimPlus simulation;
 
-    /**
-     * Number of VMs that have finished executing all their cloudlets.
-     */
+    /// Number of VMs that have finished executing all their cloudlets.
     private int numberOfFinishedVms = 0;
 
-    /**
-     * Starts the example execution, calling the class constructor\
-     * to build and run the simulation.
-     *
-     * @param args command line parameters
-     */
+    /// Starts the example execution, calling the class constructor\
+    /// to build and run the simulation.
+    ///
+    /// @param args command line parameters
     public static void main(String[] args) {
         new VmListenersExample3_DynamicVmCreation();
     }
 
-    /**
-     * Default constructor that builds and starts the simulation.
-     */
+    /// Default constructor that builds and starts the simulation.
     private VmListenersExample3_DynamicVmCreation() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
@@ -137,15 +121,13 @@ public class VmListenersExample3_DynamicVmCreation {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * A handler method that will be called when a VM
-     * is removed from a host (in this case meaning that it has finished executing
-     * its cloudlets). All VMs will use this same listener.
-     *
-     * @param eventInfo information about the happened event
-     *
-     * @see #createVm(int, DatacenterBroker)
-     */
+    /// A handler method that will be called when a VM
+    /// is removed from a host (in this case meaning that it has finished executing
+    /// its cloudlets). All VMs will use this same listener.
+    ///
+    /// @param eventInfo information about the happened event
+    ///
+    /// @see #createVm(int, DatacenterBroker)
     private void onHostDeallocationListener(VmHostEventInfo eventInfo) {
         numberOfFinishedVms++;
         System.out.printf(
@@ -156,12 +138,10 @@ public class VmListenersExample3_DynamicVmCreation {
         createNextVmIfNotReachedMaxNumberOfVms();
     }
 
-    /**
-     * After a VM finishes executing, creates another one
-     * if the number of created VMs is less than {@link #TOTAL_NUMBER_OF_VMS}.
-     * By this way, it allows the sequential execution of several VMs into a host
-     * that doesn't have enough PEs to execute them all simultaneously.
-     */
+    /// After a VM finishes executing, creates another one
+    /// if the number of created VMs is less than [#TOTAL_NUMBER_OF_VMS].
+    /// By this way, it allows the sequential execution of several VMs into a host
+    /// that doesn't have enough PEs to execute them all simultaneously.
     private void createNextVmIfNotReachedMaxNumberOfVms() {
         if(numberOfFinishedVms < TOTAL_NUMBER_OF_VMS) {
             final var vm = createAndSubmitVmForNewBroker();
@@ -181,13 +161,11 @@ public class VmListenersExample3_DynamicVmCreation {
         }
     }
 
-    /**
-     * Creates cloudlets and submit them to the broker.
-     * @param broker The DatacenterBroker that will submit the cloudlets
-     * @param vm Vm to run the cloudlets to be created
-     *
-     * @see #createCloudlet(int, Vm, DatacenterBroker)
-     */
+    /// Creates cloudlets and submit them to the broker.
+    /// @param broker The DatacenterBroker that will submit the cloudlets
+    /// @param vm Vm to run the cloudlets to be created
+    ///
+    /// @see #createCloudlet(int, Vm, DatacenterBroker)
     private void createAndSubmitCloudlets(DatacenterBroker broker, Vm vm) {
         int cloudletId = cloudletList.size();
         final var newCloudletList = new ArrayList<Cloudlet>(NUMBER_OF_CLOUDLETS);
@@ -200,12 +178,10 @@ public class VmListenersExample3_DynamicVmCreation {
         cloudletList.addAll(newCloudletList);
     }
 
-    /**
-     * Creates one Vm and a group of cloudlets to run inside it,
-     * and submit the Vm and its cloudlets to a new broker.
-     * @return the created VM
-     * @see #createVm(int, DatacenterBroker)
-     */
+    /// Creates one Vm and a group of cloudlets to run inside it,
+    /// and submit the Vm and its cloudlets to a new broker.
+    /// @return the created VM
+    /// @see #createVm(int, DatacenterBroker)
     private Vm createAndSubmitVmForNewBroker() {
         final var newVmList = new ArrayList<Vm>();
         final var broker = new DatacenterBrokerSimple(simulation);
@@ -220,15 +196,13 @@ public class VmListenersExample3_DynamicVmCreation {
         return vm;
     }
 
-    /**
-     * Creates a VM with pre-defined configuration.
-     *
-     * @param id the VM id
-     * @param broker the broker that will be submit the VM
-     * @return the created VM
-     *
-     * @see #onHostDeallocationListener(VmHostEventInfo)
-     */
+    /// Creates a VM with pre-defined configuration.
+    ///
+    /// @param id the VM id
+    /// @param broker the broker that will be submit the VM
+    /// @return the created VM
+    ///
+    /// @see #onHostDeallocationListener(VmHostEventInfo)
     private Vm createVm(int id, DatacenterBroker broker) {
         final int mips = 1000;
         final long size = 10000; // image size (Megabyte)
@@ -241,14 +215,12 @@ public class VmListenersExample3_DynamicVmCreation {
             .addOnHostDeallocationListener(this::onHostDeallocationListener);
     }
 
-    /**
-     * Creates a cloudlet with pre-defined configuration.
-     *
-     * @param id Cloudlet id
-     * @param vm vm to run the cloudlet
-     * @param broker the broker that will submit the cloudlets
-     * @return the created cloudlet
-     */
+    /// Creates a cloudlet with pre-defined configuration.
+    ///
+    /// @param id Cloudlet id
+    /// @param vm vm to run the cloudlet
+    /// @param broker the broker that will submit the cloudlets
+    /// @return the created cloudlet
     private Cloudlet createCloudlet(int id, Vm vm, DatacenterBroker broker) {
         final long fileSize = 300;
         final long outputSize = 300;
@@ -263,23 +235,19 @@ public class VmListenersExample3_DynamicVmCreation {
               .setVm(vm);
     }
 
-    /**
-     * Creates a Datacenter with pre-defined configuration.
-     *
-     * @return the created Datacenter
-     */
+    /// Creates a Datacenter with pre-defined configuration.
+    ///
+    /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /**
-     * Creates a host with pre-defined configuration.
-     *
-     * @param id The Host id
-     * @return the created host
-     */
+    /// Creates a host with pre-defined configuration.
+    ///
+    /// @param id The Host id
+    /// @return the created host
     private Host createHost(int id) {
         final var peList = new ArrayList<Pe>();
         long mips = 1000;

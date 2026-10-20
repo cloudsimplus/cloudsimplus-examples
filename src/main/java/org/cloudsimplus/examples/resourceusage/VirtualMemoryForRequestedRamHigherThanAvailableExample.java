@@ -51,62 +51,51 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * An example showing how the processing of some Cloudlets is delayed
- * due to lack of available RAM and BW.
- *
- * <p>The example creates VMs with different number of Cloudlets.
- * Those Cloudlets have different {@link UtilizationModel}s for RAM.
- * Some Cloudlets inside a given VM will require more RAM than the VM has available.
- * For instance, two Cloudlets inside a VM always require 60% of the VM capacity at the same time.
- * Since that total will be 120% of the RAM capacity, there is no way to fulfill the request
- * for one of those Cloudlets.
- * This way, one Cloudlet will use 60% of the VM RAM, while the other one will use only 40%.
- * The 20% of RAM the second Cloudlets is requiring has to rely on Virtual Memory.
- * In this scenario, CloudSim Plus will simulate the swap of memory data belonging
- * to other processes (Cloudlets) between the RAM and the disk.
- * Since the latter is way slower than the former, that will impose a processing
- * delay for the requesting Cloudlets, which will take longer than expected to finish.
- * </p>
- *
- * <p>
- * Realize that VM storage depends on Host storage. This way, for this example,
- * we have to create Hosts with a {@link HarddriveStorage} that has
- * configured parameters such as {@link HarddriveStorage#getMaxTransferRate()}.
- * </p>
- *
- * <p>For a Cloudlet, it will require more BW than there will be available.
- * This way, the allocated BW will be reduced, causing more delay.
- * When some BW cannot be allocated to the Cloudlet (due to over-subscription),
- * the delay is computed based on the time needed to use
- * the required bandwidth after the reduced allocation.
- * For instance, if the required bandwidth is 10mbps, that means
- * the cloudlet is willing to transfer 10 mbits in one second.
- * If just 8 mbps is allocated to the cloudlet,
- * to transfer the same 10 mbits it will take 0,25 second more.
- * </p>
- *
- * Check the following docs for specific implementation details you may be aware of:
- * <ul>
- *     <li>{@link CloudletSchedulerAbstract#getVirtualMemoryDelay(CloudletExecution, double)} </li>
- *     <li>{@link CloudletSchedulerAbstract#getBandwidthOverSubscriptionDelay(CloudletExecution, double)}</li>
- * </ul>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 6.3.0
- */
+/// An example showing how the processing of some Cloudlets is delayed
+/// due to lack of available RAM and BW.
+///
+/// The example creates VMs with different number of Cloudlets.
+/// Those Cloudlets have different [UtilizationModel]s for RAM.
+/// Some Cloudlets inside a given VM will require more RAM than the VM has available.
+/// For instance, two Cloudlets inside a VM always require 60% of the VM capacity at the same time.
+/// Since that total will be 120% of the RAM capacity, there is no way to fulfill the request
+/// for one of those Cloudlets.
+/// This way, one Cloudlet will use 60% of the VM RAM, while the other one will use only 40%.
+/// The 20% of RAM the second Cloudlets is requiring has to rely on Virtual Memory.
+/// In this scenario, CloudSim Plus will simulate the swap of memory data belonging
+/// to other processes (Cloudlets) between the RAM and the disk.
+/// Since the latter is way slower than the former, that will impose a processing
+/// delay for the requesting Cloudlets, which will take longer than expected to finish.
+///
+/// Realize that VM storage depends on Host storage. This way, for this example,
+/// we have to create Hosts with a [HarddriveStorage] that has
+/// configured parameters such as [HarddriveStorage#getMaxTransferRate()].
+///
+/// For a Cloudlet, it will require more BW than there will be available.
+/// This way, the allocated BW will be reduced, causing more delay.
+/// When some BW cannot be allocated to the Cloudlet (due to over-subscription),
+/// the delay is computed based on the time needed to use
+/// the required bandwidth after the reduced allocation.
+/// For instance, if the required bandwidth is 10mbps, that means
+/// the cloudlet is willing to transfer 10 mbits in one second.
+/// If just 8 mbps is allocated to the cloudlet,
+/// to transfer the same 10 mbits it will take 0,25 second more.
+///
+/// Check the following docs for specific implementation details you may be aware of:
+///
+/// - [CloudletSchedulerAbstract#getVirtualMemoryDelay(CloudletExecution,double)]
+/// - [CloudletSchedulerAbstract#getBandwidthOverSubscriptionDelay(CloudletExecution,double)]
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 6.3.0
 public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
-    /**
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// @see Datacenter#getSchedulingInterval()
     private static final int  SCHEDULING_INTERVAL = 2;
 
-    /**
-     * The reading speed (in mbps) for Hosts {@link HarddriveStorage},
-     * that impact processing delay when cloudlets use Virtual Memory.
-     * As slower is the reading speed, higher is the memory swapping overhead
-     * and the increase in cloudlet processing (exec) time.
-     */
+    /// The reading speed (in mbps) for Hosts [HarddriveStorage],
+    /// that impact processing delay when cloudlets use Virtual Memory.
+    /// As slower is the reading speed, higher is the memory swapping overhead
+    /// and the increase in cloudlet processing (exec) time.
     private static final int HOSTS_MAX_TRANSFER_RATE = 1_600;
     private static final long HOST_RAM = 20_480; //in Megabytes
 
@@ -118,9 +107,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
     private static final int VMS = 3;
     private static final int VM_PES = 2;
     private static final int VM_MIPS = 1_000;
-    /**
-     * VM RAM capacity (in MB)
-     */
+    /// VM RAM capacity (in MB)
     private static final int VM_RAM = 10_000;
 
     private static final int CLOUDLET_PES = 1;
@@ -199,9 +186,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         cloudletList.add(createCloudlet(vmList.get(2), new UtilizationModelFull()));
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -215,12 +200,10 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         return dc;
     }
 
-    /**
-     * Creates a Host with a {@link HarddriveStorage} configured
-     * to indicate delay in read operations,
-     * that impact the delay imposed for Cloudlets using Virtual Memory.
-     * @return
-     */
+    /// Creates a Host with a [HarddriveStorage] configured
+    /// to indicate delay in read operations,
+    /// that impact the delay imposed for Cloudlets using Virtual Memory.
+    /// @return
     private Host createHost() {
         final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
@@ -241,9 +224,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         return new HostSimple(HOST_RAM, bw, hardDrive, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -256,12 +237,10 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         return newVmList;
     }
 
-    /**
-     * Creates a list of Cloudlets using the same {@link UtilizationModel} for RAM and BW.
-     * @param vm VM to run the Cloudlets
-     * @param cloudlets number of cloudlets to create
-     * @param utilizationModelRamBw  {@link UtilizationModel} to be used for cloudlet RAM and BW.
-     */
+    /// Creates a list of Cloudlets using the same [UtilizationModel] for RAM and BW.
+    /// @param vm VM to run the Cloudlets
+    /// @param cloudlets number of cloudlets to create
+    /// @param utilizationModelRamBw  [UtilizationModel] to be used for cloudlet RAM and BW.
     private List<Cloudlet> createCloudlets(final Vm vm, final int cloudlets, final UtilizationModel utilizationModelRamBw) {
         //Creates a List with the same UtilizationModel BW for all cloudlets
         final var utilizationModelBwList = IntStream
@@ -272,13 +251,11 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         return createCloudlets(vm, utilizationModelRamBw, utilizationModelBwList);
     }
 
-    /**
-     * Creates one cloudlet for each BW {@link UtilizationModel} provided.
-     * @param vm
-     * @param utilizationModelRam
-     * @param utilizationModelBwList BW {@link UtilizationModel} list to be used for each created cloudlet
-     * @return
-     */
+    /// Creates one cloudlet for each BW [UtilizationModel] provided.
+    /// @param vm
+    /// @param utilizationModelRam
+    /// @param utilizationModelBwList BW [UtilizationModel] list to be used for each created cloudlet
+    /// @return
     private List<Cloudlet> createCloudlets(
         final Vm vm,
         final UtilizationModel utilizationModelRam,

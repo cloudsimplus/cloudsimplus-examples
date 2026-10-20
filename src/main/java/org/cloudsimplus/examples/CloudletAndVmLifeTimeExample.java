@@ -50,25 +50,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * An example showing how to use the new {@link Lifetimed#setLifeTime(double)} to
- * define the maximum time  {@link Cloudlet} or {@link Vm} entity is allowed to execute.
- * After this time is reached, the entity is finished as soon as possible.
- *
- * <p>
- *     If the VM has a lifeTime set, it's Cloudlets follow the same lifetime.
- *     If both Cloudlet and Vm have a lifetime, the shorter defines the maximum
- *     amount of time the Cloudlet will execute.
- * </p>
- *
- * <p>The example creates all Cloudlets and some VMs with a given lifetime.
- * Since VM lifetime is shorter than their Cloudlets' lifetime,
- * such Cloudlets finish sooner than their own lifetime.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 8.2.0
- * @see CloudletLifeTimeExample
- */
+/// An example showing how to use the new [Lifetimed#setLifeTime(double)] to
+/// define the maximum time  [Cloudlet] or [Vm] entity is allowed to execute.
+/// After this time is reached, the entity is finished as soon as possible.
+///
+/// If the VM has a lifeTime set, it's Cloudlets follow the same lifetime.
+/// If both Cloudlet and Vm have a lifetime, the shorter defines the maximum
+/// amount of time the Cloudlet will execute.
+///
+/// The example creates all Cloudlets and some VMs with a given lifetime.
+/// Since VM lifetime is shorter than their Cloudlets' lifetime,
+/// such Cloudlets finish sooner than their own lifetime.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 8.2.0
+/// @see CloudletLifeTimeExample
 public class CloudletAndVmLifeTimeExample {
     private static final int HOSTS = 3;
     private static final int HOST_PES = 10;
@@ -81,23 +77,17 @@ public class CloudletAndVmLifeTimeExample {
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10_000;
 
-    /**
-     * If the scheduling interval is not multiple of the VM/Cloudlet lifetime,
-     * Cloudlets may execute more than you desire.
-     * @see Datacenter#getSchedulingInterval()
-     */
+    /// If the scheduling interval is not multiple of the VM/Cloudlet lifetime,
+    /// Cloudlets may execute more than you desire.
+    /// @see Datacenter#getSchedulingInterval()
     private static final int SCHEDULING_INTERVAL = 3;
 
-    /**
-     * Maximum time (in seconds) Cloudlets are allowed to execute.
-     * Set -1 to disable lifeTime and execute the Cloudlet entirely.
-     */
+    /// Maximum time (in seconds) Cloudlets are allowed to execute.
+    /// Set -1 to disable lifeTime and execute the Cloudlet entirely.
     private static final double CLOUDLET_LIFE_TIME = 5;
 
-    /**
-     * Maximum time (in seconds) some VMs are allowed to execute.
-     * @see Lifetimed#setLifeTime(double)
-     */
+    /// Maximum time (in seconds) some VMs are allowed to execute.
+    /// @see Lifetimed#setLifeTime(double)
     private static final double VM_LIFE_TIME = 3;
 
     private final CloudSimPlus simulation;
@@ -141,21 +131,17 @@ public class CloudletAndVmLifeTimeExample {
         System.out.printf("Simulation finished at %s. Execution time: %.2f seconds%n", LocalTime.now(), TimeUtil.elapsedSeconds(startSecs));
     }
 
-    /**
-     * Gets the lifetime as a String.
-     * If the lifetime is {@link Double#MAX_VALUE} (the default value),
-     * returns an empty string to indicate the attribute was not set.
-     *
-     * @param entity a Cloudlet of VM entity
-     * @return a String lifetime
-     */
+    /// Gets the lifetime as a String.
+    /// If the lifetime is [Double#MAX_VALUE] (the default value),
+    /// returns an empty string to indicate the attribute was not set.
+    ///
+    /// @param entity a Cloudlet of VM entity
+    /// @return a String lifetime
     private String getLifeTimeStr(final Lifetimed entity) {
         return entity.getLifeTime() == Double.MAX_VALUE ? "" : "%.2f".formatted(entity.getLifeTime());
     }
 
-    /**
-     * Sets a lifetime for half of the VMs.
-     */
+    /// Sets a lifetime for half of the VMs.
     private void setVmsLifeTime() {
         vmList.stream()
               .filter(vm -> vm.getId() < VMS/2)

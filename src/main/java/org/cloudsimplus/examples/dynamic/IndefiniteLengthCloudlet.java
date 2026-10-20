@@ -46,24 +46,21 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to create Cloudlets with an indefinite length,
- * so that each Cloudlet stops running only if:
- * <ul>
- *  <li>(i) it reaches {@link Long#MAX_VALUE} MI executed or</li>
- *  <li>(ii) a positive length is dynamically defined (the time or event when the length of such Cloudlets are set
- *  can be defined in uncountable ways, according to developer needs)</li>
- *  <li>(iii) {@link CloudSimTag#CLOUDLET_FINISH} message is sent to the {@link DatacenterBroker}.</li>
- *  <li>(iv) the simulation is terminated by defining a termination time.</li>
- * </ul>
- *
- * In this example it is called the {@link CloudSimPlus#terminateAt(double)}
- * method to define when the simulation must finish.
- * At that moment, the length of the Cloudlets is set so that they can finish executing.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.0.0
- */
+/// An example showing how to create Cloudlets with an indefinite length,
+/// so that each Cloudlet stops running only if:
+///
+/// - (i) it reaches [Long#MAX_VALUE] MI executed or
+/// - (ii) a positive length is dynamically defined (the time or event when the length of such Cloudlets are set
+///   can be defined in uncountable ways, according to developer needs)
+/// - (iii) [CloudSimTag#CLOUDLET_FINISH] message is sent to the [DatacenterBroker].
+/// - (iv) the simulation is terminated by defining a termination time.
+///
+/// In this example it is called the [CloudSimPlus#terminateAt(double)]
+/// method to define when the simulation must finish.
+/// At that moment, the length of the Cloudlets is set so that they can finish executing.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.0.0
 public class IndefiniteLengthCloudlet {
     private static final int HOSTS = 1;
     private static final int HOST_PES = 8;
@@ -75,14 +72,12 @@ public class IndefiniteLengthCloudlet {
     private static final int CLOUDLETS = 2;
     private static final int CLOUDLET_PES = 2;
 
-    /**
-     * Defines a negative length for Cloudlets so that
-     * they keep running until explicitly requested to finish.
-     * In this example, Cloudlets are finished only when
-     * the simulation termination time is reached.
-     *
-     * @see CloudSimPlus#terminateAt(double)
-     */
+    /// Defines a negative length for Cloudlets so that
+    /// they keep running until explicitly requested to finish.
+    /// In this example, Cloudlets are finished only when
+    /// the simulation termination time is reached.
+    ///
+    /// @see CloudSimPlus#terminateAt(double)
     private static final int CLOUDLET_LENGTH = -10000;
 
     private final CloudSimPlus simulation;
@@ -121,9 +116,7 @@ public class IndefiniteLengthCloudlet {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -149,9 +142,7 @@ public class IndefiniteLengthCloudlet {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -166,11 +157,9 @@ public class IndefiniteLengthCloudlet {
         return newVmList;
     }
 
-    /**
-     * Creates Cloudlets with indefinite length by setting a negative value.
-     * This way, the Cloudlets keep running until one of the conditions explained
-     * in the documentation of this class is met.
-     */
+    /// Creates Cloudlets with indefinite length by setting a negative value.
+    /// This way, the Cloudlets keep running until one of the conditions explained
+    /// in the documentation of this class is met.
     private List<Cloudlet> createCloudlets() {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilizationFull = new UtilizationModelFull();

@@ -47,19 +47,17 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example that runs 4 Cloudlets into a VM where its number
- * of PEs is just half of the total PEs required by all Cloudlets.
- * The Vm uses a {@link CloudletSchedulerSpaceShared}, which
- * makes half of the Cloudlets to run first, while the other half
- * waits their finalization.
- * This way, the execution time of all cloudlets is the same,
- * but the start time of the second half is equal to
- * the finish time of the first half.
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.2.1
- */
+/// An example that runs 4 Cloudlets into a VM where its number
+/// of PEs is just half of the total PEs required by all Cloudlets.
+/// The Vm uses a [CloudletSchedulerSpaceShared], which
+/// makes half of the Cloudlets to run first, while the other half
+/// waits their finalization.
+/// This way, the execution time of all cloudlets is the same,
+/// but the start time of the second half is equal to
+/// the finish time of the first half.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.2.1
 public class CloudletSchedulerSpaceSharedExample1 {
     private static final int HOSTS = 1;
     private static final int HOST_PES = 4;
@@ -103,9 +101,7 @@ public class CloudletSchedulerSpaceSharedExample1 {
         new CloudletsTableBuilder(cloudletFinishedListList).build();
     }
 
-    /**
-     * Creates a Datacenter that uses a {@link VmAllocationPolicySimple} by default.
-     */
+    /// Creates a Datacenter that uses a [VmAllocationPolicySimple] by default.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int h = 0; h < HOSTS; h++) {
@@ -116,8 +112,8 @@ public class CloudletSchedulerSpaceSharedExample1 {
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /** Creates a Host that uses a {@link ResourceProvisionerSimple} by default
-     * for RAM and BW. */
+    /// Creates a Host that uses a [ResourceProvisionerSimple] by default
+    /// for RAM and BW.
     private Host createHost() {
         final var peList = new ArrayList<Pe>(HOST_PES);
         //List of Host's CPUs (Processing Elements, PEs)
@@ -133,9 +129,7 @@ public class CloudletSchedulerSpaceSharedExample1 {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         final int mips = 1000;
@@ -151,9 +145,7 @@ public class CloudletSchedulerSpaceSharedExample1 {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilizationModelFull = new UtilizationModelFull();

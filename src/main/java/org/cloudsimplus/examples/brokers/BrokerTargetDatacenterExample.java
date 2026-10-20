@@ -43,21 +43,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * An example showing how to make the {@link DatacenterBrokerSimple}
- * to set a specific target {@link Datacenter} to place VMs,
- * before trying the next Datacenter if VM placement fails
- * (due to lack of suitable Hosts).
- *
- * <p>You can see that VM 11 submitted to Broker 6 targeting Datacenter 3
- * could not be placed into that DC due to lack of suitable Hosts.
- * Then, the next Datacenter was selected, in a round-robin (circular) way.
- * </p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 7.3.2
- * @see #createBrokersVmsAndCloudlets()
- */
+/// An example showing how to make the [DatacenterBrokerSimple]
+/// to set a specific target [Datacenter] to place VMs,
+/// before trying the next Datacenter if VM placement fails
+/// (due to lack of suitable Hosts).
+///
+/// You can see that VM 11 submitted to Broker 6 targeting Datacenter 3
+/// could not be placed into that DC due to lack of suitable Hosts.
+/// Then, the next Datacenter was selected, in a round-robin (circular) way.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 7.3.2
+/// @see #createBrokersVmsAndCloudlets()
 public class BrokerTargetDatacenterExample {
     private static final int DATACENTERS = 3;
     private static final int HOSTS_BY_DC = 5;
@@ -96,10 +93,8 @@ public class BrokerTargetDatacenterExample {
         brokerList.forEach(BrokerTargetDatacenterExample::createCloudletsResultTable);
     }
 
-    /**
-     * Creates a broker for each available Datacenter
-     * and submit VMs and Cloudlets.
-     */
+    /// Creates a broker for each available Datacenter
+    /// and submit VMs and Cloudlets.
     private void createBrokersVmsAndCloudlets() {
         for (final var dc : datacenterList) {
             final var broker = createBroker(dc);
@@ -116,11 +111,9 @@ public class BrokerTargetDatacenterExample {
         }
     }
 
-    /**
-     * Creates a broker that sets a target Datacenter to initially place arriving VMs.
-     * @param dc the target datacenter
-     * @return the new broker
-     */
+    /// Creates a broker that sets a target Datacenter to initially place arriving VMs.
+    /// @param dc the target datacenter
+    /// @return the new broker
     private DatacenterBrokerSimple createBroker(final Datacenter dc) {
         final var broker = new DatacenterBrokerSimple(simulation);
         broker.setName("Broker %d for %s".formatted(broker.getId(), dc));
@@ -142,9 +135,7 @@ public class BrokerTargetDatacenterExample {
                         .toList();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = IntStream.range(0, HOSTS_BY_DC)
                                       .mapToObj(i -> createHost())
@@ -173,9 +164,7 @@ public class BrokerTargetDatacenterExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms(final int vmsNumber) {
         final var vms = new ArrayList<Vm>(vmsNumber);
         for (int i = 0; i < vmsNumber; i++) {
@@ -188,9 +177,7 @@ public class BrokerTargetDatacenterExample {
         return vms;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets(int cloudletsNumber) {
         final var cloudlets = new ArrayList<Cloudlet>(cloudletsNumber);
 

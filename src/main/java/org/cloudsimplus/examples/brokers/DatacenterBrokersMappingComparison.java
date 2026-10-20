@@ -60,32 +60,28 @@ import java.util.List;
 
 import static java.util.Map.Entry;
 
-/**
- * An example that uses a
- * <a href="http://en.wikipedia.org/wiki/Simulated_annealing">Simulated Annealing</a>
- * heuristic to find a suboptimal mapping between Cloudlets and Vm's submitted to a
- * DatacenterBroker. The number of {@link Pe}s of Vm's and Cloudlets are defined
- * randomly.
- *
- * <p>The {@link DatacenterBrokerHeuristic} is used
- * with the {@link CloudletToVmMappingSimulatedAnnealing} class
- * in order to find an acceptable solution with a high
- * {@link HeuristicSolution#getFitness() fitness value}.</p>
- *
- * <p>Different {@link CloudletToVmMappingHeuristic} implementations can be used
- * with the {@link DatacenterBrokerHeuristic} class.</p>
- *
- * <p>A comparison of cloudlet-VM mapping is done among the best fit approach,
- * heuristic approach and round robin mapping.</p>
- *
- * @author Humaira Abdul Salam
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 4.3.8
- */
+/// An example that uses a
+/// [Simulated Annealing](http://en.wikipedia.org/wiki/Simulated_annealing)
+/// heuristic to find a suboptimal mapping between Cloudlets and Vm's submitted to a
+/// DatacenterBroker. The number of [Pe]s of Vm's and Cloudlets are defined
+/// randomly.
+///
+/// The [DatacenterBrokerHeuristic] is used
+/// with the [CloudletToVmMappingSimulatedAnnealing] class
+/// in order to find an acceptable solution with a high
+/// [fitness value][HeuristicSolution#getFitness()].
+///
+/// Different [CloudletToVmMappingHeuristic] implementations can be used
+/// with the [DatacenterBrokerHeuristic] class.
+///
+/// A comparison of cloudlet-VM mapping is done among the best fit approach,
+/// heuristic approach and round robin mapping.
+///
+/// @author Humaira Abdul Salam
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 4.3.8
 public class DatacenterBrokersMappingComparison {
-    /**
-     * Simulated Annealing (SA) parameters.
-     */
+    /// Simulated Annealing (SA) parameters.
     public static final double SA_INITIAL_TEMPERATURE = 1.0;
     public static final double SA_COLD_TEMPERATURE = 0.0001;
     public static final double SA_COOLING_RATE = 0.003;
@@ -130,9 +126,7 @@ public class DatacenterBrokersMappingComparison {
         System.out.println("Comparison finished!");
     }
 
-    /**
-     * Default constructor where the simulation is built.
-     */
+    /// Default constructor where the simulation is built.
     private DatacenterBrokersMappingComparison(final DatacenterBroker broker, final ContinuousDistribution random, final boolean verbose) {
         this.broker = broker;
         this.simulation = broker.getSimulation();
@@ -196,12 +190,10 @@ public class DatacenterBrokersMappingComparison {
             "The solution based on %s mapper costs %.2f.%n", broker.getClass().getSimpleName(), brokersMappingCost);
     }
 
-    /**
-     * Randomly gets a number of PEs (CPU cores).
-     *
-     * @param maxPesNumber the maximum value to get a random number of PEs
-     * @return the randomly generated PEs number
-     */
+    /// Randomly gets a number of PEs (CPU cores).
+    ///
+    /// @param maxPesNumber the maximum value to get a random number of PEs
+    /// @return the randomly generated PEs number
     private int getRandomPesNumber(final int maxPesNumber, final ContinuousDistribution random) {
         final double uniform = random.sample();
 

@@ -8,20 +8,16 @@ import org.cloudsimplus.vms.network.NetworkVm;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * An example of a Workflow Distributed Application that is compounded by
- * 3 {@link NetworkCloudlet}, each one having different stages
- * such as sending, receiving or processing data.
- *
- * @author Saurabh Kumar Garg
- * @author Rajkumar Buyya
- * @author Manoel Campos da Silva Filho
- */
+/// An example of a Workflow Distributed Application that is compounded by
+/// 3 [NetworkCloudlet], each one having different stages
+/// such as sending, receiving or processing data.
+///
+/// @author Saurabh Kumar Garg
+/// @author Rajkumar Buyya
+/// @author Manoel Campos da Silva Filho
 public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
-    /**
-     * Starts the execution of the example.
-     * @param args
-     */
+    /// Starts the execution of the example.
+    /// @param args
     public static void main(String[] args) {
         new NetworkVmsExampleWorkflowApp();
     }
@@ -56,13 +52,11 @@ public class NetworkVmsExampleWorkflowApp extends NetworkVmExampleAbstract {
         return Arrays.asList(networkCloudlets);
     }
 
-    /**
-     * Creates a {@link NetworkCloudlet}.
-     *
-     * @param id
-     * @param vm the VM that will run the created {@link NetworkCloudlet}
-     * @return
-     */
+    /// Creates a [NetworkCloudlet].
+    ///
+    /// @param id
+    /// @param vm the VM that will run the created [NetworkCloudlet]
+    /// @return
     private NetworkCloudlet createNetworkCloudlet(final int id, final NetworkVm vm) {
         final var utilizationModel = new UtilizationModelFull();
         final var cloudlet = new NetworkCloudlet(id, CLOUDLET_PES);

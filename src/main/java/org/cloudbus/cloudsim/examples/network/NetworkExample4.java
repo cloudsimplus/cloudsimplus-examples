@@ -31,24 +31,22 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple example showing how to create a Datacenter with 1 host and a network
- * topology, running 1 cloudlet on it. Here, instead of using a BRITE file
- * describing the links, they are just inserted in the code.
- *
- * <p>The example defines a given latency for communication with the created broker.
- * Since the broker receives multiple messages (such as for VM and Cloudlet creation),
- * cloudlets start running just after such multiple messages are received.
- * If 3 messages are sent to the broker for starting a Cloudlet,
- * the total delay is the network latency multiplied by 3.</p>
- */
+/// A simple example showing how to create a Datacenter with 1 host and a network
+/// topology, running 1 cloudlet on it. Here, instead of using a BRITE file
+/// describing the links, they are just inserted in the code.
+///
+/// The example defines a given latency for communication with the created broker.
+/// Since the broker receives multiple messages (such as for VM and Cloudlet creation),
+/// cloudlets start running just after such multiple messages are received.
+/// If 3 messages are sent to the broker for starting a Cloudlet,
+/// the total delay is the network latency multiplied by 3.
 public class NetworkExample4 {
     private static final int VM_PES = 1;
 
-    /** In Megabits/s. */
+    /// In Megabits/s.
     private static final double NETWORK_BW = 10.0;
 
-    /** In seconds. */
+    /// In seconds.
     private static final double NETWORK_LATENCY = 10.0;
 
     private final DatacenterBroker broker;

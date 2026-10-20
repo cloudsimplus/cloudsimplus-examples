@@ -48,25 +48,21 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Shows how to cancel the execution of a Cloudlet
- * after executing a given amount of MIPS from its total
- * MIPS length.
- *
- * <p>Realize you can't use the {@link Cloudlet#setStatus(Cloudlet.Status)}
- * to directly change the status of a Cloudlet, such as to cancel it.
- * That is an issue inherited from CloudSim that needs to be fixed yet.
- * To change the Cloudlet status you have to use the {@link CloudletScheduler}
- * that controls the execution of the Cloudlet.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.2.6
- */
+/// Shows how to cancel the execution of a Cloudlet
+/// after executing a given amount of MIPS from its total
+/// MIPS length.
+///
+/// Realize you can't use the [Cloudlet#setStatus(Cloudlet.Status)]
+/// to directly change the status of a Cloudlet, such as to cancel it.
+/// That is an issue inherited from CloudSim that needs to be fixed yet.
+/// To change the Cloudlet status you have to use the [CloudletScheduler]
+/// that controls the execution of the Cloudlet.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.2.6
 public class CloudletCancellationExample {
-    /**
-     * Defines, between other things, the time intervals
-     * to update the processing of Cloudlets (in seconds).
-     */
+    /// Defines, between other things, the time intervals
+    /// to update the processing of Cloudlets (in seconds).
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 1;
@@ -103,13 +99,11 @@ public class CloudletCancellationExample {
         vmList = createVms();
         cloudletList = createCloudlets();
 
-        /**
-         * Monitor the execution of the first Cloudlet to cancel it after it has executed 50%
-         * of its total length.
-         * In order to make this work, the {@link Datacenter#getSchedulingInterval()}
-         * most be set.
-         * See {@link #SCHEDULING_INTERVAL} for more details.
-         */
+        /// Monitor the execution of the first Cloudlet to cancel it after it has executed 50%
+        /// of its total length.
+        /// In order to make this work, the [Datacenter#getSchedulingInterval()]
+        /// most be set.
+        /// See [#SCHEDULING_INTERVAL] for more details.
         cloudletList.get(0).addOnUpdateProcessingListener(this::cancelCloudletIfHalfExecuted);
 
         broker0.submitVmList(vmList);
@@ -121,10 +115,8 @@ public class CloudletCancellationExample {
         new CloudletsTableBuilder(cloudletFinishedList).build();
     }
 
-    /**
-     * Cancel a Cloudlet if it has already executed 50% of its total MIPS length.
-     * @param e the event information about Cloudlet processing
-     */
+    /// Cancel a Cloudlet if it has already executed 50% of its total MIPS length.
+    /// @param e the event information about Cloudlet processing
     private void cancelCloudletIfHalfExecuted(final CloudletVmEventInfo e) {
         final var cloudlet = e.getCloudlet();
         if(cloudlet.getFinishedLengthSoFar() >= CLOUDLET_LENGTH / 2){
@@ -135,9 +127,7 @@ public class CloudletCancellationExample {
         }
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -171,9 +161,7 @@ public class CloudletCancellationExample {
         return host;
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -188,9 +176,7 @@ public class CloudletCancellationExample {
         return list;
     }
 
-    /**
-     * Creates a list of Cloudlets.
-     */
+    /// Creates a list of Cloudlets.
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {

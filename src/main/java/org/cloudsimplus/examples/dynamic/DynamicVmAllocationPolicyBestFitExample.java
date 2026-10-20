@@ -72,37 +72,34 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-/**
- * An example showing how to create 1 Datacenter with 5 hosts,
- * 1 VM by host and 1 cloudlet by VM and perform VM allocation by
- * using Java 8+ Functional Programming to change, at runtime, the
- * policy used by a {@link VmAllocationPolicy}.
- *
- * <p>VMs are allocated based on a <b>Best Fit allocation policy</b>, which
- * selects the suitable Host with the lowest number of available PEs
- * that is enough to run the VM.
- * This policy is dynamically defined by changing the {@link Function}
- * of the {@link VmAllocationPolicy}, without requiring to create
- * a new class. The {@link VmAllocationPolicySimple} used in this example ignores power usage of
- * Hosts. This way, it isn't required to set a PowerModel for Hosts.
- * </p>
- *
- * It is used some constants to create simulation objects such as
- * {@link  DatacenterSimple}, {@link  Host} and {@link  Vm}.
- * The values of these constants were careful and accordingly chosen to allow
- * migration of VMs due to either under and overloaded hosts and
- * to allow one developer to know exactly how the simulation will run
- * and what will be the final results.
- * Several values impact the simulation results, such as
- * hosts CPU capacity and number of PEs, VMs and cloudlets requirements
- * and even VM bandwidth (that defines the VM migration time).
- *
- * <p>This way, if you want to change these values, you must
- * define new appropriated ones to allow the simulation
- * to run correctly.</p>
- *
- * @author Manoel Campos da Silva Filho
- */
+/// An example showing how to create 1 Datacenter with 5 hosts,
+/// 1 VM by host and 1 cloudlet by VM and perform VM allocation by
+/// using Java 8+ Functional Programming to change, at runtime, the
+/// policy used by a [VmAllocationPolicy].
+///
+/// VMs are allocated based on a **Best Fit allocation policy**, which
+/// selects the suitable Host with the lowest number of available PEs
+/// that is enough to run the VM.
+/// This policy is dynamically defined by changing the [Function]
+/// of the [VmAllocationPolicy], without requiring to create
+/// a new class. The [VmAllocationPolicySimple] used in this example ignores power usage of
+/// Hosts. This way, it isn't required to set a PowerModel for Hosts.
+///
+/// It is used some constants to create simulation objects such as
+/// [DatacenterSimple], [Host] and [Vm].
+/// The values of these constants were careful and accordingly chosen to allow
+/// migration of VMs due to either under and overloaded hosts and
+/// to allow one developer to know exactly how the simulation will run
+/// and what will be the final results.
+/// Several values impact the simulation results, such as
+/// hosts CPU capacity and number of PEs, VMs and cloudlets requirements
+/// and even VM bandwidth (that defines the VM migration time).
+///
+/// This way, if you want to change these values, you must
+/// define new appropriated ones to allow the simulation
+/// to run correctly.
+///
+/// @author Manoel Campos da Silva Filho
 public final class DynamicVmAllocationPolicyBestFitExample {
     private static final int    SCHEDULE_INTERVAL = 5;
 
@@ -127,9 +124,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     private static final long   CLOUDLET_FILESIZE = 300;
     private static final long   CLOUDLET_OUTPUTSIZE = 300;
 
-    /**
-     * List of all created VMs.
-     */
+    /// List of all created VMs.
     private final List<Vm> vmList = new ArrayList<>();
 
     private CloudSimPlus simulation;
@@ -163,17 +158,15 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    /**
-     * A method that defines a Best Fit policy to select a suitable Host with the least
-     * available PEs to place a VM.
-     * Using Java 8+ Functional Programming, this method is given as parameter
-     * to the constructor of a {@link VmAllocationPolicySimple}
-     *
-     * @param allocationPolicy the {@link VmAllocationPolicy} that is trying to allocate a Host for the requesting VM
-     * @param vm the VM to find a host to
-     * @return an {@link Optional<Host>} which may contain a Host or an empty Optional if no suitable Host was found
-     * @see #createDatacenter()
-     */
+    /// A method that defines a Best Fit policy to select a suitable Host with the least
+    /// available PEs to place a VM.
+    /// Using Java 8+ Functional Programming, this method is given as parameter
+    /// to the constructor of a [VmAllocationPolicySimple]
+    ///
+    /// @param allocationPolicy the [VmAllocationPolicy] that is trying to allocate a Host for the requesting VM
+    /// @param vm the VM to find a host to
+    /// @return an [`Optional<Host>`][java.util.Optional] which may contain a Host or an empty Optional if no suitable Host was found
+    /// @see #createDatacenter()
     private Optional<Host> bestFitHostSelectionPolicy(VmAllocationPolicy allocationPolicy, Vm vm) {
         return allocationPolicy
             .getHostList()
@@ -191,13 +184,11 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         broker.submitCloudletList(newCloudletList);
     }
 
-    /**
-     * Creates a Cloudlet.
-     *
-     * @param vm the VM that will run the Cloudlets
-     * @param broker the broker that the created Cloudlets belong to
-     * @return the created Cloudlets
-     */
+    /// Creates a Cloudlet.
+    ///
+    /// @param vm the VM that will run the Cloudlets
+    /// @param broker the broker that the created Cloudlets belong to
+    /// @return the created Cloudlets
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
         final var cloudlet =
             new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getPesNumber())
@@ -227,12 +218,10 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         return vm;
     }
 
-    /**
-     * Creates a Datacenter with number of Hosts defined by {@link #HOSTS},
-     * but only some of these Hosts will be active (powered on) initially.
-     *
-     * @return
-     */
+    /// Creates a Datacenter with number of Hosts defined by [#HOSTS],
+    /// but only some of these Hosts will be active (powered on) initially.
+    ///
+    /// @return
     private Datacenter createDatacenter() {
         for(int i = 0; i < HOSTS; i++){
             final int pes = HOST_INITIAL_PES + i;

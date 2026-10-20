@@ -43,16 +43,14 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A variation of BasicFirstExample.java which runs two kinds of cloudlets
- * ("long" and a "short") and prints the simulations results in several different
- * styles to demonstrate the functionality of CloudletsTableBuilder.
- * 
- * The actual simulation is not the focus in this example, the formatting is.
- * 
- * @author Lennart Demes
- * @author Manoel Campos da Silva Filho
- */
+/// A variation of BasicFirstExample.java which runs two kinds of cloudlets
+/// ("long" and a "short") and prints the simulations results in several different
+/// styles to demonstrate the functionality of CloudletsTableBuilder.
+///
+/// The actual simulation is not the focus in this example, the formatting is.
+///
+/// @author Lennart Demes
+/// @author Manoel Campos da Silva Filho
 public class CloudletsTableBuilderFormattingExample {
     private static final int  HOSTS = 1;
     private static final int  HOST_PES = 8;
@@ -67,10 +65,8 @@ public class CloudletsTableBuilderFormattingExample {
     private static final int CLOUDLETS = 4;
     private static final int CLOUDLET_PES = 2;
     
-    /**
-     * Cloudlet lengths are deliberately arbitrary to create more
-     * interesting results for custom formatting.
-     */
+    /// Cloudlet lengths are deliberately arbitrary to create more
+    /// interesting results for custom formatting.
     private static final int CLOUDLET_LENGTH_SHORT = 124_963;
     private static final int CLOUDLET_LENGTH_LONG = 984_174_395;
 
@@ -108,53 +104,39 @@ public class CloudletsTableBuilderFormattingExample {
         
     }
     
-    /**
-     * Displays a list of cloudlets as a table while demonstrating several formatting/display options.
-     * @param cloudletFinishedList The list of cloudlets to use for the demonstration.
-     */
+    /// Displays a list of cloudlets as a table while demonstrating several formatting/display options.
+    /// @param cloudletFinishedList The list of cloudlets to use for the demonstration.
     private void demonstrateCloudletTableFormattingOptions(List<Cloudlet> cloudletFinishedList) {
     	
-    	/**
-    	 * Prints the results with default settings.
-    	 */
+    	/// Prints the results with default settings.
     	new CloudletsTableBuilder(cloudletFinishedList)
     		.build();
     	
-    	/**
-    	 * Prints the results with a custom title.
-    	 */
+    	/// Prints the results with a custom title.
     	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTitle("This is a custom title")
     		.build();
     	
-    	/**
-    	 * Prints the results with 3 instead of one decimal point for time columns.
-    	 */
+    	/// Prints the results with 3 instead of one decimal point for time columns.
     	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTimeFormat("%.3f")
     		.setTitle("3 decimal points in time columns")
     		.build();
     	
-    	/**
-    	 * Prints the results with additional separators in the length columns to increase readability.
-    	 */
+    	/// Prints the results with additional separators in the length columns to increase readability.
     	new CloudletsTableBuilder(cloudletFinishedList)
     		.setLengthFormat("%,d")
     		.setTitle("Separators in length columns")
     		.build();
     	
-    	/**
-    	 * Adds an entire additional column for displaying the submission delay of a cloudlet.
-    	 */
+    	/// Adds an entire additional column for displaying the submission delay of a cloudlet.
     	new CloudletsTableBuilder(cloudletFinishedList)
     		.setTitle("Additional column for submission delay")
     		.addColumn( new MarkdownTableColumn("SubmissionDelay") , Cloudlet::getSubmissionDelay)
     		.build();
     }
 
-    /**
-     * Creates a Datacenter and its Hosts.
-     */
+    /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
@@ -181,9 +163,7 @@ public class CloudletsTableBuilderFormattingExample {
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
     }
 
-    /**
-     * Creates a list of VMs.
-     */
+    /// Creates a list of VMs.
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
@@ -196,10 +176,8 @@ public class CloudletsTableBuilderFormattingExample {
         return vmList;
     }
 
-    /**
-     * Creates a list of Cloudlets, toggling between a "long" cloudlet with a high number of MIs
-     * and a "short" cloudlet with less MIs. "Short" cloudlets also receive a smaller submission delay.
-     */
+    /// Creates a list of Cloudlets, toggling between a "long" cloudlet with a high number of MIs
+    /// and a "short" cloudlet with less MIs. "Short" cloudlets also receive a smaller submission delay.
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
 

@@ -47,33 +47,31 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An example showing how to run two simulation scenarios with different configurations
- * in parallel, using the CloudSim Plus exclusive features and
- * <a href="https://www.oracle.com/technical-resources/articles/java/ma14-java-se-8-streams.html">Java 8 Lambda Expressions and Parallel Streams</a>.
- * The parallel execution of simulations doesn't ensure that the overall execution time will be reduced.
- * It depends on diverse factors such as the number of simulations, the tasks that each simulation
- * executes, the  number of available physical CPUs at your machine, etc.
- *
- * <p>This is just a minimal example that runs 2 simulations with different number
- * of Hosts, VMs and Cloudlets. However, all these objects will have the same configurations
- * in the different simulations. There will be just a difference in the number of created
- * objects.</p>
- *
- * <p>To enable such a parallel simulations execution, the logging must be
- * disable (as shown in the first line of the main method) and any console
- * output should be avoided during simulation execution.
- * Further, usage of static mutable attributes must be avoided.
- * All simulation attributes must be instance attributes and one
- * simulation run (a simulation instance) should not share data with other ones.</p>
- *
- * @author Manoel Campos da Silva Filho
- * @since CloudSim Plus 1.0
- */
+/// An example showing how to run two simulation scenarios with different configurations
+/// in parallel, using the CloudSim Plus exclusive features and
+/// [Java 8 Lambda Expressions and Parallel Streams](https://www.oracle.com/technical-resources/articles/java/ma14-java-se-8-streams.html).
+/// The parallel execution of simulations doesn't ensure that the overall execution time will be reduced.
+/// It depends on diverse factors such as the number of simulations, the tasks that each simulation
+/// executes, the  number of available physical CPUs at your machine, etc.
+///
+/// This is just a minimal example that runs 2 simulations with different number
+/// of Hosts, VMs and Cloudlets. However, all these objects will have the same configurations
+/// in the different simulations. There will be just a difference in the number of created
+/// objects.
+///
+/// To enable such a parallel simulations execution, the logging must be
+/// disable (as shown in the first line of the main method) and any console
+/// output should be avoided during simulation execution.
+/// Further, usage of static mutable attributes must be avoided.
+/// All simulation attributes must be instance attributes and one
+/// simulation run (a simulation instance) should not share data with other ones.
+///
+/// @author Manoel Campos da Silva Filho
+/// @since CloudSim Plus 1.0
 public class ParallelSimulationsExample implements Runnable {
     private final String title;
     private final CloudSimPlus simulation;
-    /** Created when the simulation is started inside {@link #run()}. */
+    /// Created when the simulation is started inside [#run()].
     @SuppressWarnings("NullAway.Init")
     private DatacenterBroker broker;
     private List<Cloudlet> cloudletList;
@@ -82,11 +80,9 @@ public class ParallelSimulationsExample implements Runnable {
     private int vmsNumber;
     private int cloudletsNumber;
 
-    /**
-     * Creates the simulation scenarios with different configurations and execute them,
-     * printing the results for each one after all simulations have finished.
-     * @param args
-     */
+    /// Creates the simulation scenarios with different configurations and execute them,
+    /// printing the results for each one after all simulations have finished.
+    /// @param args
     public static void main(String[] args) {
         /*IT IS MANDATORY TO DISABLE THE LOG WHEN EXECUTING PARALLEL SIMULATIONS TO AVOID RUNTIME EXCEPTIONS.*/
         Log.setLevel(Level.OFF);
@@ -130,11 +126,9 @@ public class ParallelSimulationsExample implements Runnable {
             .build();
     }
 
-    /**
-     * Default constructor where the simulation is initialized.
-     * @param title a title for the simulation scenario (just for log purposes)
-     * @see #run()
-     */
+    /// Default constructor where the simulation is initialized.
+    /// @param title a title for the simulation scenario (just for log purposes)
+    /// @see #run()
     private ParallelSimulationsExample(final String title) {
         this.title = title;
         this.cloudletList = new ArrayList<>();
@@ -151,11 +145,9 @@ public class ParallelSimulationsExample implements Runnable {
         return hostList;
     }
 
-    /**
-     * Creates a Hosts using a {@link ResourceProvisionerSimple}
-     * for RAM and BW.
-     * @return
-     */
+    /// Creates a Hosts using a [ResourceProvisionerSimple]
+    /// for RAM and BW.
+    /// @return
     private Host createHost() {
         final long  mips = 1000; // capacity of each CPU core (in Million Instructions per Second)
         final long  ram = 2048; // host memory (Megabyte)
@@ -180,11 +172,9 @@ public class ParallelSimulationsExample implements Runnable {
         broker.submitVmList(vmList);
     }
 
-    /**
-     * Creates a VM using a {@link CloudletSchedulerTimeShared} by default.
-     * @param id
-     * @return
-     */
+    /// Creates a VM using a [CloudletSchedulerTimeShared] by default.
+    /// @param id
+    /// @return
     private Vm createVm(final int id) {
         final long   mips = 1000;
         final long   storage = 10000; // vm image size (Megabyte)
@@ -227,9 +217,7 @@ public class ParallelSimulationsExample implements Runnable {
                 .setUtilizationModelRam(utilizationModelDynamic);
     }
 
-    /**
-     * Builds the simulation scenario and starts the simulation.
-     */
+    /// Builds the simulation scenario and starts the simulation.
     @Override
     public void run() {
         final var datacenter0 = new DatacenterSimple(simulation, createHosts());
