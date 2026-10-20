@@ -120,6 +120,9 @@ public class CostsExample1 {
      */
     private DatacenterBroker createBroker() {
         final var broker = new DatacenterBrokerSimple(simulation);
+        //Disables VM creation retry, so that VMs that couldn't be placed aren't retried forever
+        broker.getVmCreation().setRetryDelay(-1);
+
         //Destroys idle VMs after some time (in seconds)
         broker.setVmDestructionDelay(0.2);
         return broker;
