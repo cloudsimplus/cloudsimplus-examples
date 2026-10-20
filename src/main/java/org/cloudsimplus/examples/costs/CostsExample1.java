@@ -48,9 +48,8 @@ import java.util.List;
 /**
  * A simple example showing how to define datacenter resource utilization
  * and individual VM's costs ($).
- * It creates VMs that run some cloudlets.
- * Some VMs will just be idle all the time and
- * other ones won't be created due to lack of available Hosts.
+ * It creates VMs that run some cloudlets,
+ * while other VMs will just be idle all the time.
  *
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Plus 6.2.7
@@ -116,7 +115,7 @@ public class CostsExample1 {
 
     /**
      * Creates a broker which is a software acting on behalf of a cloud customer to manage his/her VMs and Cloudlets.
-     * It disables VMs creation retry, this way, failed VMs will be just added to the {@link DatacenterBroker#getVmFailedList()}.
+     * It disables VM creation retry, so that VMs that can't be placed are just added to the {@link DatacenterBroker#getVmFailedList()}.
      */
     private DatacenterBroker createBroker() {
         final var broker = new DatacenterBrokerSimple(simulation);
