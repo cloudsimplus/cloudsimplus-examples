@@ -84,6 +84,7 @@ import static org.cloudsimplus.util.MathUtil.positive;
 /// TODO See https://github.com/manoelcampos/cloudsimplus/issues/151
 /// TODO [CloudSimTag#CLOUDLET_FAIL] events aren't been processed.
 /// TODO It has to be checked how to make the Cloudlet to be executed in the Host specified in the trace file.
+/// See https://github.com/cloudsimplus/cloudsimplus/issues/590
 public class GoogleTaskEventsExample1 {
     private static final String TASK_EVENTS_FILE = "workload/google-traces/task-events-sample-1.csv";
     private static final String TASK_USAGE_FILE = "workload/google-traces/task-usage-sample-1.csv";

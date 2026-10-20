@@ -71,6 +71,7 @@ import java.util.function.Function;
 /// @since CloudSim Plus 4.0.0
 ///
 /// TODO [MachineEventType#UPDATE] events are not being processed yet.
+/// See https://github.com/cloudsimplus/cloudsimplus/issues/590
 public class GoogleMachineEventsExample1 {
     private static final String TRACE_FILENAME = "workload/google-traces/machine-events-sample-1.csv";
     private static final int HOST_BW = 10;
