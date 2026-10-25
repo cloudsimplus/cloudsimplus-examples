@@ -36,8 +36,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelStochastic;
@@ -168,7 +167,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        final var vm = new VmSimple(id, mips, VM_PES_NUMBER)
+        final var vm = new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips))
                 .setRam(ram).setBw(bw).setSize(size)
                 .setCloudletScheduler(new CloudletSchedulerSpaceShared());
         return vm;
@@ -219,16 +218,13 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
     /// @param id The Host id
     /// @return the created host
     private Host createHost(int id) {
-        final var peList = new ArrayList<Pe>();
         final long mips = 1000;
-        for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(HOST_PES_NUMBER, mips);
 
         final long ram = 2048; // host memory (Megabyte)
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 }

@@ -37,8 +37,7 @@ import org.cloudsimplus.faultinjection.VmClonerSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.TimeUtil;
@@ -51,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/// Example showing how to inject random [Pe] faults into Hosts using
+/// Example showing how to inject random CPU core faults into Hosts using
 /// [HostFaultInjection] objects.
 ///
 /// It's considered that we have multiple VMs from a given customer (broker),
@@ -75,8 +74,16 @@ public final class HostFaultInjectionExample1 {
     /// Number of Hosts to create for each Datacenter. The number of elements in
     /// this array defines the number of Datacenters to be created.
     private static final int HOSTS = 8;
-    private static final int HOST_PES = 5;
+    private static final int HOST_CORES = 5;
     private static final int HOST_MIPS_BY_PE = 1000;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS_BY_PE);
+
     private static final long HOST_RAM = 500000; //host memory (Megabyte)
     private static final long HOST_STORAGE = 1000000; //host storage
     private static final long HOST_BW = 100000000L;
@@ -92,14 +99,22 @@ public final class HostFaultInjectionExample1 {
     private final List<Host> hostList = new ArrayList<>();
 
     private static final int VMS_BY_BROKER = 2;
-    private static final int VM_PES = 2; //number of cpus
+    private static final int VM_CORES = 2; //number of cpus
     private static final int VM_MIPS = 1000;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     private static final long VM_SIZE = 1000; //image size (Megabyte)
     private static final int VM_RAM = 10000; //vm memory (Megabyte)
     private static final long VM_BW = 100000;
 
     private static final int CLOUDLETS_BY_BROKER = 6;
-    private static final int CLOUDLET_PES = 2;
+    private static final int CLOUDLET_CORES = 2;
 
     /// The length has to be large to ensure the simulation will run for long enough,
     /// so that faults will affect all VMs from certain broker.
@@ -179,7 +194,7 @@ public final class HostFaultInjectionExample1 {
     }
 
     public Vm createVm() {
-        final Vm vm = new VmSimple(++createdVms, VM_MIPS, VM_PES);
+        final Vm vm = new VmSimple(++createdVms, VM_CAPACITY);
         vm
             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -195,7 +210,7 @@ public final class HostFaultInjectionExample1 {
         final var utilizationModelFull = new UtilizationModelFull();
         for (int i = 0; i < CLOUDLETS_BY_BROKER; i++) {
             Cloudlet c
-                = new CloudletSimple(++createdCloudlets, CLOUDLET_LENGTH, CLOUDLET_PES)
+                = new CloudletSimple(++createdCloudlets, CLOUDLET_LENGTH, CLOUDLET_CORES)
                         .setFileSize(CLOUDLET_FILESIZE)
                         .setOutputSize(CLOUDLET_OUTPUT_SIZE)
                         .setUtilizationModelCpu(utilizationModelFull)
@@ -219,11 +234,10 @@ public final class HostFaultInjectionExample1 {
     }
 
     public Host createHost(final int id) {
-        final var pesList = createPeList(HOST_PES, HOST_MIPS_BY_PE);
         final var ramProvisioner = new ResourceProvisionerSimple();
         final var bwProvisioner = new ResourceProvisionerSimple();
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, pesList);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host
             .setRamProvisioner(ramProvisioner)
             .setBwProvisioner(bwProvisioner)
@@ -231,15 +245,6 @@ public final class HostFaultInjectionExample1 {
             .setId(id);
 
         return host;
-    }
-
-    public List<Pe> createPeList(final int pesNumber, final long mips) {
-        final var peList = new ArrayList<Pe>(pesNumber);
-        for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
-
-        return peList;
     }
 
     /// Creates the fault injection for host
@@ -270,7 +275,7 @@ public final class HostFaultInjectionExample1 {
     ///
     /// @see #createFaultInjectionForHosts(Datacenter)
     private Vm cloneVm(final Vm vm) {
-        final Vm clone = new VmSimple(vm.getMips(), vm.getPesNumber());
+        final Vm clone = new VmSimple(new CoreCapacity(vm.getProcessor().getCores(), vm.getProcessor().getMips()));
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the vm to its clone,
@@ -286,7 +291,7 @@ public final class HostFaultInjectionExample1 {
 
         System.out.printf(
             "%n# %s: Cloning %s as Vm %d -> MIPS: %.0f PEs Number: %d%n",
-            vm.getBroker(), vm, clone.getId(), clone.getMips(), clone.getPesNumber());
+            vm.getBroker(), vm, clone.getId(), clone.getProcessor().getMips(), clone.getProcessor().getCores());
 
         return clone;
     }
@@ -320,7 +325,7 @@ public final class HostFaultInjectionExample1 {
     /// @param source the Cloudlet to be cloned.
     /// @return the cloned (new) cloudlet
     private Cloudlet cloneCloudlet(Cloudlet source) {
-        final var clone = new CloudletSimple(source.getLength(), source.getPesNumber());
+        final var clone = new CloudletSimple(source.getLength(), source.getRequiredCores());
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the cloudlet to its clone,

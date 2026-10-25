@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
@@ -155,12 +154,9 @@ public class ParallelSimulationsExample implements Runnable {
         final long  bw = 10000; // in Megabits/s
         final int   pesNumber = 4;
 
-        final var peList = new ArrayList<Pe>(pesNumber); // List of CPU cores
-        for(int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(pesNumber, mips);
 
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private void createVms() {
@@ -182,7 +178,7 @@ public class ParallelSimulationsExample implements Runnable {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 2; // number of CPU cores
 
-        return new VmSimple(id, mips, pesNumber)
+        return new VmSimple(id, new CoreCapacity(pesNumber, mips))
             .setRam(ram)
             .setBw(bw)
             .setSize(storage);

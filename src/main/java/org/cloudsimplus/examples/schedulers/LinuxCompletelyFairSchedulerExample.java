@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerCompletelyFair;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -60,12 +59,20 @@ import java.util.List;
 public class LinuxCompletelyFairSchedulerExample {
     private static final int HOSTS_NUMBER = 1;
     private static final long HOST_MIPS = 1000;
-    private static final int HOST_PES = 3;
+    private static final int HOST_CORES = 3;
     private static final int VMS_NUMBER = 1;
-    private static final int VM_PES = HOST_PES;
+    private static final int VM_CORES = HOST_CORES;
     private static final long VM_MIPS = HOST_MIPS;
-    private static final int CLOUDLETS_NUMBER = HOST_PES*2;
-    private static final int CLOUDLET_PES = 1;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
+    private static final int CLOUDLETS_NUMBER = HOST_CORES*2;
+    private static final int CLOUDLET_CORES = 1;
     private static final int CLOUDLET_LEN = 10000; //in MI
 
     private final CloudSimPlus simulation;
@@ -137,18 +144,9 @@ public class LinuxCompletelyFairSchedulerExample {
         final long storage = 1000000; // host storage
         final long bw = 10000;
 
-        final var peList = createHostPesList(HOST_MIPS);
+        final var peList = new CoreCapacity(HOST_CORES, HOST_MIPS);
 
        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
-    }
-
-    private List<Pe> createHostPesList(long mips) {
-        final var cpuCoresList = new ArrayList<Pe>(HOST_PES);
-        for(int i = 0; i < HOST_PES; i++){
-            cpuCoresList.add(new PeSimple(mips));
-        }
-
-        return cpuCoresList;
     }
 
     private Vm createVm(DatacenterBroker broker) {
@@ -156,7 +154,7 @@ public class LinuxCompletelyFairSchedulerExample {
         final int    ram = 512; // vm memory (Megabyte)
         final long   bw = 1000; // vm bandwidth
 
-        return new VmSimple(numberOfCreatedVms++, VM_MIPS, VM_PES)
+        return new VmSimple(numberOfCreatedVms++, VM_CAPACITY)
             .setRam(ram).setBw(bw).setSize(storage)
             .setCloudletScheduler(new CloudletSchedulerCompletelyFair());
     }
@@ -166,7 +164,7 @@ public class LinuxCompletelyFairSchedulerExample {
         final long outputSize = 300; //Size (in bytes) after execution
         final var utilization = new UtilizationModelFull();
 
-        return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LEN, CLOUDLET_PES)
+        return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LEN, CLOUDLET_CORES)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilization)

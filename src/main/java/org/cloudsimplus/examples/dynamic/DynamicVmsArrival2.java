@@ -33,8 +33,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
@@ -149,7 +148,7 @@ public class DynamicVmsArrival2 {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        return new VmSimple(id, mips, VM_PES_NUMBER).setRam(ram).setBw(bw).setSize(size);
+        return new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips)).setRam(ram).setBw(bw).setSize(size);
     }
 
     /// Creates a cloudlet with pre-defined configuration.
@@ -186,15 +185,12 @@ public class DynamicVmsArrival2 {
     ///
     /// @return the created host
     private Host createHost() {
-        final var peList = new ArrayList<Pe>();
         final long mips = 1000;
-        for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(HOST_PES_NUMBER, mips);
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList);
+        return new HostSimple(ram, bw, storage, cpuCapacity);
     }
 }

@@ -35,8 +35,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.traces.google.BrokerManager;
@@ -91,11 +90,18 @@ public class GoogleTaskEventsExample1 {
 
     private static final int HOSTS = 10;
     private static final int VMS = 8;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
     private static final long HOST_RAM = 2048; //in Megabytes
     private static final long HOST_BW = 10000; //in Megabits/s
     private static final long HOST_STORAGE = 1000000; //in Megabytes
     private static final double HOST_MIPS = 1000;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
 
     /// Defines a negative length for Cloudlets created from the Google Task Events Trace file,
     /// so that they can run indefinitely until a [CloudSimTag#CLOUDLET_FINISH]
@@ -107,8 +113,16 @@ public class GoogleTaskEventsExample1 {
     /// @see GoogleTaskEventsTraceReader#setMaxCloudletsToCreate(int)
     private static final int MAX_CLOUDLETS = 8;
 
-    private static final long VM_PES = 4;
+    private static final long VM_CORES = 4;
     private static final int  VM_MIPS = 1000;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     private static final long VM_RAM = 500; //in Megabytes
     private static final long VM_BW = 100; //in Megabits/s
     private static final long VM_SIZE_MB = 1000; //in Megabytes
@@ -197,7 +211,7 @@ public class GoogleTaskEventsExample1 {
         This is different from the CPU UtilizationModel, which is defined
         in the "task usage" trace files.
         */
-        final long pesNumber = positive(event.actualCpuCores(VM_PES), VM_PES);
+        final long pesNumber = positive(event.actualCpuCores(VM_CORES), VM_CORES);
 
         final double maxRamUsagePercent = positive(event.getResourceRequestForRam(), Conversion.HUNDRED_PERCENT);
         final var utilizationRam = new UtilizationModelDynamic(0, maxRamUsagePercent);
@@ -244,21 +258,10 @@ public class GoogleTaskEventsExample1 {
     }
 
     private Host createHost() {
-        final var peList = createPesList(HOST_PES);
         //Uses a ResourceProvisionerSimple for RAM and BW
-        final Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
-    }
-
-    private List<Pe> createPesList(final int count) {
-        final var peList = new ArrayList<Pe>(count);
-        for(int i = 0; i < count; i++){
-            //Uses a PeProvisionerSimple by default
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
-        return peList;
     }
 
     private List<Vm> createVms() {
@@ -267,7 +270,7 @@ public class GoogleTaskEventsExample1 {
 
     private Vm createVm() {
         //Uses a CloudletSchedulerTimeShared by default
-        return new VmSimple(VM_MIPS, VM_PES).setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE_MB);
+        return new VmSimple(VM_CAPACITY).setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE_MB);
     }
 
     private void printCloudlets(final DatacenterBroker broker) {

@@ -19,8 +19,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.network.topologies.BriteNetworkTopology;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.resources.SanStorage;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -42,7 +41,7 @@ import java.util.List;
 /// causing the Cloudlet to start executing just after a few seconds.
 public class NetworkExample1 {
     private static final String NETWORK_TOPOLOGY_FILE = "topology.brite";
-    private static final int VM_PES = 1;
+    private static final int VM_CORES = 1;
     private final Datacenter datacenter0;
     private final DatacenterBroker broker;
 
@@ -102,7 +101,7 @@ public class NetworkExample1 {
         final var utilizationModel = new UtilizationModelFull();
 
         final var cloudlet1 =
-            new CloudletSimple(length, VM_PES)
+            new CloudletSimple(length, VM_CORES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
@@ -119,7 +118,7 @@ public class NetworkExample1 {
         final long size = 10000; //image size (Megabyte)
         final int ram = 512; //vm memory (Megabyte)
         final long bw = 1000; //in Megabits/s
-        final Vm vm1 = new VmSimple(mips, VM_PES)
+        final Vm vm1 = new VmSimple(new CoreCapacity(VM_CORES, mips))
                 .setRam(ram).setBw(bw).setSize(size)
                 .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -129,16 +128,15 @@ public class NetworkExample1 {
 
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
-        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
-        peList.add(new PeSimple(mips));
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final var host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, cpuCapacity);
         hostList.add(host);
 
         return new DatacenterSimple(simulation, hostList);

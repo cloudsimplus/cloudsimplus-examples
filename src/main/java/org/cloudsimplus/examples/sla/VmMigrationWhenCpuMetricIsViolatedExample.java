@@ -36,8 +36,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.power.models.PowerModelHostSimple;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.selectionpolicies.VmSelectionPolicyMinimumUtilization;
@@ -69,6 +68,13 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     private static final int  VM_RAM = 10000; //vm memory (MB)
     private static final long VM_BW = 100000;
     private static final int  VM_PES_NUM = 3; //number of cpus
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_PES_NUM, VM_MIPS);
 
     private static final long CLOUDLET_LENGHT = 20000;
     private static final long CLOUDLET_FILESIZE = 300;
@@ -155,7 +161,7 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     }
 
     private Vm createVm() {
-        final Vm vm = new VmSimple(vmList.size(), VM_MIPS, VM_PES_NUM);
+        final Vm vm = new VmSimple(vmList.size(), VM_CAPACITY);
         vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
           .setCloudletScheduler(new CloudletSchedulerTimeShared());
         return vm;
@@ -177,7 +183,6 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
                     cloudletInitialCpuUsagePercent,
                     maxCloudletCpuUsagePercent,
                     progressiveCpuUsage);
-
 
             final Cloudlet c
                     = new CloudletSimple(
@@ -269,8 +274,8 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     }
 
     private Host createHost(final int pesNumber, final long mipsByPe) {
-        final var peList = createPeList(pesNumber, mipsByPe);
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final var cpuCapacity = new CoreCapacity(pesNumber, mipsByPe);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setPowerModel(new PowerModelHostSimple(1000, 700));
         host.setRamProvisioner(new ResourceProvisionerSimple());
         host.setBwProvisioner(new ResourceProvisionerSimple());
@@ -278,11 +283,4 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
         return host;
     }
 
-    private List<Pe> createPeList(final int numberOfPEs, final long mips) {
-        final var peList = new ArrayList<Pe>(numberOfPEs);
-        for (int i = 0; i < numberOfPEs; i++) {
-            peList.add(new PeSimple(mips));
-        }
-        return peList;
-    }
 }

@@ -36,8 +36,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.power.models.PowerModel;
 import org.cloudsimplus.power.models.PowerModelHostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -93,7 +92,14 @@ public class PowerExample {
     /// to keep Hosts CPU utilization history records.
     private static final int SCHEDULING_INTERVAL = 10;
     private static final int HOSTS = 2;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
 
     /// Indicates the time (in seconds) the Host takes to start up.
     private static final double HOST_START_UP_DELAY = 5;
@@ -108,10 +114,17 @@ public class PowerExample {
     private static final double HOST_SHUT_DOWN_POWER = 3;
 
     private static final int VMS = 4;
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, 1000);
 
     private static final int CLOUDLETS = 8;
-    private static final int CLOUDLET_PES = 2;
+    private static final int CLOUDLET_CORES = 2;
     private static final int CLOUDLET_LENGTH = 50000;
 
     /// Defines the power a Host uses, even if it's idle (in Watts).
@@ -225,7 +238,6 @@ public class PowerExample {
 
     /// Creates a [Datacenter] and its [Host]s.
     private Datacenter createDatacenter() {
-
         for(int i = 0; i < HOSTS; i++) {
             final var host = createPowerHost(i);
             hostList.add(host);
@@ -237,18 +249,12 @@ public class PowerExample {
     }
 
     private Host createPowerHost(final int id) {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
         final var vmScheduler = new VmSchedulerTimeShared();
 
-        final var host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
         host.setStartupDelay(HOST_START_UP_DELAY)
             .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
 
@@ -269,7 +275,7 @@ public class PowerExample {
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final var vm = new VmSimple(i, 1000, VM_PES);
+            final var vm = new VmSimple(i, VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10000).enableUtilizationStats();
             list.add(vm);
         }
@@ -285,7 +291,7 @@ public class PowerExample {
             //Sets half of the cloudlets with the defined length and the other half with the double of it
             final long length = i < CLOUDLETS / 2 ? CLOUDLET_LENGTH : CLOUDLET_LENGTH * 2;
             final var cloudlet =
-                new CloudletSimple(i, length, CLOUDLET_PES)
+                new CloudletSimple(i, length, CLOUDLET_CORES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())

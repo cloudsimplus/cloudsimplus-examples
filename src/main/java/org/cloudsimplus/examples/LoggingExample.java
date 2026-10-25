@@ -37,8 +37,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletScheduler;
 import org.cloudsimplus.selectionpolicies.VmSelectionPolicyRandomSelection;
 import org.cloudsimplus.util.Log;
@@ -61,13 +60,13 @@ public class LoggingExample {
     private static final int SCHEDULING_INTERVAL_SECS = 10;
     private static final double HOST_OVER_UTILIZATION_MIGRATION_THRESHOLD = 0.7;
 
-    private static final int[] HOST_PES = {8, 8, 4, 4, 4};
+    private static final int[] HOST_CORES = {8, 8, 4, 4, 4};
 
     private static final int VMS = 5;
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
 
     private static final int CLOUDLETS = 2;
-    private static final int CLOUDLET_PES = 1;
+    private static final int CLOUDLET_CORES = 1;
     private static final int CLOUDLET_LENGTH = 50_000;
 
     private static final int HOST_MIPS =       10_000;
@@ -76,6 +75,14 @@ public class LoggingExample {
     private static final int HOST_STORAGE = 1_000_000;
 
     private static final int VM_MIPS =          1_000;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     private static final int VM_RAM =           2_000;
     private static final int VM_BW =            2_000;
     private static final int VM_SIZE =         10_000;
@@ -144,8 +151,8 @@ public class LoggingExample {
 
     /// Creates a Datacenter and its Hosts.
     private Datacenter createDatacenter() {
-        final var hostList = new ArrayList<Host>(HOST_PES.length);
-        for (int pes : HOST_PES) {
+        final var hostList = new ArrayList<Host>(HOST_CORES.length);
+        for (int pes : HOST_CORES) {
             final var host = createHost(pes);
             hostList.add(host);
         }
@@ -165,18 +172,13 @@ public class LoggingExample {
     }
 
     private Host createHost(final int pes) {
-        final var peList = new ArrayList<Pe>(pes);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < pes; i++) {
-            //Uses a PeProvisionerSimple by default to provision PEs for VMs
-            peList.add(new PeSimple(HOST_MIPS));
-        }
+        final var cpuCapacity = new CoreCapacity(pes, HOST_MIPS);
 
         /*
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
     }
 
     /// Creates a list of VMs.
@@ -184,7 +186,7 @@ public class LoggingExample {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_MIPS, VM_PES);
+            final Vm vm = new VmSimple(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             list.add(vm);
         }
@@ -205,7 +207,7 @@ public class LoggingExample {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSubmissionDelay(submissionDelay);
             cloudlet.setSizes(1024);
             list.add(cloudlet);

@@ -33,8 +33,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
@@ -54,11 +53,18 @@ import java.util.List;
 public class DynamicVmsArrival {
     private static final int HOSTS = 2;
     /// Number of Processor Elements (CPU Cores) of each Host.
-    private static final int HOST_PES = 2;
+    private static final int HOST_CORES = 2;
     private static final double HOST_MIPS = 1000;
 
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     /// Number of Processor Elements (CPU Cores) of each VM and cloudlet.
-    private static final int VM_PES = 1;
+    private static final int VM_CORES = 1;
 
     /// Number of VMs to create.
     /// If you try to increase this number without increases Hosts,
@@ -70,7 +76,7 @@ public class DynamicVmsArrival {
     private static final int CLOUDLETS = VMS;
     /// The length of each Cloudlet in number of Million Instructions (MI)
     private static final int CLOUDLET_LENGTH = 10000;
-    private static final int CLOUDLET_PES = 1;
+    private static final int CLOUDLET_CORES = 1;
 
     /// The time to wait before destroying a VM after it becomes idle (in seconds).
     public static final int IDLE_VM_DESTRUCTION_DELAY = 1;
@@ -180,7 +186,7 @@ public class DynamicVmsArrival {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        final var vm = new VmSimple(mips, VM_PES);
+        final var vm = new VmSimple(new CoreCapacity(VM_CORES, mips));
         vm.setRam(ram)
           .setBw(bw)
           .setSize(size)
@@ -210,7 +216,7 @@ public class DynamicVmsArrival {
         final var utilizationModelFull = new UtilizationModelFull();
         final var utilizationModelDynamic = new UtilizationModelDynamic(0.2);
 
-        return new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
+        return new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
             .setUtilizationModelCpu(utilizationModelFull)
             .setUtilizationModelRam(utilizationModelDynamic)
             .setUtilizationModelBw(utilizationModelDynamic)
@@ -232,14 +238,10 @@ public class DynamicVmsArrival {
     ///
     /// @return the created host
     private Host createHost() {
-        final var peList = new ArrayList<Pe>();
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS));
-        }
         long ram = 2048; // host memory (Megabyte)
         long storage = 1000000; // host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList);
+        return new HostSimple(ram, bw, storage, HOST_CAPACITY);
     }
 }

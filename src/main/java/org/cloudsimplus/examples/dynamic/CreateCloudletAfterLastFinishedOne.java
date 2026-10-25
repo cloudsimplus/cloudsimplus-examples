@@ -36,8 +36,7 @@ import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -124,7 +123,7 @@ public class CreateCloudletAfterLastFinishedOne {
     private Vm createVm() {
         final int mips = 1000;
 
-        return new VmSimple(mips, VM_PES_NUMBER)
+        return new VmSimple(new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(512).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -175,16 +174,13 @@ public class CreateCloudletAfterLastFinishedOne {
     /// @param id The Host id
     /// @return the created host
     private Host createHost(int id) {
-        final var peList = new ArrayList<Pe>();
         long mips = 1000;
-        for(int i = 0; i < HOST_PES_NUMBER; i++){
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(HOST_PES_NUMBER, mips);
         long ram = 2048; // host memory (Megabyte)
         long storage = 1000000; // host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
-       return new HostSimple(ram, bw, storage, peList)
+       return new HostSimple(ram, bw, storage, cpuCapacity)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerSpaceShared());

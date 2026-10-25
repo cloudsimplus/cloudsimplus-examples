@@ -40,8 +40,7 @@ import org.cloudsimplus.distributions.UniformDistr;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudsimplus.util.Log;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -89,8 +88,24 @@ public class MinTimeBetweenEventsExample {
     private static final int CLOUDLETS = 6;
 
     private static final long HOST_MIPS = 1000;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_PES_NUMBER, HOST_MIPS);
+
     private static final int VM_MIPS = 1000;
-    private static final int CLOUDLET_PES = 1;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_PES_NUMBER, VM_MIPS);
+
+    private static final int CLOUDLET_CORES = 1;
     private static final long CLOUDLET_LENGTH = 100;     //in number of Million Instructions (MI)
 
     private final List<Host> hostList;
@@ -131,17 +146,11 @@ public class MinTimeBetweenEventsExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>();
-        for (int i = 0; i < HOST_PES_NUMBER; i++) {
-            final var peSimple = new PeSimple(HOST_MIPS);
-            peList.add(peSimple);
-        }
-
         final long ram = 4096; // host memory (Megabyte)
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, peList)
+        return new HostSimple(ram, bw, storage, HOST_CAPACITY)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerSpaceShared());
@@ -164,7 +173,7 @@ public class MinTimeBetweenEventsExample {
         final long bw = 1000;
 
         //It uses a CloudletSchedulerTimeShared by default
-        final Vm vm = new VmSimple(id, VM_MIPS, VM_PES_NUMBER);
+        final Vm vm = new VmSimple(id, VM_CAPACITY);
         vm.setRam(ram).setBw(bw).setSize(size);
         return vm;
     }
@@ -190,7 +199,7 @@ public class MinTimeBetweenEventsExample {
         final long outputSize = 300; //in bytes
         final var utilizationModel = new UtilizationModelDynamic(0.1);
 
-        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
+        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(new UtilizationModelFull())

@@ -32,8 +32,7 @@ import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -71,6 +70,13 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
     /// Number of processor elements (CPU cores) of each host.
     private static final int HOST_PES_NUM = 2;
 
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_PES_NUM, HOST_MIPS);
+
     /// The total MIPS capacity across all the Host PEs.
     private static final long HOST_TOTAL_MIPS_CAPACITY = HOST_MIPS*HOST_PES_NUM;
 
@@ -82,7 +88,6 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
 
     private static final long VM_MIPS = HOST_TOTAL_MIPS_CAPACITY/NUMBER_OF_VMS;
     private final CloudSimPlus simulation;
-
 
     private List<Cloudlet> cloudletList;
     private List<Vm> vmList;
@@ -151,14 +156,7 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final var peList = new ArrayList<Pe>();
-        /*Creates the Host's CPU cores and defines the provisioner
-        used to allocate each core for requesting VMs.*/
-        for(int i = 0; i < HOST_PES_NUM; i++){
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerSpaceShared());
+        return new HostSimple(ram, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerSpaceShared());
     }
 
     private Vm createVm(DatacenterBroker broker, long mips, int pesNumber) {
@@ -166,7 +164,7 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
         final int  ram = 512; // vm memory (Megabyte)
         final long bw = 1000; // vm bandwidth
 
-        return new VmSimple(numberOfCreatedVms++, mips, pesNumber)
+        return new VmSimple(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(storage)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -174,7 +172,7 @@ public class SharingHostPEsUsingVmSchedulerSpaceSharedExample {
     private Cloudlet createCloudlet(DatacenterBroker broker, Vm vm) {
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
-        final long  numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
+        final long  numberOfCpuCores = vm.getProcessor().getCores(); //cloudlet will use all the VM's CPU cores
 
         return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LENGTH, numberOfCpuCores)
             .setFileSize(fileSize)

@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.util.Log;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -55,18 +54,33 @@ public class VmRelativeHostResourceUtilizationExample {
     private static final int  SCHEDULING_INTERVAL = 2;
 
     private static final int  HOSTS = 1;
-    private static final int  HOST_PES = 16;
+    private static final int  HOST_CORES = 16;
     private static final long HOST_RAM = 10_000; //in Megabytes
     private static final long HOST_BW = 100_000; //in Megabits/s
     private static final int  HOST_MIPS = 1000;
 
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     private static final int  VMS = 2;
-    private static final int  VM_PES = 4;
+    private static final int  VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, HOST_MIPS);
+
     private static final long VM_RAM = HOST_RAM/VMS; //in Megabytes
     private static final long VM_BW = HOST_BW/VMS; //in Megabits/s
 
     private static final int  CLOUDLETS = VMS;
-    private static final int  CLOUDLET_PES = VM_PES;
+    private static final int  CLOUDLET_CORES = VM_CORES;
     private static final int  CLOUDLET_LENGTH = 10_000;
 
     private final CloudSimPlus simulation;
@@ -126,24 +140,19 @@ public class VmRelativeHostResourceUtilizationExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
         final long storage = 1000000; //in Megabytes
 
         /*
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, storage, peList);
+        return new HostSimple(HOST_RAM, HOST_BW, storage, HOST_CAPACITY);
     }
 
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final var vm = new VmSimple(HOST_MIPS, VM_PES);
+            final var vm = new VmSimple(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(10000);
             newVmList.add(vm);
         }
@@ -158,7 +167,7 @@ public class VmRelativeHostResourceUtilizationExample {
         final var utilizationModelRamAndBw = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                     .setUtilizationModelBw(utilizationModelRamAndBw)
                     .setUtilizationModelRam(utilizationModelRamAndBw)

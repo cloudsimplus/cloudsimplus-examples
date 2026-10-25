@@ -42,8 +42,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.resources.Processor;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -91,11 +90,27 @@ public class VerticalVmCpuScalingExample {
     private static final int SCHEDULING_INTERVAL = 1;
     private static final int HOSTS = 1;
 
-    private static final int HOST_PES = 64;
+    private static final int HOST_CORES = 64;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
+
     private static final int VMS = 1;
-    private static final int VM_PES = 14;
+    private static final int VM_CORES = 14;
     private static final int VM_RAM = 1200;
     private static final int VM_MIPS = 1000;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
     private List<Host> hostList;
@@ -146,7 +161,7 @@ public class VerticalVmCpuScalingExample {
         vmList.forEach(vm ->
             System.out.printf(
                 "\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%d). RAM usage: %.2f%% (%d MB)%n",
-                evt.getTime(), vm.getId(), vm.getCpuPercentUtilization()*100.0, vm.getPesNumber(),
+                evt.getTime(), vm.getId(), vm.getCpuPercentUtilization()*100.0, vm.getProcessor().getCores(),
                 vm.getCloudletScheduler().getCloudletExecList().size(),
                 vm.getRam().getPercentUtilization()*100, vm.getRam().getAllocatedResource())
         );
@@ -171,15 +186,10 @@ public class VerticalVmCpuScalingExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     /// Creates a list of initial VMs in which each VM is able to scale vertically
@@ -192,7 +202,7 @@ public class VerticalVmCpuScalingExample {
         final var newVmList = new ArrayList<Vm>(vmsNumber);
         for (int i = 0; i < vmsNumber; i++) {
             final var vm = createVm();
-            vm.setPeVerticalScaling(createVerticalPeScaling());
+            vm.setCpuVerticalScaling(createVerticalPeScaling());
             newVmList.add(vm);
         }
 
@@ -202,7 +212,7 @@ public class VerticalVmCpuScalingExample {
     private Vm createVm() {
         final int id = createsVms++;
 
-        return new VmSimple(id, VM_MIPS, VM_PES).setRam(VM_RAM).setBw(1000).setSize(10000);
+        return new VmSimple(id, VM_CAPACITY).setRam(VM_RAM).setBw(1000).setSize(10000);
     }
 
     /// Creates a [VerticalVmScaling] for scaling VM's CPU when it is under or overloaded.

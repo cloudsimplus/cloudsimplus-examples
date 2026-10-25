@@ -35,8 +35,7 @@ import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -147,13 +146,10 @@ public class TerminateSimulationAtGivenConditionExample {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final var peList = new ArrayList<Pe>(); //List of CPU cores
+        //Defines the number of Host CPU cores and the MIPS capacity of each core
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
-        /*Creates the Host's CPU cores and defines the provisioner
-        used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips));
-
-        return new HostSimple(ram, bw, storage, peList)
+        return new HostSimple(ram, bw, storage, cpuCapacity)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -166,7 +162,7 @@ public class TerminateSimulationAtGivenConditionExample {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 1; // number of CPU cores
 
-        return new VmSimple(numberOfCreatedVms++, mips, pesNumber)
+        return new VmSimple(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
                 .setRam(ram)
                 .setBw(bw)
                 .setSize(storage)
@@ -177,7 +173,7 @@ public class TerminateSimulationAtGivenConditionExample {
         final long length = 10000; //in Million Instructions (MI)
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
-        final long  numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
+        final long  numberOfCpuCores = vm.getProcessor().getCores(); //cloudlet will use all the VM's CPU cores
 
         //Defines how CPU, RAM and Bandwidth resources are used
         //Sets the same utilization model for all these resources.

@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.util.Log;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.vms.Vm;
@@ -65,17 +64,32 @@ import static org.cloudsimplus.util.TimeUtil.secondsToStr;
 /// @since ClodSimPlus 7.3.1
 public class LargeScaleExample {
     private static final int  HOSTS = 200_000;
-    private static final int  HOST_PES = 16;
+    private static final int  HOST_CORES = 16;
     private static final int  HOST_MIPS = 1000;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     private static final int  HOST_RAM = 2048; //in Megabytes
     private static final long HOST_BW = 10_000; //in Megabits/s
     private static final long HOST_STORAGE = 1_000_000; //in Megabytes
 
     private static final int VMS = HOSTS*4;
-    private static final int VM_PES = HOST_PES/4;
+    private static final int VM_CORES = HOST_CORES/4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, HOST_MIPS);
 
     private static final int CLOUDLETS = VMS;
-    private static final int CLOUDLET_PES = VM_PES/2;
+    private static final int CLOUDLET_CORES = VM_CORES/2;
     private static final int CLOUDLET_LENGTH = HOST_MIPS * 10;
 
     /// Defines a time interval to process cloudlets execution
@@ -157,18 +171,11 @@ public class LargeScaleExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            //Uses a PeProvisionerSimple by default to provision PEs for VMs
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
         /*
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
     }
 
     /// Creates a list of VMs.
@@ -177,7 +184,7 @@ public class LargeScaleExample {
         System.out.printf("Creating %,d VMs%n", VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final var vm = new VmSimple(HOST_MIPS, VM_PES);
+            final var vm = new VmSimple(VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10_000);
             vmList.add(vm);
         }
@@ -194,7 +201,7 @@ public class LargeScaleExample {
 
         System.out.printf("Creating %,d Cloudlets%n", CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSizes(1024);
             cloudletList.add(cloudlet);
         }

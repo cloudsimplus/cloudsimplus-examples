@@ -32,8 +32,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -92,7 +91,7 @@ public class TwoCloudletsAndOneSpaceSharedVmExample {
         long bw = 1000;
         int pesNumber = 1; // number of cpus
 
-        final var vm = new VmSimple(vmid, mips, pesNumber)
+        final var vm = new VmSimple(vmid, new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
         vmlist.add(vm);
@@ -138,16 +137,15 @@ public class TwoCloudletsAndOneSpaceSharedVmExample {
     /// @return the Datacenter
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
-        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
 
-        peList.add(new PeSimple(mips));
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        final var host = new HostSimple(ram, bw, storage, peList)
+        final var host = new HostSimple(ram, bw, storage, cpuCapacity)
             .setVmScheduler(new VmSchedulerTimeShared());
 
         hostList.add(host);

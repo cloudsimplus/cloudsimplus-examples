@@ -14,8 +14,7 @@ import org.cloudsimplus.network.switches.AggregateSwitch;
 import org.cloudsimplus.network.switches.EdgeSwitch;
 import org.cloudsimplus.network.switches.RootSwitch;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.vms.network.NetworkVm;
@@ -44,7 +43,15 @@ abstract class NetworkVmExampleAbstract {
     public static final double COST_PER_BW = 0.0; // the cost of using bw in this resource
 
     public static final int  HOST_MIPS = 1000;
-    public static final int  HOST_PES = 8;
+    public static final int  HOST_CORES = 8;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     public static final int  HOST_RAM = 2048; // MEGA
     public static final long HOST_STORAGE = 1000000; // MEGA
     public static final long HOST_BW = 10000;
@@ -53,14 +60,21 @@ abstract class NetworkVmExampleAbstract {
     public static final long VM_SIZE = 10000; // image size (Megabyte)
     public static final int  VM_RAM = 512; // MEGA
     public static final long VM_BW = 1000;
-    public static final int  VM_PES_NUMBER = HOST_PES / MAX_VMS_PER_HOST;
+    public static final int  VM_PES_NUMBER = HOST_CORES / MAX_VMS_PER_HOST;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_PES_NUMBER, VM_MIPS);
 
     /// Number of fictitious applications to create.
     /// Each application is just a list of [NetworkCloudlet].
     /// @see #appMap
     public static final int APPS_NUMBER = 1;
 
-    public static final int CLOUDLET_PES = VM_PES_NUMBER;
+    public static final int CLOUDLET_CORES = VM_PES_NUMBER;
     public static final int TASK_LENGTH = 4000;
     public static final int CLOUDLET_FILE_SIZE = 300;
     public static final int CLOUDLET_OUTPUT_SIZE = 300;
@@ -154,8 +168,8 @@ abstract class NetworkVmExampleAbstract {
         final int hostsNumber = EdgeSwitch.PORTS * AggregateSwitch.PORTS * RootSwitch.PORTS;
         final var netHostList = new ArrayList<NetworkHost>(hostsNumber);
         for (int i = 0; i < hostsNumber; i++) {
-            final List<Pe> peList = createPEs(HOST_PES, HOST_MIPS);
-            final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+            final CoreCapacity cpuCapacity = HOST_CAPACITY;
+            final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
             host
                 .setRamProvisioner(new ResourceProvisionerSimple())
                 .setBwProvisioner(new ResourceProvisionerSimple())
@@ -173,15 +187,6 @@ abstract class NetworkVmExampleAbstract {
 
         createNetwork(dc);
         return dc;
-    }
-
-    protected List<Pe> createPEs(final int pesNumber, final long mips) {
-        final var peList = new ArrayList<Pe>();
-        for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
-
-        return peList;
     }
 
     /// Creates internal Datacenter network.
@@ -224,7 +229,7 @@ abstract class NetworkVmExampleAbstract {
         final int vmsNumber = getDatacenterHostList().size() * MAX_VMS_PER_HOST;
         final var netVmList = new ArrayList<NetworkVm>();
         for (int i = 0; i < vmsNumber; i++) {
-            final var vm = new NetworkVm(i, VM_MIPS, VM_PES_NUMBER);
+            final var vm = new NetworkVm(i, VM_CAPACITY);
             vm.setRam(VM_RAM)
               .setBw(VM_BW)
               .setSize(VM_SIZE)

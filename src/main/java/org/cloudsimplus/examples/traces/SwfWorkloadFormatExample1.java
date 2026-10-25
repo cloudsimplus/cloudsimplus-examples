@@ -35,8 +35,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.DatacenterBrokerEventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.traces.SwfWorkloadFileReader;
 import org.cloudsimplus.traces.TraceReaderAbstract;
@@ -85,10 +84,18 @@ public class SwfWorkloadFormatExample1 {
     /// will be created as one cloudlet.
     private int maxCloudletsToCreateFromWorkloadFile = Integer.MAX_VALUE;
 
-    private final int HOST_PES = 12;
+    private final int HOST_CORES = 12;
 
     private static final int  VM_MIPS = 10000;
-    private static final int  VM_PES = 4;
+    private static final int  VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     private static final long VM_SIZE = 2000;
     private static final int  VM_RAM = 1000;
     private static final long VM_BW = 50000;
@@ -161,13 +168,13 @@ public class SwfWorkloadFormatExample1 {
     /// Creates a list of VMs according to the number of Cloudlets,
     /// in order to try accommodating all Cloudlets into those VMs.
     private void createVms() {
-        final double totalCloudletPes = cloudletList.stream().mapToDouble(Cloudlet::getPesNumber).sum();
-        /* The number to multiply the VM_PES was chosen at random.
+        final double totalCloudletCores = cloudletList.stream().mapToDouble(Cloudlet::getRequiredCores).sum();
+        /* The number to multiply the VM_CORES was chosen at random.
         * It's used to reduce the number of VMs to create. */
-        final int totalVms = (int)Math.ceil(totalCloudletPes / (VM_PES*6));
+        final int totalVms = (int)Math.ceil(totalCloudletCores / (VM_CORES*6));
 
         for (int i = 0; i < totalVms; i++) {
-            final var vm = new VmSimple(VM_MIPS, VM_PES)
+            final var vm = new VmSimple(VM_CAPACITY)
                             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
                             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
             vmlist.add(vm);
@@ -207,20 +214,12 @@ public class SwfWorkloadFormatExample1 {
 
         final var hostList = new ArrayList<Host>((int)hostsNumber);
         for (int i = 0; i < hostsNumber; i++) {
-            List<Pe> peList = createPeList(VM_MIPS);
-            final var host = new HostSimple(ram, bw, storage, peList);
+            CoreCapacity cpuCapacity = new CoreCapacity(HOST_CORES, VM_MIPS);
+            final var host = new HostSimple(ram, bw, storage, cpuCapacity);
             hostList.add(host);
         }
 
         return hostList;
     }
 
-    private List<Pe> createPeList(final long mips) {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(mips));
-        }
-
-        return peList;
-    }
 }

@@ -41,8 +41,7 @@ import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -104,7 +103,15 @@ public class LoadBalancerByHorizontalVmScalingExample {
     private static final int CLOUDLETS_CREATION_INTERVAL = SCHEDULING_INTERVAL * 2;
 
     private static final int HOSTS = 50;
-    private static final int HOST_PES = 32;
+    private static final int HOST_CORES = 32;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
+
     private static final int VMS = 4;
     private static final int CLOUDLETS = 6;
     private final CloudSimPlus simulation;
@@ -116,6 +123,14 @@ public class LoadBalancerByHorizontalVmScalingExample {
 
     /// Different lengths that will be randomly assigned to created Cloudlets.
     private static final long[] CLOUDLET_LENGTHS = {2000, 4000, 10000, 16000, 2000, 30000, 20000};
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(2, 1000);
+
     private final ContinuousDistribution rand;
 
     private int createdCloudlets;
@@ -211,15 +226,10 @@ public class LoadBalancerByHorizontalVmScalingExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
-        return new HostSimple(ram, bw, storage, peList)
+        return new HostSimple(ram, bw, storage, HOST_CAPACITY)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -270,7 +280,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
     /// @return the created Vm
     private Vm createVm() {
         final int id = createsVms++;
-        return new VmSimple(id, 1000, 2)
+        return new VmSimple(id, VM_CAPACITY)
             .setRam(512).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }

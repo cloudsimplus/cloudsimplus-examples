@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.util.BytesConversion;
 import org.cloudsimplus.util.Log;
 import org.cloudsimplus.util.TimeUtil;
@@ -67,13 +66,27 @@ import static java.util.stream.Collectors.toCollection;
 /// @since CloudSim Plus 4.4.1
 public class UtilizationModelFullPerformance {
     private static final int HOSTS = 20_000;
-    private static final int HOST_PES = 16;
+    private static final int HOST_CORES = 16;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
 
     private static final int VMS = HOSTS*4;
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, 1000);
 
     private static final int CLOUDLETS = VMS*2;
-    private static final int CLOUDLET_PES = 2;
+    private static final int CLOUDLET_CORES = 2;
     private static final int CLOUDLET_LENGTH = 10_000;
     private static final int SCHEDULING_INTERVAL = 0;
 
@@ -146,21 +159,16 @@ public class UtilizationModelFullPerformance {
     }
 
     private Host createHost() {
-        final List<Pe> peList =
-            IntStream.range(0, HOST_PES)
-                     .mapToObj(i -> new PeSimple(1000))
-                     .collect(toCollection(() -> new ArrayList<>(HOST_PES)));
-
         final long ramMB = 20480;
         final long bwMbps = 10000;
         final long storageMB = 1000000;
-        return new HostSimple(ramMB, bwMbps, storageMB, peList);
+        return new HostSimple(ramMB, bwMbps, storageMB, HOST_CAPACITY);
     }
 
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final Vm vm = new VmSimple(1000, VM_PES);
+            final Vm vm = new VmSimple(VM_CAPACITY);
             newVmList.add(vm);
         }
 
@@ -170,7 +178,7 @@ public class UtilizationModelFullPerformance {
     private List<Cloudlet> createCloudlets() {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setUtilizationModelCpu(um).setSizes(1024);
             newCloudletList.add(cloudlet);
         }

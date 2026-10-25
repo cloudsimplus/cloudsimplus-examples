@@ -19,8 +19,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.network.topologies.BriteNetworkTopology;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
@@ -31,7 +30,7 @@ import java.util.List;
 /// A simple example showing how to create 2 datacenters with 1 host each and run
 /// cloudlets of 2 users. It also sets a network topology.
 public class NetworkExample3 {
-    private static final int VM_PES = 1;
+    private static final int VM_CORES = 1;
 
     private final List<Datacenter> datacenterList;
     private final List<DatacenterBroker> brokerList;
@@ -96,13 +95,13 @@ public class NetworkExample3 {
         final var utilizationModel = new UtilizationModelFull();
 
         final var cloudlet1 =
-            new CloudletSimple(length, VM_PES)
+            new CloudletSimple(length, VM_CORES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
 
         final var cloudlet2 =
-            new CloudletSimple(length, VM_PES)
+            new CloudletSimple(length, VM_CORES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
@@ -120,10 +119,10 @@ public class NetworkExample3 {
         final int ram = 512; //vm memory (Megabyte)
         final long bw = 1000;
 
-        final Vm vm1 = new VmSimple(mips, VM_PES)
+        final Vm vm1 = new VmSimple(new CoreCapacity(VM_CORES, mips))
                 .setRam(ram).setBw(bw).setSize(size);
 
-        final Vm vm2 = new VmSimple(mips, VM_PES)
+        final Vm vm2 = new VmSimple(new CoreCapacity(VM_CORES, mips))
                 .setRam(ram).setBw(bw).setSize(size);
 
         vmList1.add(vm1);
@@ -159,16 +158,15 @@ public class NetworkExample3 {
 
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
-        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
-        peList.add(new PeSimple(mips));
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final Host host = new HostSimple(ram, bw, storage, peList);
+        final Host host = new HostSimple(ram, bw, storage, cpuCapacity);
         hostList.add(host);
 
         return new DatacenterSimple(simulation, hostList);

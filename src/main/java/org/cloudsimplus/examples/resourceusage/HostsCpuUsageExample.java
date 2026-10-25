@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -108,8 +107,8 @@ public class HostsCpuUsageExample {
 
         final var cloudletFinishedList = broker.getCloudletFinishedList();
         new CloudletsTableBuilder(cloudletFinishedList)
-            .addColumn(new TextTableColumn("Host  ", "MIPS  "), cloudlet -> cloudlet.getVm().getHost().getMips(), 5)
-            .addColumn(new TextTableColumn("VM MIPS"), cloudlet -> cloudlet.getVm().getMips(), 7)
+            .addColumn(new TextTableColumn("Host  ", "MIPS  "), cloudlet -> cloudlet.getVm().getHost().getProcessor().getMips(), 5)
+            .addColumn(new TextTableColumn("VM MIPS"), cloudlet -> cloudlet.getVm().getProcessor().getMips(), 7)
             .build();
 
         System.out.printf("%nHosts CPU utilization statistics%n");
@@ -139,7 +138,7 @@ public class HostsCpuUsageExample {
         final long size = 10000; //image size (Megabyte)
         final int ram = 2048; //vm memory (Megabyte)
         final long bw = 1000;
-        final var vm = new VmSimple(mips, pesNumber)
+        final var vm = new VmSimple(new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
         vm.enableUtilizationStats();
@@ -149,11 +148,11 @@ public class HostsCpuUsageExample {
     /// Shows CPU utilization mean of all hosts into a given Datacenter.
     private void printCpuUtilizationForAllHosts() {
         for (final var host : hostList) {
-            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getPesNumber();
+            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getProcessor().getCores();
             final double cpuUsageMean = host.getCpuUtilizationStats().getMean()*100;
             System.out.printf(
                 "\tHost %d: PEs number: %2d MIPS by PE: %.0f CPU Utilization mean: %6.2f%%%n",
-                host.getId(), host.getPesNumber(), mipsByPe, cpuUsageMean);
+                host.getId(), host.getProcessor().getCores(), mipsByPe, cpuUsageMean);
         }
     }
 
@@ -185,16 +184,13 @@ public class HostsCpuUsageExample {
     }
 
     private Host createHost(final int id, final int pesNumber, final long mips) {
-        final var peList = new ArrayList<Pe>();
-        for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(pesNumber, mips);
 
         final long ram = 2048; //host memory (Megabyte)
         final long storage = 1000000; //host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        final var host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, cpuCapacity);
         host.setId(id)
             .setVmScheduler(new VmSchedulerTimeShared());
         host.enableUtilizationStats();
