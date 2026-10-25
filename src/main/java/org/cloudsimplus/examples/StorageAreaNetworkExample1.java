@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicySimple;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -184,7 +184,7 @@ import java.util.List;
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple(), createSanArray());
+        return new DatacenterSimple(simulation, hostList, new VmPlacementPolicySimple(), createSanArray());
     }
 
     private Host createHost() {

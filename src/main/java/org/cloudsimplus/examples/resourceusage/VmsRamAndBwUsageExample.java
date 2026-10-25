@@ -206,7 +206,7 @@ public class VmsRamAndBwUsageExample {
             * The key of this map is the time the usage was collected (in seconds)
             * and the value the percentage of utilization (from 0 to 1). */
             final Map<Double, Double> vmUtilizationHistory = Objects.requireNonNull(allVmsUtilizationHistory.get(vm));
-            vmUtilizationHistory.put(simulation.clock(), vm.getResource(resourceClass).getPercentUtilization());
+            vmUtilizationHistory.put(simulation.clock(), vm.getResource(resourceClass).getPercentOccupied());
         }
     }
 

@@ -44,6 +44,8 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.cloudsimplus.resources.Processor.totalMips;
+
 /// An example showing how to create a Datacenter with two hosts,
 /// with one Vm in each one, and run 1 cloudlet in each Vm.
 /// At the end, it shows the total CPU utilization of hosts
@@ -148,7 +150,7 @@ public class HostsCpuUsageExample {
     /// Shows CPU utilization mean of all hosts into a given Datacenter.
     private void printCpuUtilizationForAllHosts() {
         for (final var host : hostList) {
-            final double mipsByPe = host.getTotalMipsCapacity() / (double)host.getProcessor().getCores();
+            final double mipsByPe = totalMips(host) / (double)host.getProcessor().getCores();
             final double cpuUsageMean = host.getCpuUtilizationStats().getMean()*100;
             System.out.printf(
                 "\tHost %d: PEs number: %2d MIPS by PE: %.0f CPU Utilization mean: %6.2f%%%n",

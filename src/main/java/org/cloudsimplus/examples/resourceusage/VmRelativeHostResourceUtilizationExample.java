@@ -124,8 +124,8 @@ public class VmRelativeHostResourceUtilizationExample {
             System.out.printf(
                 "Host %-2d Total Utilization:         %5.0f%% |                         %5.0f%% |                        %5.0f%%%n%n",
                 host.getId(),host.getCpuPercentUtilization()*100,
-                host.getRam().getPercentUtilization()*100,
-                host.getBw().getPercentUtilization()*100);
+                host.getRam().getPercentOccupied()*100,
+                host.getBw().getPercentOccupied()*100);
         }
     }
 
@@ -143,7 +143,7 @@ public class VmRelativeHostResourceUtilizationExample {
         final long storage = 1000000; //in Megabytes
 
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, HOST_BW, storage, HOST_CAPACITY);

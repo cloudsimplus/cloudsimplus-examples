@@ -24,7 +24,7 @@
 package org.cloudsimplus.examples;
 
 import ch.qos.logback.classic.Level;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyFirstFit;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.cloudlets.Cloudlet;
@@ -165,14 +165,14 @@ public class LargeScaleExample {
             hostList.add(host);
         }
 
-        var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        var dc = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);

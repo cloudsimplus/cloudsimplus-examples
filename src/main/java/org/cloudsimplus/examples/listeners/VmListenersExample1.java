@@ -52,8 +52,8 @@ import java.util.List;
 /// The example uses the new Vm listeners to get these
 /// notifications while the simulation is running.
 ///
-/// @see Vm#addOnHostAllocationListener(EventListener)
-/// @see Vm#addOnHostDeallocationListener(EventListener)
+/// @see Vm#addOnHostPlacementListener(EventListener)
+/// @see Vm#addOnHostRemovalListener(EventListener)
 /// @see Vm#addOnCreationFailureListener(EventListener)
 /// @see EventListener
 ///
@@ -129,14 +129,14 @@ public class VmListenersExample1 {
         /* Sets the Listener to intercept allocation of a Host to the Vm.
          * The Listener is created using Java 8+ Lambda Expressions.
         */
-        vm0.addOnHostAllocationListener(eventInfo -> System.out.printf(
+        vm0.addOnHostPlacementListener(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Host %d allocated to Vm %d at time %.2f%n",
                 eventInfo.getHost().getId(), eventInfo.getVm().getId(), eventInfo.getTime()));
 
         /* Sets the listener to intercept deallocation of a Host for the Vm.
          * The Listener is created using Java 8+ Lambda Expressions.
         */
-        vm0.addOnHostDeallocationListener(eventInfo -> System.out.printf(
+        vm0.addOnHostRemovalListener(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Vm %d moved/removed from Host %d at time %.2f%n",
                 eventInfo.getVm().getId(), eventInfo.getHost().getId(), eventInfo.getTime()));
 

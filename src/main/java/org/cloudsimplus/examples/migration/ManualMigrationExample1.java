@@ -23,10 +23,10 @@
  */
 package org.cloudsimplus.examples.migration;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigration;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationAbstract;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationBestFitStaticThreshold;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyFirstFit;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigration;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationAbstract;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationBestFitStaticThreshold;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -58,21 +58,21 @@ import java.util.List;
 /// when the simulation reaches specific times.
 ///
 /// This is a manual migration, different when using some
-/// [VmAllocationPolicyMigration] implementation.
+/// [VmPlacementPolicyMigration] implementation.
 /// Such a policy automatically migrates VMs based on
 /// a static host CPU utilization threshold.
 /// In this example, such an implementation is not used
 /// and therefore, automatic VM migration based on CPU utilization threshold is not triggered.
 /// If you want to implement a VM migration policy, you should
 /// create a subclass from some of the existing ones.
-/// Usually the starting point is the [VmAllocationPolicyMigrationAbstract]
-/// but concrete implementations such as the [VmAllocationPolicyMigrationBestFitStaticThreshold]
+/// Usually the starting point is the [VmPlacementPolicyMigrationAbstract]
+/// but concrete implementations such as the [VmPlacementPolicyMigrationBestFitStaticThreshold]
 /// can be used as an example.
 ///
 /// VMs are initially placed into Hosts following the
-/// [VmAllocationPolicyFirstFit] policy, which doesn't implement automatic VM
+/// [VmPlacementPolicyFirstFit] policy, which doesn't implement automatic VM
 /// migration based on CPU utilization threshold. We call this VM as "manual migration"
-/// exactly because we are not using a [VmAllocationPolicyMigration] implementation
+/// exactly because we are not using a [VmPlacementPolicyMigration] implementation
 /// and the migration is defined by the simulation class itself.
 ///
 /// When the simulation clock reaches a specific time,
@@ -179,13 +179,13 @@ public final class ManualMigrationExample1 {
     /// Prints the state of a Host along the simulation time.
     ///
     /// Realize that the Host State History is just collected
-    /// if [history is enabled][Host#isStateHistoryEnabled()]
+    /// if [history is enabled][org.cloudsimplus.hosts.HostStateHistory#isEnabled()]
     /// by calling [Host#setStateHistoryEnabled(boolean)].
     ///
     /// @param host
     private void printHostHistory(Host host) {
         final boolean cpuUtilizationNotZero =
-            host.getStateHistory()
+            host.getStateHistory().getEntries()
                 .stream()
                 .map(HostStateHistoryEntry::percentUsage)
                 .anyMatch(cpuUtilization -> cpuUtilization > 0);
@@ -266,7 +266,7 @@ public final class ManualMigrationExample1 {
         }
         System.out.println();
 
-        final var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        final var dc = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }

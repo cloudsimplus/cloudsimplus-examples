@@ -13,7 +13,7 @@ import org.cloudsimplus.hosts.network.NetworkHost;
 import org.cloudsimplus.network.switches.AggregateSwitch;
 import org.cloudsimplus.network.switches.EdgeSwitch;
 import org.cloudsimplus.network.switches.RootSwitch;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -171,8 +171,8 @@ abstract class NetworkVmExampleAbstract {
             final CoreCapacity cpuCapacity = HOST_CAPACITY;
             final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
             host
-                .setRamProvisioner(new ResourceProvisionerSimple())
-                .setBwProvisioner(new ResourceProvisionerSimple())
+                .setRamAllocator(new ResourceAllocatorSimple())
+                .setBwAllocator(new ResourceAllocatorSimple())
                 .setVmScheduler(new VmSchedulerTimeShared());
             netHostList.add(host);
         }

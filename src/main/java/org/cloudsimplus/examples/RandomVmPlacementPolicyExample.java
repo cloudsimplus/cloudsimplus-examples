@@ -23,8 +23,8 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicySimple;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -37,7 +37,7 @@ import org.cloudsimplus.distributions.ContinuousDistribution;
 import org.cloudsimplus.distributions.UniformDistr;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -54,18 +54,18 @@ import java.util.List;
 import java.util.Optional;
 
 /// An example showing how to implement a custom
-/// [VmAllocationPolicy] that randomly
+/// [VmPlacementPolicy] that randomly
 /// selects suitable Hosts to place submitted VMs.
 /// Check the [#createDatacenter()] method for details.
 ///
 /// Since CloudSim Plus provides functional
-/// VmAllocationPolicy implementations, you don't
+/// VmPlacementPolicy implementations, you don't
 /// even need to create a new class to implement your own policy,
 /// unless you really want to (to make reuse easy).
 ///
 /// @author Manoel Campos da Silva Filho
 /// @since CloudSim Plus 4.0.5
-public class RandomVmAllocationPolicyExample {
+public class RandomVmPlacementPolicyExample {
     private static final int HOSTS = 10;
     private static final int HOST_CORES = 8;
 
@@ -102,10 +102,10 @@ public class RandomVmAllocationPolicyExample {
     private final ContinuousDistribution random;
 
     public static void main(String[] args) {
-        new RandomVmAllocationPolicyExample();
+        new RandomVmPlacementPolicyExample();
     }
 
-    private RandomVmAllocationPolicyExample() {
+    private RandomVmPlacementPolicyExample() {
         final double startSecs = TimeUtil.currentTimeSecs();
         //Enables just some level of log messages.
         Log.setLevel(ch.qos.logback.classic.Level.WARN);
@@ -132,7 +132,7 @@ public class RandomVmAllocationPolicyExample {
     }
 
     /// Creates a Datacenter and its Hosts, defining
-    /// a [VmAllocationPolicy] that randomly selects suitable Hosts
+    /// a [VmPlacementPolicy] that randomly selects suitable Hosts
     /// to place submitted VMs.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
@@ -141,24 +141,24 @@ public class RandomVmAllocationPolicyExample {
             hostList.add(host);
         }
 
-        final var vmAllocationPolicy = new VmAllocationPolicySimple();
+        final var vmPlacementPolicy = new VmPlacementPolicySimple();
 
         //Replaces the default method that allocates Hosts to VMs by our own implementation
-        vmAllocationPolicy.setFindHostForVmFunction(this::findRandomSuitableHostForVm);
+        vmPlacementPolicy.setFindHostForVmFunction(this::findRandomSuitableHostForVm);
 
-        return new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
+        return new DatacenterSimple(simulation, hostList, vmPlacementPolicy);
     }
 
     /// Define a specific policy to randomly select a suitable Host to place a given VM.
     /// It's a very efficient policy since it doesn't perform sorting
     /// in order to find a suitable Host.
     ///
-    /// @param vmAllocationPolicy the [VmAllocationPolicy] containing Host allocation information
+    /// @param vmPlacementPolicy the [VmPlacementPolicy] containing VM placement information
     /// @param vm the [Vm] to find a host to be placed
     /// @return an [Optional] that may contain a Host in which to place a Vm, or an [Optional#empty()]
     /// [Optional] if not suitable Host was found.
-    private Optional<Host> findRandomSuitableHostForVm(final VmAllocationPolicy vmAllocationPolicy, final Vm vm) {
-        final var hostList = vmAllocationPolicy.getHostList();
+    private Optional<Host> findRandomSuitableHostForVm(final VmPlacementPolicy vmPlacementPolicy, final Vm vm) {
+        final var hostList = vmPlacementPolicy.getHostList();
         /* Despite the loop is bound to the number of Hosts inside the List,
         *  the index "i" is not used to get a Host at that position,
         *  but just to define that the maximum number of tries to find a
@@ -180,8 +180,8 @@ public class RandomVmAllocationPolicyExample {
         final long storage = 1000000; //in Megabytes
         final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
         host
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
+            .setRamAllocator(new ResourceAllocatorSimple())
+            .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }

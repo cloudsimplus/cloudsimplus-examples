@@ -24,8 +24,8 @@
 package org.cloudsimplus.examples;
 
 import ch.qos.logback.classic.Level;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationStaticThreshold;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationStaticThreshold;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -137,7 +137,7 @@ public class LoggingExample {
         //Enable different log levels for specific classes of objects
         Log.setLevel(DatacenterBroker.LOGGER, Level.ERROR);
         Log.setLevel(Datacenter.LOGGER, Level.WARN);
-        Log.setLevel(VmAllocationPolicy.LOGGER, Level.OFF);
+        Log.setLevel(VmPlacementPolicy.LOGGER, Level.OFF);
         Log.setLevel(CloudletScheduler.LOGGER, Level.WARN);
     }
 
@@ -157,12 +157,12 @@ public class LoggingExample {
             hostList.add(host);
         }
 
-        /*Creates a VmAllocationPolicy that migrates VMs from under/overloaded hosts,
+        /*Creates a VmPlacementPolicy that migrates VMs from under/overloaded hosts,
         selecting migrating VMs randomly.*/
-        final var vmAllocationPolicy =
-            new VmAllocationPolicyMigrationStaticThreshold(
+        final var vmPlacementPolicy =
+            new VmPlacementPolicyMigrationStaticThreshold(
                 new VmSelectionPolicyRandomSelection(), HOST_OVER_UTILIZATION_MIGRATION_THRESHOLD);
-        final var dc = new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
+        final var dc = new DatacenterSimple(simulation, hostList, vmPlacementPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL_SECS);
         if(DISABLE_MIGRATIONS) {
             dc.disableMigrations();
@@ -175,7 +175,7 @@ public class LoggingExample {
         final var cpuCapacity = new CoreCapacity(pes, HOST_MIPS);
 
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);

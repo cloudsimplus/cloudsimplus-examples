@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyRoundRobin;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyRoundRobin;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/// An example that show the usage of the [VmAllocationPolicyRoundRobin],
+/// An example that show the usage of the [VmPlacementPolicyRoundRobin],
 /// that cyclically places VMs into Hosts. This way, it places a VM into a Host
 /// and moves to the next Host.
 /// All hosts are not powered-on when created. As VMs need to be placed,
@@ -54,7 +54,7 @@ import java.util.List;
 ///
 /// @author Manoel Campos da Silva Filho
 /// @since CloudSim Plus 4.4.2
-public class VmAllocationPolicyRoundRobinExample {
+public class VmPlacementPolicyRoundRobinExample {
     private static final int HOSTS = 4;
     private static final int HOST_CORES = 8;
 
@@ -86,10 +86,10 @@ public class VmAllocationPolicyRoundRobinExample {
     private Datacenter datacenter0;
 
     public static void main(String[] args) {
-        new VmAllocationPolicyRoundRobinExample();
+        new VmPlacementPolicyRoundRobinExample();
     }
 
-    private VmAllocationPolicyRoundRobinExample() {
+    private VmPlacementPolicyRoundRobinExample() {
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
@@ -120,7 +120,7 @@ public class VmAllocationPolicyRoundRobinExample {
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList, new VmAllocationPolicyRoundRobin());
+        return new DatacenterSimple(simulation, hostList, new VmPlacementPolicyRoundRobin());
     }
 
     private Host createHost() {
@@ -129,7 +129,7 @@ public class VmAllocationPolicyRoundRobinExample {
         final long storage = 1000000; //in Megabytes
 
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(ram, bw, storage, HOST_CAPACITY, false);

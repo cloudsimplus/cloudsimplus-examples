@@ -132,7 +132,7 @@ public class VmGroupPlacementExample1 {
             hostList.add(host);
         }
 
-        //Uses a VmAllocationPolicySimple by default to allocate VMs
+        //Uses a VmPlacementPolicySimple by default to place VMs
         return new DatacenterSimple(simulation, hostList);
     }
 
@@ -145,7 +145,7 @@ public class VmGroupPlacementExample1 {
         final long storage = BASE_HOST_STORAGE * id; //in Megabytes
 
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         final Host host = new HostSimple(ram, bw, storage, cpuCapacity);

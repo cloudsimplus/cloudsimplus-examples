@@ -163,7 +163,7 @@ public class VerticalVmCpuScalingExample {
                 "\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%d). RAM usage: %.2f%% (%d MB)%n",
                 evt.getTime(), vm.getId(), vm.getCpuPercentUtilization()*100.0, vm.getProcessor().getCores(),
                 vm.getCloudletScheduler().getCloudletExecList().size(),
-                vm.getRam().getPercentUtilization()*100, vm.getRam().getAllocatedResource())
+                vm.getRam().getPercentOccupied()*100, vm.getRam().getOccupied())
         );
     }
 
@@ -254,7 +254,7 @@ public class VerticalVmCpuScalingExample {
         /// using the available ones such as the [ResourceScalingGradual]
         /// or [ResourceScalingInstantaneous].
         final double multiplier = 2;
-        verticalCpuScaling.setResourceScaling(vs -> multiplier * vs.getScalingFactor() * vs.getAllocatedResource())
+        verticalCpuScaling.setResourceScaling(vs -> multiplier * vs.getScalingFactor() * vs.getOccupiedResource())
                           .setLowerThresholdFunction(this::lowerCpuUtilizationThreshold)
                           .setUpperThresholdFunction(this::upperCpuUtilizationThreshold);
 

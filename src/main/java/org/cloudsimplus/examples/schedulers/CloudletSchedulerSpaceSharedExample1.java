@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.schedulers;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicySimple;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -34,7 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -107,7 +107,7 @@ public class CloudletSchedulerSpaceSharedExample1 {
         new CloudletsTableBuilder(cloudletFinishedListList).build();
     }
 
-    /// Creates a Datacenter that uses a [VmAllocationPolicySimple] by default.
+    /// Creates a Datacenter that uses a [VmPlacementPolicySimple] by default.
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int h = 0; h < HOSTS; h++) {
@@ -118,7 +118,7 @@ public class CloudletSchedulerSpaceSharedExample1 {
         return new DatacenterSimple(simulation, hostList);
     }
 
-    /// Creates a Host that uses a [ResourceProvisionerSimple] by default
+    /// Creates a Host that uses a [ResourceAllocatorSimple] by default
     /// for RAM and BW.
     private Host createHost() {
         final long ram = 2048; //in Megabytes

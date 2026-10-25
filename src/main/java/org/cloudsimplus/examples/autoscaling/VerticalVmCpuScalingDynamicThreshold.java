@@ -42,7 +42,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.resources.Processor;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
@@ -196,8 +196,8 @@ public class VerticalVmCpuScalingDynamicThreshold {
         final long storage = 10000000; //in Megabytes
         final int id = hostList.size();
         return new HostSimple(ram, bw, storage, HOST_CAPACITY)
-            .setRamProvisioner(new ResourceProvisionerSimple())
-            .setBwProvisioner(new ResourceProvisionerSimple())
+            .setRamAllocator(new ResourceAllocatorSimple())
+            .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
     }
 
@@ -271,7 +271,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
         /// So, here we are defining our own [ResourceScaling] instead of
         /// using the available ones such as the [ResourceScalingGradual]
         /// or [ResourceScalingInstantaneous].
-        verticalCpuScaling.setResourceScaling(vs -> 2*vs.getScalingFactor()*vs.getAllocatedResource());
+        verticalCpuScaling.setResourceScaling(vs -> 2*vs.getScalingFactor()*vs.getOccupiedResource());
 
         verticalCpuScaling.setLowerThresholdFunction(this::lowerCpuUtilizationThreshold);
         verticalCpuScaling.setUpperThresholdFunction(this::upperCpuUtilizationThreshold);

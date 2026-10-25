@@ -207,7 +207,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
             hostList.add(host);
         }
 
-        //Uses a VmAllocationPolicySimple by default to allocate VMs
+        //Uses a VmPlacementPolicySimple by default to place VMs
         final var dc = new DatacenterSimple(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
@@ -224,7 +224,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         hardDrive.setAvgSeekTime(0).setLatency(0).setMaxTransferRate(HOSTS_MAX_TRANSFER_RATE);
 
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, bw, hardDrive, HOST_CAPACITY);

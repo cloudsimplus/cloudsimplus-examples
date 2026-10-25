@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.sla;
 
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationWorstFitStaticThreshold;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationWorstFitStaticThreshold;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -35,7 +35,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.power.models.PowerModelHostSimple;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -263,7 +263,7 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
         System.out.println();
 
         final var allocationPolicy
-                = new VmAllocationPolicyMigrationWorstFitStaticThreshold(
+                = new VmPlacementPolicyMigrationWorstFitStaticThreshold(
                         new VmSelectionPolicyMinimumUtilization(),
                         contract.getCpuUtilizationMetric().getMaxDimension().getValue());
         allocationPolicy.setUnderUtilizationThreshold(contract.getCpuUtilizationMetric().getMinDimension().getValue());
@@ -277,8 +277,8 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
         final var cpuCapacity = new CoreCapacity(pesNumber, mipsByPe);
         final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setPowerModel(new PowerModelHostSimple(1000, 700));
-        host.setRamProvisioner(new ResourceProvisionerSimple());
-        host.setBwProvisioner(new ResourceProvisionerSimple());
+        host.setRamAllocator(new ResourceAllocatorSimple());
+        host.setBwAllocator(new ResourceAllocatorSimple());
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }

@@ -178,12 +178,12 @@ public class VerticalVmRamScalingExample {
     private void onClockTickListener(final EventInfo event) {
         for (final var vm : vmList) {
             System.out.printf("\t\tTime %6.1f: Vm %d Ram Usage: %6.2f%% (%4d of %4d MB)",
-                event.getTime(), vm.getId(), vm.getRam().getPercentUtilization() * 100.0,
-                vm.getRam().getAllocatedResource(), vm.getRam().getCapacity());
+                event.getTime(), vm.getId(), vm.getRam().getPercentOccupied() * 100.0,
+                vm.getRam().getOccupied(), vm.getRam().getCapacity());
 
             System.out.printf(" | Host Ram Allocation: %6.2f%% (%5d of %5d MB). Running Cloudlets: %d%n",
-                vm.getHost().getRam().getPercentUtilization() * 100,
-                vm.getHost().getRam().getAllocatedResource(),
+                vm.getHost().getRam().getPercentOccupied() * 100,
+                vm.getHost().getRam().getOccupied(),
                 vm.getHost().getRam().getCapacity(), vm.getCloudletScheduler().getCloudletExecList().size());
         }
     }
