@@ -148,7 +148,7 @@ public class DynamicVmsArrival2 {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        return new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips)).setRam(ram).setBw(bw).setSize(size);
+        return VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips)).setRam(ram).setBw(bw).setSize(size);
     }
 
     /// Creates a cloudlet with pre-defined configuration.
@@ -163,7 +163,7 @@ public class DynamicVmsArrival2 {
         final int pesNumber = 1;
         final var utilizationModel = new UtilizationModelFull();
 
-        return new CloudletSimple(id, length, pesNumber)
+        return CloudletSimple.of(id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModel(utilizationModel)
@@ -178,7 +178,7 @@ public class DynamicVmsArrival2 {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -191,6 +191,6 @@ public class DynamicVmsArrival2 {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        return new HostSimple(ram, bw, storage, cpuCapacity);
+        return HostSimple.of(ram, bw, storage, cpuCapacity);
     }
 }

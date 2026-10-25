@@ -167,7 +167,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        final var vm = new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips))
+        final var vm = VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips))
                 .setRam(ram).setBw(bw).setSize(size)
                 .setCloudletScheduler(new CloudletSchedulerSpaceShared());
         return vm;
@@ -190,7 +190,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         final var bwUtilizationModel  = new UtilizationModelStochastic();
 
         final var cloudlet =
-            new CloudletSimple(id, length, pesNumber)
+            CloudletSimple.of(id, length, pesNumber)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModelCpu(cpuUtilizationModel)
@@ -209,7 +209,7 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         final var host = createHost(0);
         hostList.add(host);
 
-        return new DatacenterSimple(simulation, hostList)
+        return DatacenterSimple.of(simulation, hostList)
                      .setSchedulingInterval(DATACENTER_SCHEDULING_INTERVAL);
     }
 
@@ -225,6 +225,6 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 }

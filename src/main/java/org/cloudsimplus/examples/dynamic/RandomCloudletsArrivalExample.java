@@ -156,7 +156,7 @@ public class RandomCloudletsArrivalExample {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -165,7 +165,7 @@ public class RandomCloudletsArrivalExample {
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
@@ -180,7 +180,7 @@ public class RandomCloudletsArrivalExample {
     }
 
     private Vm createVm(final int pes) {
-        return new VmSimple(new CoreCapacity(pes, 1000))
+        return VmSimple.of(new CoreCapacity(pes, 1000))
             .setRam(1000).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -198,7 +198,7 @@ public class RandomCloudletsArrivalExample {
 
     private Cloudlet createCloudlet() {
         final var um = new UtilizationModelDynamic(0.2);
-        return new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
+        return CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES)
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModelCpu(new UtilizationModelFull())

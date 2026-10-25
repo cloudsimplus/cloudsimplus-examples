@@ -181,7 +181,7 @@ public class VerticalVmCpuScalingExample {
             hostList.add(createHost());
         }
 
-        final var dc0 = new DatacenterSimple(simulation, hostList);
+        final var dc0 = DatacenterSimple.of(simulation, hostList);
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
@@ -189,7 +189,7 @@ public class VerticalVmCpuScalingExample {
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     /// Creates a list of initial VMs in which each VM is able to scale vertically
@@ -212,7 +212,7 @@ public class VerticalVmCpuScalingExample {
     private Vm createVm() {
         final int id = createsVms++;
 
-        return new VmSimple(id, VM_CAPACITY).setRam(VM_RAM).setBw(1000).setSize(10000);
+        return VmSimple.of(id, VM_CAPACITY).setRam(VM_RAM).setBw(1000).setSize(10000);
     }
 
     /// Creates a [VerticalVmScaling] for scaling VM's CPU when it is under or overloaded.
@@ -333,7 +333,7 @@ public class VerticalVmCpuScalingExample {
 
         //Each Cloudlet will use 1% of RAM and BW
         final var utilizationModelDynamic = new UtilizationModelDynamic(0.01);
-        final var cl = new CloudletSimple(length, pesNumber);
+        final var cl = CloudletSimple.of(length, pesNumber);
         cl
             .setUtilizationModelBw(utilizationModelDynamic)
             .setUtilizationModelRam(utilizationModelDynamic)

@@ -186,7 +186,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
             hostList.add(createHost());
         }
 
-        Datacenter dc0 = new DatacenterSimple(simulation, hostList);
+        Datacenter dc0 = DatacenterSimple.of(simulation, hostList);
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
@@ -195,7 +195,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
         final int id = hostList.size();
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY)
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -226,7 +226,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private Vm createVm() {
         final int id = createsVms++;
 
-        final Vm vm = new VmSimple(id, VM_CAPACITY)
+        final Vm vm = VmSimple.of(id, VM_CAPACITY)
             .setRam(VM_RAM).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
         return vm;
@@ -378,7 +378,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
         /// use a [UtilizationModelStochastic] to define resource usage randomly,
         /// or use any other [UtilizationModel] implementation.
         final var utilizationModelDynamic = new UtilizationModelDynamic(1.0/CLOUDLETS);
-        final var cl = new CloudletSimple(length, pesNumber);
+        final var cl = CloudletSimple.of(length, pesNumber);
         cl.setFileSize(1024)
           .setOutputSize(1024)
           .setUtilizationModelBw(utilizationModelDynamic)

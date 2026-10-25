@@ -172,12 +172,12 @@ public class PauseSimulationAtGivenTimeExample1 {
             .build();
     }
 
-    private DatacenterSimple createDatacenter() {
+    private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
         final var host0 = createHost();
         hostList.add(host0);
 
-        var dc = new DatacenterSimple(simulation, hostList);
+        var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -191,11 +191,11 @@ public class PauseSimulationAtGivenTimeExample1 {
         //Defines the number of Host CPU cores and the MIPS capacity of each core
         final var cpuCapacity = new CoreCapacity(1, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm() {
-        return new VmSimple(VM_CAPACITY)
+        return VmSimple.of(VM_CAPACITY)
                 .setRam(512)
                 .setBw(1000)
                 .setSize(10000)
@@ -203,7 +203,7 @@ public class PauseSimulationAtGivenTimeExample1 {
     }
 
     private Cloudlet createCloudlet(Vm vm) {
-        return new CloudletSimple(10000, vm.getProcessor().getCores())
+        return CloudletSimple.of(10000, vm.getProcessor().getCores())
                 .setFileSize(300)
                 .setOutputSize(300)
                 .setUtilizationModel(new UtilizationModelFull())

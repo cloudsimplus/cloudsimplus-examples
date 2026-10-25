@@ -142,7 +142,7 @@ public class MinTimeBetweenEventsExample {
 
     private Datacenter createDatacenter() {
         hostList.add(createHost());
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -150,7 +150,7 @@ public class MinTimeBetweenEventsExample {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY)
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerSpaceShared());
@@ -173,7 +173,7 @@ public class MinTimeBetweenEventsExample {
         final long bw = 1000;
 
         //It uses a CloudletSchedulerTimeShared by default
-        final Vm vm = new VmSimple(id, VM_CAPACITY);
+        final Vm vm = VmSimple.of(id, VM_CAPACITY);
         vm.setRam(ram).setBw(bw).setSize(size);
         return vm;
     }
@@ -199,7 +199,7 @@ public class MinTimeBetweenEventsExample {
         final long outputSize = 300; //in bytes
         final var utilizationModel = new UtilizationModelDynamic(0.1);
 
-        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
+        final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(new UtilizationModelFull())

@@ -243,7 +243,7 @@ public class PowerExample {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -254,7 +254,7 @@ public class PowerExample {
         final long storage = 1000000; //in Megabytes
         final var vmScheduler = new VmSchedulerTimeShared();
 
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setStartupDelay(HOST_START_UP_DELAY)
             .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
 
@@ -275,7 +275,7 @@ public class PowerExample {
     private List<Vm> createVms() {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final var vm = new VmSimple(i, VM_CAPACITY);
+            final var vm = VmSimple.of(i, VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10000).enableUtilizationStats();
             list.add(vm);
         }
@@ -291,7 +291,7 @@ public class PowerExample {
             //Sets half of the cloudlets with the defined length and the other half with the double of it
             final long length = i < CLOUDLETS / 2 ? CLOUDLET_LENGTH : CLOUDLET_LENGTH * 2;
             final var cloudlet =
-                new CloudletSimple(i, length, CLOUDLET_CORES)
+                CloudletSimple.of(i, length, CLOUDLET_CORES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())

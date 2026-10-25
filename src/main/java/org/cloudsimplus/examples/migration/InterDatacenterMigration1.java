@@ -339,7 +339,7 @@ public final class InterDatacenterMigration1 {
     public Cloudlet createCloudlet(final Vm vm, final UtilizationModel cpuUtilizationModel) {
         final var broker = vm.getBroker();
         final var cloudlet =
-            new CloudletSimple(createdCloudlets++, CLOUDLET_LENGTH, vm.getProcessor().getCores())
+            CloudletSimple.of(createdCloudlets++, CLOUDLET_LENGTH, vm.getProcessor().getCores())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)
                 .setUtilizationModelRam(new UtilizationModelDynamic(0.4))
@@ -365,7 +365,7 @@ public final class InterDatacenterMigration1 {
     }
 
     public Vm createVm(final int pes) {
-        return new VmSimple(createdVms++, new CoreCapacity(pes, VM_MIPS))
+        return VmSimple.of(createdVms++, new CoreCapacity(pes, VM_MIPS))
                     .setRam(VM_RAM)
                     .setBw(VM_BW)
                     .setSize(VM_SIZE);
@@ -423,7 +423,7 @@ public final class InterDatacenterMigration1 {
         final var distribution = index % 2 == 0 ? Distribution.PRIVATE : Distribution.PUBLIC;
         final var hostList = createHosts(DC_HOST_PES[index]);
         final var allocationPolicy = createVmPlacementPolicy();
-        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var dc = DatacenterSimple.of(simulation, hostList, allocationPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY)
           .getCharacteristics()
@@ -449,7 +449,7 @@ public final class InterDatacenterMigration1 {
 
     public Host createHost(final int pesNumber, final long ram) {
         final var cpuCapacity = new CoreCapacity(pesNumber, HOST_MIPS);
-        final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, cpuCapacity);
+        final var host = HostSimple.of(ram, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setId(createdHosts++)
             .setVmScheduler(new VmSchedulerTimeShared())
             .setStateHistoryEnabled(true);

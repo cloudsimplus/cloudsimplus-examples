@@ -93,7 +93,7 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
         final long bw = 1000;
         final int pesNumber = 1; // number of cpus
 
-        final var vm = new VmSimple(vmid, new CoreCapacity(pesNumber, mips))
+        final var vm = VmSimple.of(vmid, new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -111,7 +111,7 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
         long outputSize = 300;
         final var utilizationModel = new UtilizationModelFull();
 
-        final var cloudlet1 = new CloudletSimple(++id, length, pesNumber)
+        final var cloudlet1 = CloudletSimple.of(++id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilizationModel)
@@ -119,7 +119,7 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
             .setVm(vm);
         cloudletList.add(cloudlet1);
 
-        final var cloudlet2 = new CloudletSimple(++id, length, pesNumber)
+        final var cloudlet2 = CloudletSimple.of(++id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilizationModel)
@@ -150,13 +150,13 @@ public class TwoCloudletsAndOneTimeSharedVmExample {
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        final var host = new HostSimple(ram, bw, storage, cpuCapacity)
+        final var host = HostSimple.of(ram, bw, storage, cpuCapacity)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
 
         hostList.add(host);
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 }

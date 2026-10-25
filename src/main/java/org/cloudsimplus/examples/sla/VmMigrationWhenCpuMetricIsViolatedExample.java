@@ -161,7 +161,7 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
     }
 
     private Vm createVm() {
-        final Vm vm = new VmSimple(vmList.size(), VM_CAPACITY);
+        final Vm vm = VmSimple.of(vmList.size(), VM_CAPACITY);
         vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
           .setCloudletScheduler(new CloudletSchedulerTimeShared());
         return vm;
@@ -185,7 +185,7 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
                     progressiveCpuUsage);
 
             final Cloudlet c
-                    = new CloudletSimple(
+                    = CloudletSimple.of(
                             cloudletId, CLOUDLET_LENGHT, 2)
                             .setFileSize(CLOUDLET_FILESIZE)
                             .setOutputSize(CLOUDLET_OUTPUTSIZE)
@@ -268,14 +268,14 @@ public final class VmMigrationWhenCpuMetricIsViolatedExample {
                         contract.getCpuUtilizationMetric().getMaxDimension().getValue());
         allocationPolicy.setUnderUtilizationThreshold(contract.getCpuUtilizationMetric().getMinDimension().getValue());
 
-        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var dc = DatacenterSimple.of(simulation, hostList, allocationPolicy);
         dc.enableMigrations().setSchedulingInterval(SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS);
         return dc;
     }
 
     private Host createHost(final int pesNumber, final long mipsByPe) {
         final var cpuCapacity = new CoreCapacity(pesNumber, mipsByPe);
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
+        final var host = HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setPowerModel(new PowerModelHostSimple(1000, 700));
         host.setRamAllocator(new ResourceAllocatorSimple());
         host.setBwAllocator(new ResourceAllocatorSimple());

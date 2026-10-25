@@ -155,20 +155,20 @@ public class UtilizationModelFullPerformance {
                          .mapToObj(i -> createHost())
                          .collect(toCollection(() -> new ArrayList<>(HOSTS)));
 
-        return new DatacenterSimple(simulation, hostList, VM_ALLOCATION_POLICY).setSchedulingInterval(SCHEDULING_INTERVAL);
+        return DatacenterSimple.of(simulation, hostList, VM_ALLOCATION_POLICY).setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
         final long ramMB = 20480;
         final long bwMbps = 10000;
         final long storageMB = 1000000;
-        return new HostSimple(ramMB, bwMbps, storageMB, HOST_CAPACITY);
+        return HostSimple.of(ramMB, bwMbps, storageMB, HOST_CAPACITY);
     }
 
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final Vm vm = new VmSimple(VM_CAPACITY);
+            final Vm vm = VmSimple.of(VM_CAPACITY);
             newVmList.add(vm);
         }
 
@@ -178,7 +178,7 @@ public class UtilizationModelFullPerformance {
     private List<Cloudlet> createCloudlets() {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setUtilizationModelCpu(um).setSizes(1024);
             newCloudletList.add(cloudlet);
         }

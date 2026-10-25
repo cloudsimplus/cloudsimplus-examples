@@ -125,7 +125,7 @@ public class SelectNextDatacenterExample {
         }
 
         //Uses a VmPlacementPolicySimple by default to place VMs
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost(final int pes) {
@@ -139,7 +139,7 @@ public class SelectNextDatacenterExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final var host = new HostSimple(ram, bw, storage, cpuCapacity);
+        final var host = HostSimple.of(ram, bw, storage, cpuCapacity);
         host.setId(++lastHostId);
         return host;
     }
@@ -149,7 +149,7 @@ public class SelectNextDatacenterExample {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_CAPACITY);
+            final Vm vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10000);
             vmList.add(vm);
         }
@@ -165,7 +165,7 @@ public class SelectNextDatacenterExample {
         final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSizes(1024);
             cloudletList.add(cloudlet);
         }

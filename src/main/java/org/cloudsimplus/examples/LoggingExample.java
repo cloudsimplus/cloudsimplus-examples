@@ -162,7 +162,7 @@ public class LoggingExample {
         final var vmPlacementPolicy =
             new VmPlacementPolicyMigrationStaticThreshold(
                 new VmSelectionPolicyRandomSelection(), HOST_OVER_UTILIZATION_MIGRATION_THRESHOLD);
-        final var dc = new DatacenterSimple(simulation, hostList, vmPlacementPolicy);
+        final var dc = DatacenterSimple.of(simulation, hostList, vmPlacementPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL_SECS);
         if(DISABLE_MIGRATIONS) {
             dc.disableMigrations();
@@ -178,7 +178,7 @@ public class LoggingExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
+        return HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
     }
 
     /// Creates a list of VMs.
@@ -186,7 +186,7 @@ public class LoggingExample {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_CAPACITY);
+            final Vm vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             list.add(vm);
         }
@@ -207,7 +207,7 @@ public class LoggingExample {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSubmissionDelay(submissionDelay);
             cloudlet.setSizes(1024);
             list.add(cloudlet);

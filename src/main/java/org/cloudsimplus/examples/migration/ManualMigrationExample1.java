@@ -211,7 +211,7 @@ public final class ManualMigrationExample1 {
     /// @return the created Cloudlets
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
         final var cloudlet =
-            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getProcessor().getCores())
+            CloudletSimple.of(CLOUDLET_LENGHT, (int)vm.getProcessor().getCores())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModel(new UtilizationModelFull());
@@ -248,7 +248,7 @@ public final class ManualMigrationExample1 {
     }
 
     public Vm createVm(int pes) {
-        final Vm vm = new VmSimple(new CoreCapacity(pes, VM_MIPS));
+        final Vm vm = VmSimple.of(new CoreCapacity(pes, VM_MIPS));
         vm
           .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
           .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -266,14 +266,14 @@ public final class ManualMigrationExample1 {
         }
         System.out.println();
 
-        final var dc = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
+        final var dc = DatacenterSimple.of(simulation, hostList, new VmPlacementPolicyFirstFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     public Host createHost(int pesNumber, long mipsByPe) {
         final var cpuCapacity = new CoreCapacity(pesNumber, mipsByPe);
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
+        final var host = HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setVmScheduler(new VmSchedulerTimeShared())
             .setStateHistoryEnabled(true);
         return host;

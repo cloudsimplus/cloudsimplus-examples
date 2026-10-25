@@ -202,14 +202,14 @@ public class VerticalVmRamScalingExample {
             hostList.add(createHost());
         }
 
-        final var dc0 = new DatacenterSimple(simulation, hostList);
+        final var dc0 = DatacenterSimple.of(simulation, hostList);
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        return new HostSimple(HOST_RAM, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(HOST_RAM, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     /// Creates a list of initial VMs in which each one is able to scale horizontally
@@ -232,7 +232,7 @@ public class VerticalVmRamScalingExample {
     private Vm createVm() {
         final int id = createsVms++;
 
-        return new VmSimple(id, VM_CAPACITY)
+        return VmSimple.of(id, VM_CAPACITY)
             .setRam(VM_RAM).setBw(1000).setSize(10000);
     }
 
@@ -309,7 +309,7 @@ public class VerticalVmRamScalingExample {
     private Cloudlet createCloudlet(final UtilizationModel ramUtilizationModel, final long length) {
         final int id = createdCloudlets++;
         final double initialBwUtilizationPercent = 0.1;
-        return new CloudletSimple(id, length, CLOUDLET_CORES)
+        return CloudletSimple.of(id, length, CLOUDLET_CORES)
                 .setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelBw(new UtilizationModelDynamic(initialBwUtilizationPercent))
                 .setUtilizationModelRam(ramUtilizationModel);

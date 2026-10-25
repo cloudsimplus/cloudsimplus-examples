@@ -237,7 +237,7 @@ public class HostActivationExample {
         final var newCloudletList = new ArrayList<Cloudlet>(vmsToCreate);
 
         for (int i = 0; i < vmsToCreate; i++) {
-            final var vm = new VmSimple(VM_CAPACITY);
+            final var vm = VmSimple.of(VM_CAPACITY);
             //vm.setSubmissionDelay(2.0);
             final var cloudlet = createCloudlet(vm);
             vmList.add(vm);
@@ -259,7 +259,7 @@ public class HostActivationExample {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyBestFit());
+        final var dc = DatacenterSimple.of(simulation, hostList, new VmPlacementPolicyBestFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -270,7 +270,7 @@ public class HostActivationExample {
     private Host createHost(final long id) {
         //Indicates if the Host will be powered on or not after creation
         final boolean activate = false;
-        final var host = new HostSimple(HOST_CAPACITY, activate);
+        final var host = HostSimple.of(HOST_CAPACITY, activate);
         host.setId(id)
             .setStartupDelay(HOST_START_UP_DELAY)
             .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
@@ -294,7 +294,7 @@ public class HostActivationExample {
          * ensuring that a positive length is generated (Cloudlets
          * with negative length run indefinitely until being explicitly stopped. */
         final long len = Math.abs(CLOUDLET_LENGTH - cloudletList.size()*3000);
-        return new CloudletSimple(len, VM_CORES)
+        return CloudletSimple.of(len, VM_CORES)
                 .setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelRam(utilizationModel)
                 .setVm(vm);

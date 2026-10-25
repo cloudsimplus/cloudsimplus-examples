@@ -208,7 +208,7 @@ public class VmListenersExample3_DynamicVmCreation {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        return new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips))
+        return VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared())
             .addOnHostRemovalListener(this::onHostRemovalListener);
@@ -226,7 +226,7 @@ public class VmListenersExample3_DynamicVmCreation {
         final long length = 10000; //in number of Million Instructions (MI)
         final int pesNumber = 1;
 
-        return new CloudletSimple(id, length, pesNumber)
+        return CloudletSimple.of(id, length, pesNumber)
               .setFileSize(fileSize)
               .setOutputSize(outputSize)
               .setUtilizationModelCpu(new UtilizationModelFull())
@@ -240,7 +240,7 @@ public class VmListenersExample3_DynamicVmCreation {
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -255,6 +255,6 @@ public class VmListenersExample3_DynamicVmCreation {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerSpaceShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerSpaceShared());
     }
 }

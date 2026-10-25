@@ -154,7 +154,7 @@ public class BrokerTargetDatacenterExample {
                                       .toList();
 
         //Uses a VmPlacementPolicySimple by default to place VMs
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -166,7 +166,7 @@ public class BrokerTargetDatacenterExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final Host host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final Host host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setId(lastHostId++);
         return host;
     }
@@ -176,7 +176,7 @@ public class BrokerTargetDatacenterExample {
         final var vms = new ArrayList<Vm>(vmsNumber);
         for (int i = 0; i < vmsNumber; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(lastVmId++, VM_CAPACITY);
+            final Vm vm = VmSimple.of(lastVmId++, VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10000);
             vms.add(vm);
         }
@@ -192,7 +192,7 @@ public class BrokerTargetDatacenterExample {
         final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < cloudletsNumber; i++) {
-            final var cloudlet = new CloudletSimple(lastCloudletId++, CLOUDLET_LENGTH, CLOUDLET_CORES);
+            final var cloudlet = CloudletSimple.of(lastCloudletId++, CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setUtilizationModel(utilizationModel);
             cloudlets.add(cloudlet);
         }

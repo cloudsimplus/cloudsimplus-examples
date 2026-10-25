@@ -136,7 +136,7 @@ public class LinuxCompletelyFairSchedulerExample {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -146,7 +146,7 @@ public class LinuxCompletelyFairSchedulerExample {
 
         final var peList = new CoreCapacity(HOST_CORES, HOST_MIPS);
 
-       return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+       return HostSimple.of(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm(DatacenterBroker broker) {
@@ -154,7 +154,7 @@ public class LinuxCompletelyFairSchedulerExample {
         final int    ram = 512; // vm memory (Megabyte)
         final long   bw = 1000; // vm bandwidth
 
-        return new VmSimple(numberOfCreatedVms++, VM_CAPACITY)
+        return VmSimple.of(numberOfCreatedVms++, VM_CAPACITY)
             .setRam(ram).setBw(bw).setSize(storage)
             .setCloudletScheduler(new CloudletSchedulerCompletelyFair());
     }
@@ -164,7 +164,7 @@ public class LinuxCompletelyFairSchedulerExample {
         final long outputSize = 300; //Size (in bytes) after execution
         final var utilization = new UtilizationModelFull();
 
-        return new CloudletSimple(numberOfCreatedCloudlets++, CLOUDLET_LEN, CLOUDLET_CORES)
+        return CloudletSimple.of(numberOfCreatedCloudlets++, CLOUDLET_LEN, CLOUDLET_CORES)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilization)

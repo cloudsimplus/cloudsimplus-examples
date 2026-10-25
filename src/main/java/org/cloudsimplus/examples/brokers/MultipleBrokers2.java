@@ -236,7 +236,7 @@ public class MultipleBrokers2 {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -248,7 +248,7 @@ public class MultipleBrokers2 {
         final var ramAllocator = new ResourceAllocatorSimple();
         final var bwAllocator = new ResourceAllocatorSimple();
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host
             .setRamAllocator(ramAllocator)
             .setBwAllocator(bwAllocator)
@@ -261,7 +261,7 @@ public class MultipleBrokers2 {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             final var vm =
-                new VmSimple(this.vmList.size()+i, VM_CAPACITY)
+                VmSimple.of(this.vmList.size()+i, VM_CAPACITY)
                     .setRam(512).setBw(1000).setSize(10000)
                     .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -288,7 +288,7 @@ public class MultipleBrokers2 {
 
     private Cloudlet createCloudlet(final int id, final int length) {
         final var utilization = new UtilizationModelFull();
-        final var cloudlet = new CloudletSimple(id, length, CLOUDLET_CORES);
+        final var cloudlet = CloudletSimple.of(id, length, CLOUDLET_CORES);
         cloudlet
             .setFileSize(1024)
             .setOutputSize(1024)

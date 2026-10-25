@@ -29,6 +29,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
@@ -141,7 +142,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
 
     }
 
-    private DatacenterSimple createDatacenter() {
+    private Datacenter createDatacenter() {
         final int numberOfHosts = 1;
         final var hostList = new ArrayList<Host>(numberOfHosts);
         for (int i = 0; i < numberOfHosts; i++) {
@@ -149,7 +150,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -161,7 +162,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final int pesNumber = 8;
         final var cpuCapacity = new CoreCapacity(pesNumber, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm(DatacenterBroker broker) {
@@ -171,7 +172,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 1; // number of CPU cores
 
-        return new VmSimple(createVmsNumber++, new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(createVmsNumber++, new CoreCapacity(pesNumber, mips))
                 .setRam(ram)
                 .setBw(bw)
                 .setSize(storage)
@@ -188,7 +189,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         //Sets the same utilization model for all these resources.
         final var utilization = new UtilizationModelFull();
 
-        return new CloudletSimple(createdCloudletsNumber++, length, numberOfCpuCores)
+        return CloudletSimple.of(createdCloudletsNumber++, length, numberOfCpuCores)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilization)

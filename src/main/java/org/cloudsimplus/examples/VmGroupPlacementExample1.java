@@ -133,7 +133,7 @@ public class VmGroupPlacementExample1 {
         }
 
         //Uses a VmPlacementPolicySimple by default to place VMs
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost(final long id, final int pes) {
@@ -148,7 +148,7 @@ public class VmGroupPlacementExample1 {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final Host host = new HostSimple(ram, bw, storage, cpuCapacity);
+        final Host host = HostSimple.of(ram, bw, storage, cpuCapacity);
         host.setId(id);
         return host;
     }
@@ -158,7 +158,7 @@ public class VmGroupPlacementExample1 {
     private List<VmGroup> createVmGroupList() {
         final var vmGroupList = new ArrayList<VmGroup>(GROUPS);
         for (int i = 0; i < GROUPS; i++) {
-            vmGroupList.add(new VmGroup(createVms()));
+            vmGroupList.add(VmGroup.of(createVms()));
         }
 
         return vmGroupList;
@@ -168,7 +168,7 @@ public class VmGroupPlacementExample1 {
         final var vmList = new ArrayList<Vm>(VMS_BY_GROUP);
         for (int i = 0; i < VMS_BY_GROUP; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_CAPACITY);
+            final Vm vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_STORAGE);
             vmList.add(vm);
         }
@@ -184,7 +184,7 @@ public class VmGroupPlacementExample1 {
         final var utilizationModelCpu = new UtilizationModelFull();
 
         for (Vm vm : group.getVmList()) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_CORES);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, VM_CORES);
             cloudlet.setSizes(1024)
                     .setUtilizationModelCpu(utilizationModelCpu)
                     .setUtilizationModelRam(utilizationModelRamBw)
