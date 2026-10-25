@@ -55,7 +55,7 @@ import java.util.List;
 /// is deallocated for a VM (in this case meaning that the VM has finished
 /// executing) in order to place the next VM to run inside the host.
 ///
-/// @see Vm#addOnHostDeallocationListener(EventListener)
+/// @see Vm#addOnHostRemovalListener(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -127,7 +127,7 @@ public class VmListenersExample3_DynamicVmCreation {
     /// @param eventInfo information about the happened event
     ///
     /// @see #createVm(int, DatacenterBroker)
-    private void onHostDeallocationListener(VmHostEventInfo eventInfo) {
+    private void onHostRemovalListener(VmHostEventInfo eventInfo) {
         numberOfFinishedVms++;
         System.out.printf(
                 "\t# EventListener: Vm %d finished running all its cloudlets at time %.0f.%n",
@@ -201,7 +201,7 @@ public class VmListenersExample3_DynamicVmCreation {
     /// @param broker the broker that will be submit the VM
     /// @return the created VM
     ///
-    /// @see #onHostDeallocationListener(VmHostEventInfo)
+    /// @see #onHostRemovalListener(VmHostEventInfo)
     private Vm createVm(int id, DatacenterBroker broker) {
         final int mips = 1000;
         final long size = 10000; // image size (Megabyte)
@@ -211,7 +211,7 @@ public class VmListenersExample3_DynamicVmCreation {
         return new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared())
-            .addOnHostDeallocationListener(this::onHostDeallocationListener);
+            .addOnHostRemovalListener(this::onHostRemovalListener);
     }
 
     /// Creates a cloudlet with pre-defined configuration.

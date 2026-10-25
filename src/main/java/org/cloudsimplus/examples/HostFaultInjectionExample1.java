@@ -36,7 +36,7 @@ import org.cloudsimplus.faultinjection.HostFaultInjection;
 import org.cloudsimplus.faultinjection.VmClonerSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -234,13 +234,13 @@ public final class HostFaultInjectionExample1 {
     }
 
     public Host createHost(final int id) {
-        final var ramProvisioner = new ResourceProvisionerSimple();
-        final var bwProvisioner = new ResourceProvisionerSimple();
+        final var ramAllocator = new ResourceAllocatorSimple();
+        final var bwAllocator = new ResourceAllocatorSimple();
         final var vmScheduler = new VmSchedulerTimeShared();
         final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host
-            .setRamProvisioner(ramProvisioner)
-            .setBwProvisioner(bwProvisioner)
+            .setRamAllocator(ramAllocator)
+            .setBwAllocator(bwAllocator)
             .setVmScheduler(vmScheduler)
             .setId(id);
 

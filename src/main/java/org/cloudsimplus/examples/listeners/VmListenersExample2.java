@@ -53,8 +53,8 @@ import java.util.List;
 /// notifications while the simulation is running. It also shows how to
 /// reuse the same listener object to different VMs.
 ///
-/// @see Vm#addOnHostAllocationListener(EventListener)
-/// @see Vm#addOnHostDeallocationListener(EventListener)
+/// @see Vm#addOnHostPlacementListener(EventListener)
+/// @see Vm#addOnHostRemovalListener(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -78,12 +78,12 @@ public class VmListenersExample2 {
     /// The listener object that will be created in order to be notified when
     /// a host is allocated for a VM. The same listener is used for all created VMs.
     /// @see #createVmListeners()
-    private EventListener<VmHostEventInfo> onHostAllocationListener;
+    private EventListener<VmHostEventInfo> onHostPlacementListener;
 
     /// The listener object that will be created in order to be notified when
     /// a host is deallocated for a VM. The same listener is used for all created VMs.
     /// @see #createVmListeners()
-    private EventListener<VmHostEventInfo> onHostDeallocationListener;
+    private EventListener<VmHostEventInfo> onHostRemovalListener;
 
     /// Starts the example execution, calling the class constructor\
     /// to build and run the simulation.
@@ -140,7 +140,7 @@ public class VmListenersExample2 {
         All VMs will use this same listener.
         The Listener is created using Java 8+ Lambda Expressions.
         */
-        this.onHostAllocationListener = eventInfo -> System.out.printf(
+        this.onHostPlacementListener = eventInfo -> System.out.printf(
                 "\t#EventListener: Host %d allocated to Vm %d at time %.2f%n",
                 eventInfo.getHost().getId(), eventInfo.getVm().getId(), eventInfo.getTime());
 
@@ -149,7 +149,7 @@ public class VmListenersExample2 {
         All VMs will use this same listener.
         The Listener is created using Java 8+ Lambda Expressions.
         */
-        this.onHostDeallocationListener = evt -> System.out.printf(
+        this.onHostRemovalListener = evt -> System.out.printf(
                 "\t#EventListener: Vm %d moved/removed from Host %d at time %.2f%n",
                 evt.getVm().getId(), evt.getHost().getId(), evt.getTime());
     }
@@ -169,10 +169,10 @@ public class VmListenersExample2 {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
         /*Adds the listener to intercept allocation of a Host to the Vm.*/
-        vm.addOnHostAllocationListener(this.onHostAllocationListener);
+        vm.addOnHostPlacementListener(this.onHostPlacementListener);
 
         /*Adds the listener to intercept deallocation of a Host for the Vm.*/
-        vm.addOnHostDeallocationListener(this.onHostDeallocationListener);
+        vm.addOnHostRemovalListener(this.onHostRemovalListener);
 
         return vm;
     }

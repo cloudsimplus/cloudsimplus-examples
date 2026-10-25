@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.traces;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyFirstFit;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -197,7 +197,7 @@ public class SwfWorkloadFormatExample1 {
     /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var hostList = createHosts(vmlist.size()/2);
-        var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        var datacenter = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
 
         System.out.printf("# Added   %12d Hosts to %s%n", hostList.size(), datacenter);
         return datacenter;

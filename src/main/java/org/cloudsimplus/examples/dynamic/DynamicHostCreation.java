@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -57,7 +57,7 @@ import java.util.List;
 /// it's created a new Host and VM. Two new Cloudlets are created for this new VM
 /// the Cloudlets and the VM is submitted by the broker to the Datacenter.
 /// Since the Hosts created before starting the simulation
-/// don't have enough PEs to place this new VM, the [VmAllocationPolicy]
+/// don't have enough PEs to place this new VM, the [VmPlacementPolicy]
 /// will chose the 5th Host (created dynamically) to place that VM
 /// and run the Cloudlets.
 ///

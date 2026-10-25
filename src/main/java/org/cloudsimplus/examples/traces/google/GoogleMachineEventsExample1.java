@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.traces.google;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicySimple;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -145,7 +145,7 @@ public class GoogleMachineEventsExample1 {
 
         //Creates Datacenters with no hosts.
         for(int i = 0; i < DATACENTERS_NUMBER; i++){
-            datacenters.add(new DatacenterSimple(simulation, new VmAllocationPolicySimple()));
+            datacenters.add(new DatacenterSimple(simulation, new VmPlacementPolicySimple()));
         }
 
         /*Process the trace file and creates the Hosts that the timestamp is defined as zero inside the file.

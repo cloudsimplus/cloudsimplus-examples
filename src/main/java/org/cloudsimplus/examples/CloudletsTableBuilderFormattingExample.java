@@ -157,13 +157,13 @@ public class CloudletsTableBuilderFormattingExample {
             hostList.add(host);
         }
 
-        //Uses a VmAllocationPolicySimple by default to allocate VMs
+        //Uses a VmPlacementPolicySimple by default to place VMs
         return new DatacenterSimple(simulation, hostList);
     }
 
     private Host createHost() {
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);

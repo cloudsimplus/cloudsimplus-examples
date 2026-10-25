@@ -24,8 +24,8 @@
 package org.cloudsimplus.examples.migration;
 
 import ch.qos.logback.classic.Level;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationBestFitStaticThreshold;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationStaticThreshold;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationBestFitStaticThreshold;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationStaticThreshold;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -55,6 +55,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Comparator.comparingLong;
+import static org.cloudsimplus.resources.Processor.totalMips;
 
 /// An example showing how to create 1 Datacenter having: 5 hosts
 /// with increasing number of PEs (starting at 4 PEs for the 1st host);
@@ -62,10 +63,10 @@ import static java.util.Comparator.comparingLong;
 /// and 1 cloudlet by VM, each one having the same number of PEs from its VM.
 ///
 /// The example then performs VM migration using
-/// a [VmAllocationPolicyMigrationBestFitStaticThreshold].
+/// a [VmPlacementPolicyMigrationBestFitStaticThreshold].
 /// Such a policy migrates VMs based on
 /// a static host CPU utilization threshold.
-/// The VmAllocationPolicy used in this example ignores power consumption of Hosts.
+/// The VmPlacementPolicy used in this example ignores power consumption of Hosts.
 /// This way, it isn't required to set a PowerModel for Hosts.
 ///
 /// According to the allocation policy, VM 0 will be allocated to Host 0.
@@ -79,7 +80,7 @@ import static java.util.Comparator.comparingLong;
 /// overreaching its upper utilization threshold (defined as 70%).
 /// This way, VMs 1 and 2 are allocated to Host 1 which has 5 PEs.
 ///
-/// The [VmAllocationPolicyMigrationBestFitStaticThreshold]
+/// The [VmPlacementPolicyMigrationBestFitStaticThreshold]
 /// allows setting static under/over CPU utilization thresholds to
 /// enable VM migration.
 /// The example uses a [UtilizationModelDynamic] to define that CPU usage of cloudlets
@@ -174,7 +175,7 @@ public final class MigrationExample1 {
     private final DatacenterBrokerSimple broker;
 
     private final CloudSimPlus simulation;
-    private final VmAllocationPolicyMigrationStaticThreshold allocationPolicy;
+    private final VmPlacementPolicyMigrationStaticThreshold allocationPolicy;
     private final List<Host> hostList;
     private int migrationsNumber = 0;
 
@@ -282,7 +283,7 @@ public final class MigrationExample1 {
     private void showHostAllocatedMips(final double time, final Host host) {
         System.out.printf(
             "%.2f: %s allocated %.2f MIPS from %.2f total capacity%n",
-            time, host, host.getVmScheduler().getTotalAllocatedMips(), host.getTotalMipsCapacity());
+            time, host, host.getVmScheduler().getTotalAllocatedMips(), totalMips(host));
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {
@@ -391,14 +392,14 @@ public final class MigrationExample1 {
         for (Host host : hostList) {
             System.out.printf(
                 "# Created %s with %.0f MIPS x %d PEs (%.0f total MIPS)%n",
-                host, host.getProcessor().getMips(), host.getProcessor().getCores(), host.getTotalMipsCapacity());
+                host, host.getProcessor().getMips(), host.getProcessor().getCores(), totalMips(host));
         }
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY);
         return dc;
     }
 
-    /// Creates a VmAllocationPolicy that
+    /// Creates a VmPlacementPolicy that
     /// sets an upper utilization threshold higher than the
     /// [#HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION]
     /// to enable placing VMs which will use more CPU than
@@ -407,9 +408,9 @@ public final class MigrationExample1 {
     /// to the value of the constant.
     /// This is used to  place VMs into a Host which will
     /// become overloaded in order to trigger the migration.
-    private VmAllocationPolicyMigrationStaticThreshold createAllocationPolicy() {
+    private VmPlacementPolicyMigrationStaticThreshold createAllocationPolicy() {
         final var policy =
-            new VmAllocationPolicyMigrationBestFitStaticThreshold(
+            new VmPlacementPolicyMigrationBestFitStaticThreshold(
                 new VmSelectionPolicyMinimumUtilization(),
                 HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION + 0.2);
         policy.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);

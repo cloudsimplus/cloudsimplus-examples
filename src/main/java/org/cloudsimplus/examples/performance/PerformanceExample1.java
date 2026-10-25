@@ -23,8 +23,8 @@
  */
 package org.cloudsimplus.examples.performance;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyFirstFit;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.cloudlets.Cloudlet;
@@ -58,7 +58,7 @@ import static org.cloudsimplus.util.TimeUtil.secondsToStr;
 /// check how they may drastically impact simulation performance.
 /// That includes the constants provided in this example
 /// (mainly the [#SCHEDULING_INTERVAL]),
-/// and the type of [VmAllocationPolicy] and [CloudletScheduler]
+/// and the type of [VmPlacementPolicy] and [CloudletScheduler]
 /// created.
 ///
 /// @author Manoel Campos da Silva Filho
@@ -100,7 +100,7 @@ public class PerformanceExample1 {
     /// A [Supplier] Function that returns a new instance of a specific [CloudletScheduler].
     private final Supplier<CloudletSchedulerTimeShared> cloudletSchedulerSupplier = CloudletSchedulerTimeShared::new;
 
-    private final VmAllocationPolicyFirstFit vmAllocationPolicy = new VmAllocationPolicyFirstFit();
+    private final VmPlacementPolicyFirstFit vmPlacementPolicy = new VmPlacementPolicyFirstFit();
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
@@ -146,7 +146,7 @@ public class PerformanceExample1 {
                      .collect(toCollection(() -> new ArrayList<>(HOSTS)));
 
         return new DatacenterSimple(simulation, hostList)
-            .setVmAllocationPolicy(vmAllocationPolicy)
+            .setVmPlacementPolicy(vmPlacementPolicy)
             .setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 

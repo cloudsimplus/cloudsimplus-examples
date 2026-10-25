@@ -24,8 +24,8 @@
 package org.cloudsimplus.examples.migration;
 
 import ch.qos.logback.classic.Level;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigration;
-import org.cloudsimplus.allocationpolicies.migration.VmAllocationPolicyMigrationFirstFitStaticThreshold;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigration;
+import org.cloudsimplus.placementpolicies.migration.VmPlacementPolicyMigrationFirstFitStaticThreshold;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -77,10 +77,10 @@ import static java.util.stream.Collectors.joining;
 /// Check [DatacenterCharacteristics#getDistribution()] for details.
 ///
 /// The example performs VM migration using
-/// a [VmAllocationPolicyMigrationFirstFitStaticThreshold].
+/// a [VmPlacementPolicyMigrationFirstFitStaticThreshold].
 /// Such a policy migrates VMs based on
 /// a static host CPU utilization threshold.
-/// The VmAllocationPolicy used in this example ignores power consumption of Hosts.
+/// The VmPlacementPolicy used in this example ignores power consumption of Hosts.
 /// This way, it isn't required to set a PowerModel for Hosts.
 ///
 /// A Host from Datacenter 1 will become overloaded,
@@ -89,7 +89,7 @@ import static java.util.stream.Collectors.joining;
 /// Therefore, intra-datacenter migration is not possible
 /// and the next datacenter available will be tried next time.
 ///
-/// The [VmAllocationPolicyMigrationFirstFitStaticThreshold]
+/// The [VmPlacementPolicyMigrationFirstFitStaticThreshold]
 /// allows setting static under/over CPU utilization thresholds to
 /// enable VM migration.
 /// The example uses a [UtilizationModelDynamic] to define that CPU usage of cloudlets
@@ -240,7 +240,7 @@ public final class InterDatacenterMigration1 {
         }
     }
 
-    /// Creates an VmAllocationPolicy and sets an upper utilization threshold higher than the
+    /// Creates an VmPlacementPolicy and sets an upper utilization threshold higher than the
     /// [#HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION]
     /// to enable placing VMs which will use more CPU than
     /// defined by the value in the mentioned constant.
@@ -248,9 +248,9 @@ public final class InterDatacenterMigration1 {
     /// to the value of the constant.
     /// This is used to  place VMs into a Host which will
     /// become overloaded in order to trigger the migration.
-    private VmAllocationPolicyMigration createVmAllocationPolicy() {
+    private VmPlacementPolicyMigration createVmPlacementPolicy() {
         final var vmSelection = new VmSelectionPolicyMinimumUtilization();
-        final var vmAllocation = new VmAllocationPolicyMigrationFirstFitStaticThreshold(vmSelection, 0.9);
+        final var vmAllocation = new VmPlacementPolicyMigrationFirstFitStaticThreshold(vmSelection, 0.9);
 
         vmAllocation.setUnderUtilizationThreshold(HOST_UNDER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
         return vmAllocation;
@@ -281,7 +281,7 @@ public final class InterDatacenterMigration1 {
             "%nHosts CPU usage History (when allocated MIPS is lower than requested one, it is due to VM migration overhead)");
         datacenterList.stream()
                       .map(Datacenter::getHostList).flatMap(List::stream)
-                      .filter(h -> !h.getStateHistory().isEmpty())
+                      .filter(h -> !h.getStateHistory().getEntries().isEmpty())
                       .forEach(this::printHostStateHistory);
     }
 
@@ -315,7 +315,7 @@ public final class InterDatacenterMigration1 {
 
         System.out.printf("# %d VMs submitted to %s have been created. VMs: %s.%n", broker.getVmCreatedList().size(), broker, vmIds);
         datacenterList.stream()
-                      .map(dc -> (VmAllocationPolicyMigrationFirstFitStaticThreshold)dc.getVmAllocationPolicy())
+                      .map(dc -> (VmPlacementPolicyMigrationFirstFitStaticThreshold)dc.getVmPlacementPolicy())
                       .forEach(policy -> policy.setOverUtilizationThreshold(HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION));
         broker.removeOnVmsCreatedListener(info.getListener());
     }
@@ -422,7 +422,7 @@ public final class InterDatacenterMigration1 {
     private Datacenter createDatacenter(final int index) {
         final var distribution = index % 2 == 0 ? Distribution.PRIVATE : Distribution.PUBLIC;
         final var hostList = createHosts(DC_HOST_PES[index]);
-        final var allocationPolicy = createVmAllocationPolicy();
+        final var allocationPolicy = createVmPlacementPolicy();
         final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY)

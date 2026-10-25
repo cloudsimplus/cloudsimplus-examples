@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.schedulers;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyFirstFit;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -43,6 +43,8 @@ import org.cloudsimplus.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.cloudsimplus.resources.Processor.totalMips;
 
 /// An example showing the usage of the [VmSchedulerTimeShared]
 /// which allows multiple VMs to use the same PEs from a Host,
@@ -140,7 +142,7 @@ public class VmSchedulerTimeSharedExample {
         simulation.start();
 
         new CloudletsTableBuilder(broker0.getCloudletFinishedList())
-            .addColumn(new TextTableColumn("Host MIPS", "total"), c -> c.getVm().getHost().getTotalMipsCapacity(), 5)
+            .addColumn(new TextTableColumn("Host MIPS", "total"), c -> totalMips(c.getVm().getHost()), 5)
             .addColumn(new TextTableColumn("VM MIPS", "total"), c -> c.getVm().getTotalMipsCapacity(), 8)
             .addColumn(new TextTableColumn("  VM MIPS", "requested"), this::getVmRequestedMips, 9)
             .addColumn(new TextTableColumn("  VM MIPS", "allocated"), this::getVmAllocatedMips, 10)
@@ -162,7 +164,7 @@ public class VmSchedulerTimeSharedExample {
     private void printHostStateHistory(Host host) {
         System.out.printf("Host: %d%n", host.getId());
         System.out.println("-----------------------------------------------------------------------------------------------------");
-        host.getStateHistory().stream().forEach(System.out::print);
+        host.getStateHistory().getEntries().forEach(System.out::print);
         System.out.println();
     }
 
@@ -189,7 +191,7 @@ public class VmSchedulerTimeSharedExample {
             hostList.add(host);
         }
 
-        Datacenter dc0 = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyFirstFit());
+        Datacenter dc0 = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 

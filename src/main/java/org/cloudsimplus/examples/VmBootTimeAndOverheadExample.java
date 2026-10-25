@@ -131,7 +131,7 @@ public class VmBootTimeAndOverheadExample {
     }
 
     private static double getVmRamUsage(final Vm vm) {
-        return vm.getRam().getPercentUtilization() * 100.0;
+        return vm.getRam().getPercentOccupied() * 100.0;
     }
 
     /// Creates a Datacenter and its Hosts.
@@ -142,13 +142,13 @@ public class VmBootTimeAndOverheadExample {
             hostList.add(host);
         }
 
-        //Uses a VmAllocationPolicySimple by default to allocate VMs
+        //Uses a VmPlacementPolicySimple by default to place VMs
         return new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);

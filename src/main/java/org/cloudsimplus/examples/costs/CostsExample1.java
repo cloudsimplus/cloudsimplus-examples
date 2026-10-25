@@ -143,7 +143,7 @@ public class CostsExample1 {
             hostList.add(host);
         }
 
-        //Uses a VmAllocationPolicySimple by default to allocate VMs
+        //Uses a VmPlacementPolicySimple by default to place VMs
         final var dc = new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
 
         // Those are monetary values. Consider any currency you want (such as Dollar)
@@ -157,7 +157,7 @@ public class CostsExample1 {
         final long storage = 1000000; //in Megabytes
 
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(ram, bw, storage, HOST_CAPACITY);

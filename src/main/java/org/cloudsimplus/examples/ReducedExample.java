@@ -66,12 +66,12 @@ void main() {
     final long bw = 100000; //in Megabits/s
 
     //Creates one Hosts with a specific list of CPU cores (PEs).
-    //Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+    //Uses ResourceAllocatorSimple by default for RAM and BW allocation
     //Uses VmSchedulerSpaceShared by default for VM scheduling
     final var host0 = new HostSimple(ram, bw, storage, new CoreCapacity(20000));
 
     //Creates one Datacenter with a list of Hosts
-    //Uses a VmAllocationPolicySimple by default to allocate VMs
+    //Uses a VmPlacementPolicySimple by default to place VMs
     final var dc0 = new DatacenterSimple(simulation, List.of(host0));
 
     //Creates one Vm to run applications (Cloudlets).

@@ -33,7 +33,7 @@ import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -144,7 +144,7 @@ public class ParallelSimulationsExample implements Runnable {
         return hostList;
     }
 
-    /// Creates a Hosts using a [ResourceProvisionerSimple]
+    /// Creates a Hosts using a [ResourceAllocatorSimple]
     /// for RAM and BW.
     /// @return
     private Host createHost() {

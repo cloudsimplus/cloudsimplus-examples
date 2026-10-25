@@ -23,8 +23,8 @@
  */
 package org.cloudsimplus.examples.power;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyBestFit;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyBestFit;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -52,8 +52,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /// An example showing how to create a Datacenter with all Hosts powered off
-/// and let the [VmAllocationPolicy] to power Hosts on and off according to demand.
-/// For this simulation, the [VmAllocationPolicyBestFit] is used.
+/// and let the [VmPlacementPolicy] to power Hosts on and off according to demand.
+/// For this simulation, the [VmPlacementPolicyBestFit] is used.
 ///
 /// The dynamic demand for Hosts is simulated
 /// by creating VMs during simulation runtime.
@@ -259,7 +259,7 @@ public class HostActivationExample {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyBestFit());
+        final var dc = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyBestFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }

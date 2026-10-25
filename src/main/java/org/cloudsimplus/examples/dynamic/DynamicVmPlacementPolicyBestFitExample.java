@@ -46,8 +46,8 @@
  */
 package org.cloudsimplus.examples.dynamic;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicySimple;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -74,14 +74,14 @@ import java.util.function.Function;
 /// An example showing how to create 1 Datacenter with 5 hosts,
 /// 1 VM by host and 1 cloudlet by VM and perform VM allocation by
 /// using Java 8+ Functional Programming to change, at runtime, the
-/// policy used by a [VmAllocationPolicy].
+/// policy used by a [VmPlacementPolicy].
 ///
 /// VMs are allocated based on a **Best Fit allocation policy**, which
 /// selects the suitable Host with the lowest number of available PEs
 /// that is enough to run the VM.
 /// This policy is dynamically defined by changing the [Function]
-/// of the [VmAllocationPolicy], without requiring to create
-/// a new class. The [VmAllocationPolicySimple] used in this example ignores power usage of
+/// of the [VmPlacementPolicy], without requiring to create
+/// a new class. The [VmPlacementPolicySimple] used in this example ignores power usage of
 /// Hosts. This way, it isn't required to set a PowerModel for Hosts.
 ///
 /// It is used some constants to create simulation objects such as
@@ -99,7 +99,7 @@ import java.util.function.Function;
 /// to run correctly.
 ///
 /// @author Manoel Campos da Silva Filho
-public final class DynamicVmAllocationPolicyBestFitExample {
+public final class DynamicVmPlacementPolicyBestFitExample {
     private static final int    SCHEDULE_INTERVAL = 5;
 
     private static final int HOSTS = 5;
@@ -130,10 +130,10 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     private final List<Host> hostList = new ArrayList<>();
 
     public static void main(String[] args) {
-        new DynamicVmAllocationPolicyBestFitExample();
+        new DynamicVmPlacementPolicyBestFitExample();
     }
 
-    private DynamicVmAllocationPolicyBestFitExample(){
+    private DynamicVmPlacementPolicyBestFitExample(){
         /*Enables just some level of log messages.
           Make sure to import org.cloudsimplus.util.Log;*/
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
@@ -160,13 +160,13 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     /// A method that defines a Best Fit policy to select a suitable Host with the least
     /// available PEs to place a VM.
     /// Using Java 8+ Functional Programming, this method is given as parameter
-    /// to the constructor of a [VmAllocationPolicySimple]
+    /// to the constructor of a [VmPlacementPolicySimple]
     ///
-    /// @param allocationPolicy the [VmAllocationPolicy] that is trying to allocate a Host for the requesting VM
+    /// @param allocationPolicy the [VmPlacementPolicy] that is trying to place the requesting VM into a Host
     /// @param vm the VM to find a host to
     /// @return an [`Optional<Host>`][java.util.Optional] which may contain a Host or an empty Optional if no suitable Host was found
     /// @see #createDatacenter()
-    private Optional<Host> bestFitHostSelectionPolicy(VmAllocationPolicy allocationPolicy, Vm vm) {
+    private Optional<Host> bestFitHostSelectionPolicy(VmPlacementPolicy allocationPolicy, Vm vm) {
         return allocationPolicy
             .getHostList()
             .stream()
@@ -229,8 +229,8 @@ public final class DynamicVmAllocationPolicyBestFitExample {
         }
         System.out.println();
 
-        /*Creates a VmAllocationPolicy and changes, at runtime, the policy used to select a Host for a VM.*/
-        final var allocationPolicy = new VmAllocationPolicySimple(this::bestFitHostSelectionPolicy);
+        /*Creates a VmPlacementPolicy and changes, at runtime, the policy used to select a Host for a VM.*/
+        final var allocationPolicy = new VmPlacementPolicySimple(this::bestFitHostSelectionPolicy);
 
         final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
 

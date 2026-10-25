@@ -23,7 +23,7 @@
  */
 package org.cloudsimplus.examples.brokers;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyBatchPlacementUnderloadedHosts;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyBatchUnderloadedHosts;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
@@ -49,8 +49,8 @@ import static java.util.stream.Collectors.joining;
 
 /// An example showing how to enable a [DatacenterBroker] to
 /// request creation of a Vm List in batch, instead of in a one-by-one basis.
-/// It can use any [org.cloudsimplus.allocationpolicies.VmAllocationPolicy]
-/// but it uses the [VmAllocationPolicyBatchPlacementUnderloadedHosts]
+/// It can use any [org.cloudsimplus.placementpolicies.VmPlacementPolicy]
+/// but it uses the [VmPlacementPolicyBatchUnderloadedHosts]
 /// as an example.
 /// Check [DatacenterBroker#setBatchVmCreation(boolean)]
 ///
@@ -160,15 +160,15 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
             hostList.add(host);
         }
 
-        final var vmAllocationPolicy = new VmAllocationPolicyBatchPlacementUnderloadedHosts(new VmSelectionPolicyMinimumUtilization());
-        final var dc = new DatacenterSimple(simulation, hostList, vmAllocationPolicy);
+        final var vmPlacementPolicy = new VmPlacementPolicyBatchUnderloadedHosts(new VmSelectionPolicyMinimumUtilization());
+        final var dc = new DatacenterSimple(simulation, hostList, vmPlacementPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
 
     private Host createHost() {
         /*
-        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
         return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);

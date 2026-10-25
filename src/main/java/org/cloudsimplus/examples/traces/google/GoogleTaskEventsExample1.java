@@ -245,7 +245,7 @@ public class GoogleTaskEventsExample1 {
             hostList.add(createHost());
         }
 
-        //Uses a VmAllocationPolicySimple by default
+        //Uses a VmPlacementPolicySimple by default
         return new DatacenterSimple(simulation, hostList);
     }
 
@@ -258,7 +258,7 @@ public class GoogleTaskEventsExample1 {
     }
 
     private Host createHost() {
-        //Uses a ResourceProvisionerSimple for RAM and BW
+        //Uses a ResourceAllocatorSimple for RAM and BW
         final Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;

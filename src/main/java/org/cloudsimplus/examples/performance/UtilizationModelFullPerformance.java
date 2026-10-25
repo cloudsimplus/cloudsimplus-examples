@@ -23,8 +23,8 @@
  */
 package org.cloudsimplus.examples.performance;
 
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicy;
-import org.cloudsimplus.allocationpolicies.VmAllocationPolicyFirstFit;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicy;
+import org.cloudsimplus.placementpolicies.VmPlacementPolicyFirstFit;
 import org.cloudsimplus.brokers.DatacenterBroker;
 import org.cloudsimplus.brokers.DatacenterBrokerSimple;
 import org.cloudsimplus.cloudlets.Cloudlet;
@@ -90,7 +90,7 @@ public class UtilizationModelFullPerformance {
     private static final int CLOUDLET_LENGTH = 10_000;
     private static final int SCHEDULING_INTERVAL = 0;
 
-    private static final VmAllocationPolicy VM_ALLOCATION_POLICY = new VmAllocationPolicyFirstFit();
+    private static final VmPlacementPolicy VM_ALLOCATION_POLICY = new VmPlacementPolicyFirstFit();
 
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
@@ -124,7 +124,7 @@ public class UtilizationModelFullPerformance {
         final double execMinutes = TimeUtil.millisecsToMinutes(System.currentTimeMillis() - startMillis);
         System.out.printf("UtilizationModel: %s (single instance)%n%n", um.getClass().getSimpleName());
 
-        System.out.println("| Execution time | Simulation time | Max Heap Used | VmAllocationPolicy | Hosts      | VMs        | Cloudlets  | Cloudlet Len | DC Scheduling Interval |");
+        System.out.println("| Execution time | Simulation time | Max Heap Used | VmPlacementPolicy | Hosts      | VMs        | Cloudlets  | Cloudlet Len | DC Scheduling Interval |");
         System.out.println("| ---------------|-----------------|---------------|--------------------|------------|------------|------------|--------------|------------------------|");
         System.out.printf(
             "| %10.2f min | %11.2f min | %10.2f GB | %18s | %10d | %10d | %10d | %12d | %22d |",

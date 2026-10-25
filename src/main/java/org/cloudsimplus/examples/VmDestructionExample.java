@@ -35,7 +35,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
-import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
+import org.cloudsimplus.allocators.ResourceAllocatorSimple;
 import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -179,13 +179,13 @@ public class VmDestructionExample {
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        final var ramProvisioner = new ResourceProvisionerSimple();
-        final var bwProvisioner = new ResourceProvisionerSimple();
+        final var ramAllocator = new ResourceAllocatorSimple();
+        final var bwAllocator = new ResourceAllocatorSimple();
         final var vmScheduler = new VmSchedulerTimeShared();
         final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
         host
-            .setRamProvisioner(ramProvisioner)
-            .setBwProvisioner(bwProvisioner)
+            .setRamAllocator(ramAllocator)
+            .setBwAllocator(bwAllocator)
             .setVmScheduler(vmScheduler);
         return host;
     }
