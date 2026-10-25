@@ -117,7 +117,7 @@ public class VmsCpuUsageExample {
         final var utilizationModelDynamic = new UtilizationModelDynamic(0.25);
         final var utilizationModelCpu = new UtilizationModelDynamic(0.5);
 
-        final var cloudlet = new CloudletSimple(length, pesNumber);
+        final var cloudlet = CloudletSimple.of(length, pesNumber);
         cloudlet.setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilizationModelCpu)
@@ -137,7 +137,7 @@ public class VmsCpuUsageExample {
         final long bw = 1000;
 
         //create two VMs
-        final var vm = new VmSimple(id, new CoreCapacity(pesNumber, mips));
+        final var vm = VmSimple.of(id, new CoreCapacity(pesNumber, mips));
         vm.setRam(ram).setBw(bw)
             .setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -168,7 +168,7 @@ public class VmsCpuUsageExample {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(2);
         return dc;
     }
@@ -180,7 +180,7 @@ public class VmsCpuUsageExample {
         final long storage = 1000000; //host storage
         final int bw = 10000;
 
-        final var host = new HostSimple(ram, bw, storage, cpuCapacity)
+        final var host = HostSimple.of(ram, bw, storage, cpuCapacity)
                 .setId(id)
                 .setStateHistoryEnabled(true)
                 .setRamAllocator(new ResourceAllocatorSimple())

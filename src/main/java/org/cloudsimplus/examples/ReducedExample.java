@@ -68,23 +68,23 @@ void main() {
     //Creates one Hosts with a specific list of CPU cores (PEs).
     //Uses ResourceAllocatorSimple by default for RAM and BW allocation
     //Uses VmSchedulerSpaceShared by default for VM scheduling
-    final var host0 = new HostSimple(ram, bw, storage, new CoreCapacity(20000));
+    final var host0 = HostSimple.of(ram, bw, storage, new CoreCapacity(20000));
 
     //Creates one Datacenter with a list of Hosts
     //Uses a VmPlacementPolicySimple by default to place VMs
-    final var dc0 = new DatacenterSimple(simulation, List.of(host0));
+    final var dc0 = DatacenterSimple.of(simulation, List.of(host0));
 
     //Creates one Vm to run applications (Cloudlets).
     //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets.
-    final var vm0 = new VmSimple(new CoreCapacity(1, 1000));
+    final var vm0 = VmSimple.of(new CoreCapacity(1, 1000));
     vm0.setRam(1000).setBw(1000).setSize(1000);
     final var vmList = List.of(vm0);
 
     //Creates two Cloudlets that represent applications to be run inside a Vm.
     //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
     final var utilizationModel = new UtilizationModelDynamic(0.5);
-    final var cloudlet0 = new CloudletSimple(10000, 1, utilizationModel);
-    final var cloudlet1 = new CloudletSimple(10000, 1, utilizationModel);
+    final var cloudlet0 = CloudletSimple.of(10000, 1, utilizationModel);
+    final var cloudlet1 = CloudletSimple.of(10000, 1, utilizationModel);
     final var cloudletList = List.of(cloudlet0, cloudlet1);
 
     /*Requests the broker to create the Vms and Cloudlets.

@@ -191,12 +191,12 @@ public class VmSchedulerTimeSharedExample {
             hostList.add(host);
         }
 
-        Datacenter dc0 = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
+        Datacenter dc0 = DatacenterSimple.of(simulation, hostList, new VmPlacementPolicyFirstFit());
         dc0.setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
+        final var host = HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host.setStateHistoryEnabled(true)
             .setVmScheduler(new VmSchedulerTimeShared());
         return host;
@@ -206,7 +206,7 @@ public class VmSchedulerTimeSharedExample {
     private void createVms() {
         for (int i = 0; i < VMS; i++) {
             final var vm =
-                new VmSimple(VM_CAPACITY)
+                VmSimple.of(VM_CAPACITY)
                     .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             vmList.add(vm);
         }
@@ -215,7 +215,7 @@ public class VmSchedulerTimeSharedExample {
     /// Creates one Cloudlet for each VM belonging to [#broker0].
     private void createCloudlets() {
         for (final var vm : vmList) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setVm(vm);
             cloudletList.add(cloudlet);
         }

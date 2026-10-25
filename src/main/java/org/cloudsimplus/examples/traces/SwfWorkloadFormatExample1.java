@@ -174,7 +174,7 @@ public class SwfWorkloadFormatExample1 {
         final int totalVms = (int)Math.ceil(totalCloudletCores / (VM_CORES*6));
 
         for (int i = 0; i < totalVms; i++) {
-            final var vm = new VmSimple(VM_CAPACITY)
+            final var vm = VmSimple.of(VM_CAPACITY)
                             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
                             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
             vmlist.add(vm);
@@ -197,7 +197,7 @@ public class SwfWorkloadFormatExample1 {
     /// @return the created Datacenter
     private Datacenter createDatacenter() {
         final var hostList = createHosts(vmlist.size()/2);
-        var datacenter = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
+        var datacenter = DatacenterSimple.of(simulation, hostList, new VmPlacementPolicyFirstFit());
 
         System.out.printf("# Added   %12d Hosts to %s%n", hostList.size(), datacenter);
         return datacenter;
@@ -215,7 +215,7 @@ public class SwfWorkloadFormatExample1 {
         final var hostList = new ArrayList<Host>((int)hostsNumber);
         for (int i = 0; i < hostsNumber; i++) {
             CoreCapacity cpuCapacity = new CoreCapacity(HOST_CORES, VM_MIPS);
-            final var host = new HostSimple(ram, bw, storage, cpuCapacity);
+            final var host = HostSimple.of(ram, bw, storage, cpuCapacity);
             hostList.add(host);
         }
 

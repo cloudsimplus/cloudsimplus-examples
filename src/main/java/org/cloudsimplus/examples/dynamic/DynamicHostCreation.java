@@ -185,7 +185,7 @@ public class DynamicHostCreation {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -195,7 +195,7 @@ public class DynamicHostCreation {
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setVmScheduler(vmScheduler);
         return host;
     }
@@ -211,7 +211,7 @@ public class DynamicHostCreation {
     }
 
     private Vm createVm(final int id) {
-        return new VmSimple(id, VM_CAPACITY)
+        return VmSimple.of(id, VM_CAPACITY)
             .setRam(512).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -221,7 +221,7 @@ public class DynamicHostCreation {
         final var utilization = new UtilizationModelFull();
         for (int i = 0; i < count; i++) {
             final var cloudlet =
-                new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
+                CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())

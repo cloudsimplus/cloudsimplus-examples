@@ -186,7 +186,7 @@ public class DynamicVmsArrival {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        final var vm = new VmSimple(new CoreCapacity(VM_CORES, mips));
+        final var vm = VmSimple.of(new CoreCapacity(VM_CORES, mips));
         vm.setRam(ram)
           .setBw(bw)
           .setSize(size)
@@ -216,7 +216,7 @@ public class DynamicVmsArrival {
         final var utilizationModelFull = new UtilizationModelFull();
         final var utilizationModelDynamic = new UtilizationModelDynamic(0.2);
 
-        return new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
+        return CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES)
             .setUtilizationModelCpu(utilizationModelFull)
             .setUtilizationModelRam(utilizationModelDynamic)
             .setUtilizationModelBw(utilizationModelDynamic)
@@ -231,7 +231,7 @@ public class DynamicVmsArrival {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -242,6 +242,6 @@ public class DynamicVmsArrival {
         long storage = 1000000; // host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY);
     }
 }

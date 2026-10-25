@@ -160,7 +160,7 @@ public class DynamicCloudletsArrival1 {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        return new VmSimple(new CoreCapacity(VM_PES_NUMBER, mips))
+        return VmSimple.of(new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -177,7 +177,7 @@ public class DynamicCloudletsArrival1 {
 
         final var utilizationModel = new UtilizationModelFull();
         final var utilizationModelDynamic = new UtilizationModelDynamic(0.05);
-        final var cloudlet = new CloudletSimple(length, pesNumber)
+        final var cloudlet = CloudletSimple.of(length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(utilizationModel)
@@ -194,7 +194,7 @@ public class DynamicCloudletsArrival1 {
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -209,6 +209,6 @@ public class DynamicCloudletsArrival1 {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-       return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerSpaceShared());
+       return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerSpaceShared());
     }
 }

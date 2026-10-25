@@ -208,7 +208,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         }
 
         //Uses a VmPlacementPolicySimple by default to place VMs
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -227,7 +227,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, bw, hardDrive, HOST_CAPACITY);
+        return HostSimple.of(HOST_RAM, bw, hardDrive, HOST_CAPACITY);
     }
 
     /// Creates a list of VMs.
@@ -235,7 +235,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_CAPACITY);
+            final Vm vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(1000).setSize(10000);
             newVmList.add(vm);
         }
@@ -285,7 +285,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final Vm vm, final UtilizationModel utilizationModelRam,
         final UtilizationModel utilizationModelBw)
     {
-        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
+        final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES);
         cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelRam(utilizationModelRam)
                 .setUtilizationModelBw(utilizationModelBw)

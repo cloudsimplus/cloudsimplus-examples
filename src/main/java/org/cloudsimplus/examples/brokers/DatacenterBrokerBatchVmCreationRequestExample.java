@@ -161,7 +161,7 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
         }
 
         final var vmPlacementPolicy = new VmPlacementPolicyBatchUnderloadedHosts(new VmSelectionPolicyMinimumUtilization());
-        final var dc = new DatacenterSimple(simulation, hostList, vmPlacementPolicy);
+        final var dc = DatacenterSimple.of(simulation, hostList, vmPlacementPolicy);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -171,14 +171,14 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
+        return HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
     }
 
     private ArrayList<Vm> createAndSubmitVms() {
         final var newVms = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final var vm = new VmSimple(VM_CAPACITY);
+            final var vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10_000);
             newVms.add(vm);
         }
@@ -195,7 +195,7 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
         final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (final var vm : vms) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSizes(1024);
             broker0.bindCloudletToVm(cloudlet, vm);
             newCloulets.add(cloudlet);

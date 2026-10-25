@@ -169,7 +169,7 @@ abstract class NetworkVmExampleAbstract {
         final var netHostList = new ArrayList<NetworkHost>(hostsNumber);
         for (int i = 0; i < hostsNumber; i++) {
             final CoreCapacity cpuCapacity = HOST_CAPACITY;
-            final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
+            final var host = NetworkHost.of(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
             host
                 .setRamAllocator(new ResourceAllocatorSimple())
                 .setBwAllocator(new ResourceAllocatorSimple())
@@ -177,7 +177,7 @@ abstract class NetworkVmExampleAbstract {
             netHostList.add(host);
         }
 
-        final var dc = new NetworkDatacenter(simulation, netHostList);
+        final var dc = NetworkDatacenter.of(simulation, netHostList);
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         dc.getCharacteristics()
             .setCostPerSecond(COST_PER_CPU_SEC)
@@ -229,7 +229,7 @@ abstract class NetworkVmExampleAbstract {
         final int vmsNumber = getDatacenterHostList().size() * MAX_VMS_PER_HOST;
         final var netVmList = new ArrayList<NetworkVm>();
         for (int i = 0; i < vmsNumber; i++) {
-            final var vm = new NetworkVm(i, VM_CAPACITY);
+            final var vm = NetworkVm.of(i, VM_CAPACITY);
             vm.setRam(VM_RAM)
               .setBw(VM_BW)
               .setSize(VM_SIZE)

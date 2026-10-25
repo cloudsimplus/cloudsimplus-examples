@@ -218,7 +218,7 @@ public class GoogleTaskEventsExample1 {
 
         final double sizeInMB    = event.getResourceRequestForLocalDiskSpace() * VM_SIZE_MB + 1;
         final long   sizeInBytes = (long) Math.ceil(megaBytesToBytes(sizeInMB));
-        return new CloudletSimple(CLOUDLET_LENGTH, pesNumber)
+        return CloudletSimple.of(CLOUDLET_LENGTH, pesNumber)
             .setFileSize(sizeInBytes)
             .setOutputSize(sizeInBytes)
             .setUtilizationModelCpu(new UtilizationModelFull())
@@ -246,7 +246,7 @@ public class GoogleTaskEventsExample1 {
         }
 
         //Uses a VmPlacementPolicySimple by default
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private long getVmSize(final Cloudlet cloudlet) {
@@ -259,7 +259,7 @@ public class GoogleTaskEventsExample1 {
 
     private Host createHost() {
         //Uses a ResourceAllocatorSimple for RAM and BW
-        final Host host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
+        final Host host = HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
@@ -270,7 +270,7 @@ public class GoogleTaskEventsExample1 {
 
     private Vm createVm() {
         //Uses a CloudletSchedulerTimeShared by default
-        return new VmSimple(VM_CAPACITY).setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE_MB);
+        return VmSimple.of(VM_CAPACITY).setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE_MB);
     }
 
     private void printCloudlets(final DatacenterBroker broker) {

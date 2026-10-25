@@ -194,7 +194,7 @@ public final class HostFaultInjectionExample1 {
     }
 
     public Vm createVm() {
-        final Vm vm = new VmSimple(++createdVms, VM_CAPACITY);
+        final Vm vm = VmSimple.of(++createdVms, VM_CAPACITY);
         vm
             .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -210,7 +210,7 @@ public final class HostFaultInjectionExample1 {
         final var utilizationModelFull = new UtilizationModelFull();
         for (int i = 0; i < CLOUDLETS_BY_BROKER; i++) {
             Cloudlet c
-                = new CloudletSimple(++createdCloudlets, CLOUDLET_LENGTH, CLOUDLET_CORES)
+                = CloudletSimple.of(++createdCloudlets, CLOUDLET_LENGTH, CLOUDLET_CORES)
                         .setFileSize(CLOUDLET_FILESIZE)
                         .setOutputSize(CLOUDLET_OUTPUT_SIZE)
                         .setUtilizationModelCpu(utilizationModelFull)
@@ -228,7 +228,7 @@ public final class HostFaultInjectionExample1 {
         }
         System.out.println();
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(SCHEDULE_TIME_TO_PROCESS_DATACENTER_EVENTS);
         return dc;
     }
@@ -237,7 +237,7 @@ public final class HostFaultInjectionExample1 {
         final var ramAllocator = new ResourceAllocatorSimple();
         final var bwAllocator = new ResourceAllocatorSimple();
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
+        final var host = HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host
             .setRamAllocator(ramAllocator)
             .setBwAllocator(bwAllocator)
@@ -275,7 +275,7 @@ public final class HostFaultInjectionExample1 {
     ///
     /// @see #createFaultInjectionForHosts(Datacenter)
     private Vm cloneVm(final Vm vm) {
-        final Vm clone = new VmSimple(new CoreCapacity(vm.getProcessor().getCores(), vm.getProcessor().getMips()));
+        final Vm clone = VmSimple.of(new CoreCapacity(vm.getProcessor().getCores(), vm.getProcessor().getMips()));
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the vm to its clone,
@@ -325,7 +325,7 @@ public final class HostFaultInjectionExample1 {
     /// @param source the Cloudlet to be cloned.
     /// @return the cloned (new) cloudlet
     private Cloudlet cloneCloudlet(Cloudlet source) {
-        final var clone = new CloudletSimple(source.getLength(), source.getRequiredCores());
+        final var clone = CloudletSimple.of(source.getLength(), source.getRequiredCores());
         /*It' not required to set an ID for the clone.
         It is being set here just to make it easy to
         relate the ID of the cloudlet to its clone,

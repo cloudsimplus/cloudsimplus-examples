@@ -167,7 +167,7 @@ public class CloudletAndVmLifeTimeExample {
             hostList.add(host);
         }
 
-        final var datacenter = new DatacenterSimple(simulation, hostList);
+        final var datacenter = DatacenterSimple.of(simulation, hostList);
         datacenter.setSchedulingInterval(SCHEDULING_INTERVAL);
         return datacenter;
     }
@@ -176,7 +176,7 @@ public class CloudletAndVmLifeTimeExample {
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
@@ -184,7 +184,7 @@ public class CloudletAndVmLifeTimeExample {
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final var vm = new VmSimple(i, VM_CAPACITY);
+            final var vm = VmSimple.of(i, VM_CAPACITY);
             vmList.add(vm);
         }
 
@@ -194,7 +194,7 @@ public class CloudletAndVmLifeTimeExample {
     private List<Cloudlet> createCloudlets() {
         final var cloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_CORES);
+            final var cloudlet = CloudletSimple.of(i, CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet
                     .setFileSize(1024)
                     .setOutputSize(1024)

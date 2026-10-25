@@ -145,7 +145,7 @@ public class GoogleMachineEventsExample1 {
 
         //Creates Datacenters with no hosts.
         for(int i = 0; i < DATACENTERS_NUMBER; i++){
-            datacenters.add(new DatacenterSimple(simulation, new VmPlacementPolicySimple()));
+            datacenters.add(DatacenterSimple.of(simulation, new VmPlacementPolicySimple()));
         }
 
         /*Process the trace file and creates the Hosts that the timestamp is defined as zero inside the file.
@@ -171,7 +171,7 @@ public class GoogleMachineEventsExample1 {
     /// @param event an object containing the trace line read, used to create the Host.
     /// @return
     private Host createHost(final MachineEvent event) {
-        final Host host = new HostSimple(event.getRam(), HOST_BW, HOST_STORAGE, new CoreCapacity(event.getCpuCores(), HOST_MIPS));
+        final Host host = HostSimple.of(event.getRam(), HOST_BW, HOST_STORAGE, new CoreCapacity(event.getCpuCores(), HOST_MIPS));
         host.setId(event.getMachineId());
         return host;
     }
@@ -194,7 +194,7 @@ public class GoogleMachineEventsExample1 {
     /// @param host
     /// @return
     private Vm createVm(final Host host) {
-        return new VmSimple(new CoreCapacity(host.getProcessor().getCores(), 1000))
+        return VmSimple.of(new CoreCapacity(host.getProcessor().getCores(), 1000))
             .setRam(host.getRam().getCapacity()).setBw(HOST_BW).setSize(HOST_STORAGE)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
     }
@@ -212,7 +212,7 @@ public class GoogleMachineEventsExample1 {
 
     private Cloudlet createCloudlet(Vm vm) {
         final var utilization = new UtilizationModelFull();
-        return new CloudletSimple(CLOUDLET_LENGTH, vm.getProcessor().getCores())
+        return CloudletSimple.of(CLOUDLET_LENGTH, vm.getProcessor().getCores())
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModel(utilization)

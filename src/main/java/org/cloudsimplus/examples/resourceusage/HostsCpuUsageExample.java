@@ -125,7 +125,7 @@ public class HostsCpuUsageExample {
         final long outputSize = 300;
         final var utilizationModel = new UtilizationModelFull();
 
-        return new CloudletSimple(length, pesNumber)
+        return CloudletSimple.of(length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModel(utilizationModel);
@@ -140,7 +140,7 @@ public class HostsCpuUsageExample {
         final long size = 10000; //image size (Megabyte)
         final int ram = 2048; //vm memory (Megabyte)
         final long bw = 1000;
-        final var vm = new VmSimple(new CoreCapacity(pesNumber, mips))
+        final var vm = VmSimple.of(new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
         vm.enableUtilizationStats();
@@ -180,7 +180,7 @@ public class HostsCpuUsageExample {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         dc.setSchedulingInterval(2);
         return dc;
     }
@@ -192,7 +192,7 @@ public class HostsCpuUsageExample {
         final long storage = 1000000; //host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        final var host = new HostSimple(ram, bw, storage, cpuCapacity);
+        final var host = HostSimple.of(ram, bw, storage, cpuCapacity);
         host.setId(id)
             .setVmScheduler(new VmSchedulerTimeShared());
         host.enableUtilizationStats();

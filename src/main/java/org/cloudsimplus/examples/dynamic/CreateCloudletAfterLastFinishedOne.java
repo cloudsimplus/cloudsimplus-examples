@@ -123,7 +123,7 @@ public class CreateCloudletAfterLastFinishedOne {
     private Vm createVm() {
         final int mips = 1000;
 
-        return new VmSimple(new CoreCapacity(VM_PES_NUMBER, mips))
+        return VmSimple.of(new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(512).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -137,7 +137,7 @@ public class CreateCloudletAfterLastFinishedOne {
         final int id = cloudletList.size();
         final long length = 10000; //in number of Million Instructions (MI)
         final int pesNumber = 1;
-        final var cloudlet = new CloudletSimple(id, length, pesNumber)
+        final var cloudlet = CloudletSimple.of(id, length, pesNumber)
             .setFileSize(300)
             .setOutputSize(300)
             .setUtilizationModel(new UtilizationModelFull());
@@ -166,7 +166,7 @@ public class CreateCloudletAfterLastFinishedOne {
             hostList.add(createHost(i));
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -180,7 +180,7 @@ public class CreateCloudletAfterLastFinishedOne {
         long storage = 1000000; // host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
-       return new HostSimple(ram, bw, storage, cpuCapacity)
+       return HostSimple.of(ram, bw, storage, cpuCapacity)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerSpaceShared());

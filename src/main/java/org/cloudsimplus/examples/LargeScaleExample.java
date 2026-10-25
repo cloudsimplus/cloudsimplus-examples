@@ -165,7 +165,7 @@ public class LargeScaleExample {
             hostList.add(host);
         }
 
-        var dc = new DatacenterSimple(simulation, hostList, new VmPlacementPolicyFirstFit());
+        var dc = DatacenterSimple.of(simulation, hostList, new VmPlacementPolicyFirstFit());
         dc.setSchedulingInterval(SCHEDULING_INTERVAL);
         return dc;
     }
@@ -175,7 +175,7 @@ public class LargeScaleExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
+        return HostSimple.of(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
     }
 
     /// Creates a list of VMs.
@@ -184,7 +184,7 @@ public class LargeScaleExample {
         System.out.printf("Creating %,d VMs%n", VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final var vm = new VmSimple(VM_CAPACITY);
+            final var vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10_000);
             vmList.add(vm);
         }
@@ -201,7 +201,7 @@ public class LargeScaleExample {
 
         System.out.printf("Creating %,d Cloudlets%n", CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSizes(1024);
             cloudletList.add(cloudlet);
         }

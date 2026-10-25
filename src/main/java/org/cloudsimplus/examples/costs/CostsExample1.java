@@ -144,7 +144,7 @@ public class CostsExample1 {
         }
 
         //Uses a VmPlacementPolicySimple by default to place VMs
-        final var dc = new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
+        final var dc = DatacenterSimple.of(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
 
         // Those are monetary values. Consider any currency you want (such as Dollar)
         dc.setCharacteristics(new DatacenterCharacteristicsSimple(0.01, 0.02, 0.001, 0.005));
@@ -160,7 +160,7 @@ public class CostsExample1 {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY);
     }
 
     /// Creates a list of VMs.
@@ -168,7 +168,7 @@ public class CostsExample1 {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int id = 0; id < VMS; id++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(id, VM_CAPACITY);
+            final Vm vm = VmSimple.of(id, VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             vmList.add(vm);
         }
@@ -187,7 +187,7 @@ public class CostsExample1 {
         for (int i = 1; i <= VMS/3; i++) {
             final Vm vm = vmList.get(i-1);
             for (int j = 0; j < CLOUDLET_BY_VM; j++) {
-                final var cloudlet = new CloudletSimple(cloudletId, (cloudletId+1) * CLOUDLET_LENGTH, CLOUDLET_CORES);
+                final var cloudlet = CloudletSimple.of(cloudletId, (cloudletId+1) * CLOUDLET_LENGTH, CLOUDLET_CORES);
                 cloudlet.setSizes(1024).setUtilizationModel(utilizationModel);
                 cloudlet.setVm(vm);
                 newCloudletList.add(cloudlet);

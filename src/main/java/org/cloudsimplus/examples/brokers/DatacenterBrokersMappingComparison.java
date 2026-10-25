@@ -34,6 +34,7 @@ import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.core.Simulation;
+import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.distributions.ContinuousDistribution;
 import org.cloudsimplus.distributions.UniformDistr;
@@ -202,13 +203,13 @@ public class DatacenterBrokersMappingComparison {
         return (int) (uniform >= 1 ? uniform % maxPesNumber : uniform * maxPesNumber) + 1;
     }
 
-    private DatacenterSimple createDatacenter(final Simulation sim) {
+    private Datacenter createDatacenter(final Simulation sim) {
         final var hostList = new ArrayList<Host>();
         for (int i = 0; i < HOSTS_TO_CREATE; i++) {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(sim, hostList, new VmPlacementPolicySimple());
+        return DatacenterSimple.of(sim, hostList, new VmPlacementPolicySimple());
     }
 
     private Host createHost() {
@@ -220,7 +221,7 @@ public class DatacenterBrokersMappingComparison {
         //Defines the number of Host CPU cores and the MIPS capacity of each core
         final var cpuCapacity = new CoreCapacity(8, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity)
+        return HostSimple.of(ram, bw, storage, cpuCapacity)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -232,7 +233,7 @@ public class DatacenterBrokersMappingComparison {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000; // vm bandwidth
 
-        return new VmSimple(id, new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(id, new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(storage)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -245,7 +246,7 @@ public class DatacenterBrokersMappingComparison {
         //Defines how RAM and Bandwidth resources are used
         final var ramAndBwUtilizationModel = new UtilizationModelDynamic(0.1);
 
-        return new CloudletSimple(id, length, pesNumber)
+        return CloudletSimple.of(id, length, pesNumber)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModelCpu(new UtilizationModelFull())

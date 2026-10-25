@@ -165,7 +165,7 @@ public class CloudletListenersExample1 {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        final var vm = new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips))
+        final var vm = VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
 
@@ -184,7 +184,7 @@ public class CloudletListenersExample1 {
         final int pesNumber = 1;
         final var utilizationModel = new UtilizationModelDynamic(0.2);
         final var cloudlet
-            = new CloudletSimple(id, length, pesNumber)
+            = CloudletSimple.of(id, length, pesNumber)
                     .setFileSize(fileSize)
                     .setOutputSize(outputSize)
                     .setUtilizationModelCpu(new UtilizationModelFull())
@@ -202,7 +202,7 @@ public class CloudletListenersExample1 {
     private Datacenter createDatacenter() {
         final var host = createHost(0);
         hostList.add(host);
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -217,6 +217,6 @@ public class CloudletListenersExample1 {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 }

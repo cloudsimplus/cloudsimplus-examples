@@ -122,7 +122,7 @@ public class CloudletSchedulerTimeSharedExample1 {
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -130,7 +130,7 @@ public class CloudletSchedulerTimeSharedExample1 {
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setVmScheduler(vmScheduler);
         return host;
     }
@@ -140,7 +140,7 @@ public class CloudletSchedulerTimeSharedExample1 {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int v = 0; v < VMS; v++) {
             final var vm =
-                new VmSimple(v, VM_CAPACITY)
+                VmSimple.of(v, VM_CAPACITY)
                     .setRam(512).setBw(1000).setSize(10000)
                     .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -155,7 +155,7 @@ public class CloudletSchedulerTimeSharedExample1 {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int c = 0; c < CLOUDLETS; c++) {
             final var cloudlet =
-                new CloudletSimple(c, CLOUDLET_LENGTH, CLOUDLET_CORES)
+                CloudletSimple.of(c, CLOUDLET_LENGTH, CLOUDLET_CORES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(new UtilizationModelFull())

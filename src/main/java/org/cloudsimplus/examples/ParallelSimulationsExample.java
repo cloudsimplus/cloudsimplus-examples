@@ -156,7 +156,7 @@ public class ParallelSimulationsExample implements Runnable {
 
         final var cpuCapacity = new CoreCapacity(pesNumber, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private void createVms() {
@@ -178,7 +178,7 @@ public class ParallelSimulationsExample implements Runnable {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 2; // number of CPU cores
 
-        return new VmSimple(id, new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(id, new CoreCapacity(pesNumber, mips))
             .setRam(ram)
             .setBw(bw)
             .setSize(storage);
@@ -205,7 +205,7 @@ public class ParallelSimulationsExample implements Runnable {
         * If there are 10 cloudlets for a VM, each Cloudlet will use 10% (0.1) of the VM resource capacity. */
         final var utilizationModelDynamic = new UtilizationModelDynamic(1.0/cloudletsNumber);
 
-        return new CloudletSimple(id, length, pesNumber)
+        return CloudletSimple.of(id, length, pesNumber)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModelCpu(utilizationModelFull)
@@ -216,7 +216,7 @@ public class ParallelSimulationsExample implements Runnable {
     /// Builds the simulation scenario and starts the simulation.
     @Override
     public void run() {
-        final var datacenter0 = new DatacenterSimple(simulation, createHosts());
+        final var datacenter0 = DatacenterSimple.of(simulation, createHosts());
 
         /* Creates a Broker accountable for submission of VMs and Cloudlets
         on behalf of a given cloud user (customer). */

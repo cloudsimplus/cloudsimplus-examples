@@ -222,14 +222,14 @@ public class LoadBalancerByHorizontalVmScalingExample {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
+        return DatacenterSimple.of(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
         final long ram = 2048; // in Megabytes
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY)
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -280,7 +280,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
     /// @return the created Vm
     private Vm createVm() {
         final int id = createsVms++;
-        return new VmSimple(id, VM_CAPACITY)
+        return VmSimple.of(id, VM_CAPACITY)
             .setRam(512).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -291,7 +291,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
 
         //randomly selects a length for the cloudlet
         final long length = CLOUDLET_LENGTHS[(int) rand.sample()];
-        return new CloudletSimple(id, length, 2)
+        return CloudletSimple.of(id, length, 2)
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModelBw(utilizadionModelDynamic)

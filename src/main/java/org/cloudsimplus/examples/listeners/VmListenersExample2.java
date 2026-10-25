@@ -164,7 +164,7 @@ public class VmListenersExample2 {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        final var vm = new VmSimple(id, new CoreCapacity(VM_PES_NUMBER, mips))
+        final var vm = VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(ram).setBw(bw).setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -187,7 +187,7 @@ public class VmListenersExample2 {
         final long fileSize = 300;
         final long outputSize = 300;
         final var utilizationModel = new UtilizationModelFull();
-        return new CloudletSimple(id, length, VM_PES_NUMBER)
+        return CloudletSimple.of(id, length, VM_PES_NUMBER)
             .setFileSize(fileSize)
             .setOutputSize(outputSize)
             .setUtilizationModel(utilizationModel)
@@ -201,7 +201,7 @@ public class VmListenersExample2 {
         final var host = createHost(0);
         hostList.add(host);
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     /// Creates a host with pre-defined configuration.
@@ -216,7 +216,7 @@ public class VmListenersExample2 {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //Megabits/s
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private void runSimulationAndPrintResults() {

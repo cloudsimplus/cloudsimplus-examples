@@ -29,6 +29,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
@@ -132,12 +133,12 @@ public class TerminateSimulationAtGivenConditionExample {
         }
     }
 
-    private DatacenterSimple createDatacenter() {
+    private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
         final var host0 = createHost();
         hostList.add(host0);
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -149,7 +150,7 @@ public class TerminateSimulationAtGivenConditionExample {
         //Defines the number of Host CPU cores and the MIPS capacity of each core
         final var cpuCapacity = new CoreCapacity(1, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity)
+        return HostSimple.of(ram, bw, storage, cpuCapacity)
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -162,7 +163,7 @@ public class TerminateSimulationAtGivenConditionExample {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 1; // number of CPU cores
 
-        return new VmSimple(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
                 .setRam(ram)
                 .setBw(bw)
                 .setSize(storage)
@@ -179,7 +180,7 @@ public class TerminateSimulationAtGivenConditionExample {
         //Sets the same utilization model for all these resources.
         final var utilization = new UtilizationModelFull();
 
-        return new CloudletSimple(
+        return CloudletSimple.of(
                 numberOfCreatedCloudlets++, length, numberOfCpuCores)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)

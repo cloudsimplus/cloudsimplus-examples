@@ -36,7 +36,7 @@ public class NetworkVmsExampleBagOfTasksApp extends NetworkVmExampleAbstract {
 
         for(int i = 0; i < CLOUDLETS_BY_APP; i++){
             final var utilizationModel = new UtilizationModelFull();
-            final var cloudlet = new NetworkCloudlet(i, CLOUDLET_CORES);
+            final var cloudlet = NetworkCloudlet.of(i, CLOUDLET_CORES);
             final NetworkVm vm = getVmList().get(i);
             cloudlet
                     .setFileSize(CLOUDLET_FILE_SIZE)

@@ -311,7 +311,7 @@ public final class MigrationExample1 {
         final var utilizationModelFull = new UtilizationModelFull();
 
         final var cloudlet =
-            new CloudletSimple(CLOUDLET_LENGTH, (int)vm.getProcessor().getCores())
+            CloudletSimple.of(CLOUDLET_LENGTH, (int)vm.getProcessor().getCores())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModelRam(utilizationModelFull)
@@ -336,7 +336,7 @@ public final class MigrationExample1 {
     }
 
     public Vm createVm(final int pes) {
-        final var vm = new VmSimple(new CoreCapacity(pes, VM_MIPS));
+        final var vm = VmSimple.of(new CoreCapacity(pes, VM_MIPS));
         vm
             .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -388,7 +388,7 @@ public final class MigrationExample1 {
     /// @return
     private Datacenter createDatacenter() {
         System.out.println();
-        final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
+        final var dc = DatacenterSimple.of(simulation, hostList, allocationPolicy);
         for (Host host : hostList) {
             System.out.printf(
                 "# Created %s with %.0f MIPS x %d PEs (%.0f total MIPS)%n",
@@ -430,7 +430,7 @@ public final class MigrationExample1 {
 
     public Host createHost(final int pesNumber, final long ram) {
         final var cpuCapacity = new CoreCapacity(pesNumber, HOST_MIPS);
-        final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, cpuCapacity);
+        final var host = HostSimple.of(ram, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setVmScheduler(new VmSchedulerTimeShared())
             .setStateHistoryEnabled(true);
         return host;

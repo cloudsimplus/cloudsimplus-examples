@@ -101,7 +101,7 @@ public class NetworkExample1 {
         final var utilizationModel = new UtilizationModelFull();
 
         final var cloudlet1 =
-            new CloudletSimple(length, VM_CORES)
+            CloudletSimple.of(length, VM_CORES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
@@ -118,7 +118,7 @@ public class NetworkExample1 {
         final long size = 10000; //image size (Megabyte)
         final int ram = 512; //vm memory (Megabyte)
         final long bw = 1000; //in Megabits/s
-        final Vm vm1 = new VmSimple(new CoreCapacity(VM_CORES, mips))
+        final Vm vm1 = VmSimple.of(new CoreCapacity(VM_CORES, mips))
                 .setRam(ram).setBw(bw).setSize(size)
                 .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -136,9 +136,9 @@ public class NetworkExample1 {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final var host = new HostSimple(ram, bw, storage, cpuCapacity);
+        final var host = HostSimple.of(ram, bw, storage, cpuCapacity);
         hostList.add(host);
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 }

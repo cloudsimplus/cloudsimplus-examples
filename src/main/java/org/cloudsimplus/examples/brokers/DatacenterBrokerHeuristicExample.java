@@ -30,6 +30,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.distributions.UniformDistr;
 import org.cloudsimplus.heuristics.CloudletToVmMappingHeuristic;
@@ -176,13 +177,13 @@ public class DatacenterBrokerHeuristicExample {
         return heuristic.getRandomValue(maxPesNumber)+1;
     }
 
-    private DatacenterSimple createDatacenter() {
+    private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
         for(int i = 0; i < HOSTS_TO_CREATE; i++) {
             hostList.add(createHost());
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -194,7 +195,7 @@ public class DatacenterBrokerHeuristicExample {
         //Defines the number of Host CPU cores and the MIPS capacity of each core
         final var cpuCapacity = new CoreCapacity(8, mips);
 
-       return new HostSimple(ram, bw, storage, cpuCapacity)
+       return HostSimple.of(ram, bw, storage, cpuCapacity)
                    .setRamAllocator(new ResourceAllocatorSimple())
                    .setBwAllocator(new ResourceAllocatorSimple())
                    .setVmScheduler(new VmSchedulerTimeShared());
@@ -206,7 +207,7 @@ public class DatacenterBrokerHeuristicExample {
         final int    ram = 512; // vm memory (Megabyte)
         final long   bw = 1000; // vm bandwidth
 
-        return new VmSimple(createdVms++, new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(createdVms++, new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(storage)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -219,7 +220,7 @@ public class DatacenterBrokerHeuristicExample {
         final var utilizationFull = new UtilizationModelFull();
         final var utilizationDynamic = new UtilizationModelDynamic(0.1);
 
-        return new CloudletSimple(createdCloudlets++, length, pesNumber)
+        return CloudletSimple.of(createdCloudlets++, length, pesNumber)
                     .setFileSize(fileSize)
                     .setOutputSize(outputSize)
                     .setUtilizationModelCpu(utilizationFull)

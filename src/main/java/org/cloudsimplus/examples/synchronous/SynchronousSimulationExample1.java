@@ -161,7 +161,7 @@ public class SynchronousSimulationExample1 {
         }
 
         //Uses a VmPlacementPolicySimple by default to place VMs
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -173,7 +173,7 @@ public class SynchronousSimulationExample1 {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        return HostSimple.of(ram, bw, storage, HOST_CAPACITY);
     }
 
     /// Creates a list of VMs.
@@ -181,7 +181,7 @@ public class SynchronousSimulationExample1 {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_CAPACITY);
+            final Vm vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10000);
             list.add(vm);
         }
@@ -194,7 +194,7 @@ public class SynchronousSimulationExample1 {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                     .setSizes(1024)
                     .setSubmissionDelay(i);

@@ -29,6 +29,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
@@ -104,14 +105,14 @@ public class UtilizationModelDynamicExample {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    private DatacenterSimple createDatacenter() {
+    private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>(HOSTS);
         for(int i = 0; i < HOSTS; i++) {
             final var host = createHost();
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -123,7 +124,7 @@ public class UtilizationModelDynamicExample {
         //Defines the number of Host CPU cores and the MIPS capacity of each core
         final var cpuCapacity = new CoreCapacity(2, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
+        return HostSimple.of(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm(DatacenterBroker broker) {
@@ -133,7 +134,7 @@ public class UtilizationModelDynamicExample {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 2; // number of CPU cores
 
-        return new VmSimple(vmList.size(), new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(vmList.size(), new CoreCapacity(pesNumber, mips))
                 .setRam(ram)
                 .setBw(bw)
                 .setSize(storage)
@@ -153,7 +154,7 @@ public class UtilizationModelDynamicExample {
         *  Virtual PEs or simply vPEs are the PEs allocated to a given VM,
         *  which will be used to run Cloudlets.*/
         final var utilizationHalfCapacity = new UtilizationModelDynamic(0.5);
-        return new CloudletSimple(
+        return CloudletSimple.of(
                         cloudletList.size(), length, numberOfCpuCores)
                         .setFileSize(fileSize)
                         .setOutputSize(outputSize)

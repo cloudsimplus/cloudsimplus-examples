@@ -106,7 +106,7 @@ public class NetworkVmsExampleSimpleApp {
             netHostList.add(host);
         }
 
-        final var dc = new NetworkDatacenter(simulation, netHostList);
+        final var dc = NetworkDatacenter.of(simulation, netHostList);
         dc.setSchedulingInterval(5);
 
         createNetwork(dc);
@@ -114,7 +114,7 @@ public class NetworkVmsExampleSimpleApp {
     }
 
     private NetworkHost createHost() {
-        final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
+        final var host = NetworkHost.of(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host
             .setRamAllocator(new ResourceAllocatorSimple())
             .setBwAllocator(new ResourceAllocatorSimple())
@@ -156,7 +156,7 @@ public class NetworkVmsExampleSimpleApp {
     }
 
     private NetworkVm createVm(int id) {
-        final var vm = new NetworkVm(id, HOST_CAPACITY);
+        final var vm = NetworkVm.of(id, HOST_CAPACITY);
         vm
                 .setRam(HOST_RAM)
                 .setBw(HOST_BW)
@@ -193,7 +193,7 @@ public class NetworkVmsExampleSimpleApp {
     /// @param vm the VM that will run the created [NetworkCloudlet]
     /// @return
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm) {
-        final var netCloudlet = new NetworkCloudlet(HOST_CORES);
+        final var netCloudlet = NetworkCloudlet.of(HOST_CORES);
         netCloudlet
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)

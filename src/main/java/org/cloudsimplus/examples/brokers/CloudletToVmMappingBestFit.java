@@ -114,7 +114,7 @@ public class CloudletToVmMappingBestFit {
             hostList.add(host);
         }
 
-        final var dc = new DatacenterSimple(simulation, hostList);
+        final var dc = DatacenterSimple.of(simulation, hostList);
         return dc;
     }
 
@@ -123,7 +123,7 @@ public class CloudletToVmMappingBestFit {
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
+        final var host = HostSimple.of(ram, bw, storage, HOST_CAPACITY);
         host.setVmScheduler(vmScheduler);
         return host;
     }
@@ -135,7 +135,7 @@ public class CloudletToVmMappingBestFit {
         final var vmList = new ArrayList<Vm>(VMS);
         for (int i = VMS-1; i >= 0; i--) {
             final Vm vm =
-                new VmSimple(new CoreCapacity(i+1, 1000))
+                VmSimple.of(new CoreCapacity(i+1, 1000))
                     .setRam(512).setBw(1000).setSize(10000)
                     .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -153,7 +153,7 @@ public class CloudletToVmMappingBestFit {
         final var utilization = new UtilizationModelFull();
         for (int i = 0; i < CLOUDLETS; i++) {
             final var cloudlet =
-                new CloudletSimple(CLOUDLET_LENGTH, i+1)
+                CloudletSimple.of(CLOUDLET_LENGTH, i+1)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModel(utilization);

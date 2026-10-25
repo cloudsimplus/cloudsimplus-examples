@@ -29,6 +29,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudsimplus.cloudlets.Cloudlet;
 import org.cloudsimplus.cloudlets.CloudletSimple;
 import org.cloudsimplus.core.CloudSimPlus;
+import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
@@ -107,12 +108,12 @@ public class TerminateSimulationAtGivenTimeExample {
         System.out.println(getClass().getSimpleName() + " finished!");
     }
 
-    private DatacenterSimple createDatacenter() {
+    private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
         final var host0 = createHost();
         hostList.add(host0);
 
-        return new DatacenterSimple(simulation, hostList);
+        return DatacenterSimple.of(simulation, hostList);
     }
 
     private Host createHost() {
@@ -124,14 +125,14 @@ public class TerminateSimulationAtGivenTimeExample {
         //Defines the number of Host CPU cores and the MIPS capacity of each core
         final var cpuCapacity = new CoreCapacity(1, mips);
 
-        return new HostSimple(ram, bw, storage, cpuCapacity);
+        return HostSimple.of(ram, bw, storage, cpuCapacity);
     }
 
     private Vm createVm(DatacenterBroker broker) {
         final long mips = 1000;
         final int    pesNumber = 1; // number of CPU cores
 
-        return new VmSimple(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
+        return VmSimple.of(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
                 .setRam(512)
                 .setBw((long) 1000)
                 .setSize((long) 10000)
@@ -142,7 +143,7 @@ public class TerminateSimulationAtGivenTimeExample {
         final long length = 10000; //in Million Instructions (MI)
         final long  numberOfCpuCores = vm.getProcessor().getCores(); //cloudlet will use all the VM's CPU cores
 
-        return new CloudletSimple(
+        return CloudletSimple.of(
                 numberOfCreatedCloudlets++, length, numberOfCpuCores)
                 .setFileSize(300)
                 .setOutputSize(300)

@@ -136,7 +136,7 @@ public class VmRelativeHostResourceUtilizationExample {
             hostList.add(host);
         }
 
-        return new DatacenterSimple(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
+        return DatacenterSimple.of(simulation, hostList).setSchedulingInterval(SCHEDULING_INTERVAL);
     }
 
     private Host createHost() {
@@ -146,13 +146,13 @@ public class VmRelativeHostResourceUtilizationExample {
         Uses ResourceAllocatorSimple by default for RAM and BW allocation
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, HOST_BW, storage, HOST_CAPACITY);
+        return HostSimple.of(HOST_RAM, HOST_BW, storage, HOST_CAPACITY);
     }
 
     private List<Vm> createVms() {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
-            final var vm = new VmSimple(VM_CAPACITY);
+            final var vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(10000);
             newVmList.add(vm);
         }
@@ -167,7 +167,7 @@ public class VmRelativeHostResourceUtilizationExample {
         final var utilizationModelRamAndBw = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                     .setUtilizationModelBw(utilizationModelRamAndBw)
                     .setUtilizationModelRam(utilizationModelRamAndBw)
