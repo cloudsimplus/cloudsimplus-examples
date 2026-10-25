@@ -39,8 +39,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.resources.Ram;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModel;
@@ -95,18 +94,33 @@ public class VerticalVmRamScalingExample {
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 1;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
 
     /// Host RAM capacity in Megabytes.
     private static final long HOST_RAM = 20000;
 
     private static final int HOST_MIPS = 1000;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     private static final int VMS = 1;
 
     /// Vm RAM capacity in Megabytes.
     private static final int VM_RAM = 1000;
-    private static final int VM_PES = 5;
+    private static final int VM_CORES = 5;
     private static final int VM_MIPS = 1000;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
 
     /// The percentage (in scale from 0 to 1) to scale VM RAM capacity up/down
     /// when it becomes under/overloaded.
@@ -125,7 +139,7 @@ public class VerticalVmRamScalingExample {
     /// the VM resource usage will reduce when a Cloudlet finishes.
     private static final long[] CLOUDLET_LENGTHS = {40_000, 50_000, 60_000, 70_000, 80_000};
 
-    private static final int CLOUDLET_PES = 1;
+    private static final int CLOUDLET_CORES = 1;
 
     private int createdCloudlets;
     private int createsVms;
@@ -193,14 +207,9 @@ public class VerticalVmRamScalingExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
-        return new HostSimple(HOST_RAM, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(HOST_RAM, bw, storage, HOST_CAPACITY).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     /// Creates a list of initial VMs in which each one is able to scale horizontally
@@ -223,7 +232,7 @@ public class VerticalVmRamScalingExample {
     private Vm createVm() {
         final int id = createsVms++;
 
-        return new VmSimple(id, VM_MIPS, VM_PES)
+        return new VmSimple(id, VM_CAPACITY)
             .setRam(VM_RAM).setBw(1000).setSize(10000);
     }
 
@@ -300,7 +309,7 @@ public class VerticalVmRamScalingExample {
     private Cloudlet createCloudlet(final UtilizationModel ramUtilizationModel, final long length) {
         final int id = createdCloudlets++;
         final double initialBwUtilizationPercent = 0.1;
-        return new CloudletSimple(id, length, CLOUDLET_PES)
+        return new CloudletSimple(id, length, CLOUDLET_CORES)
                 .setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelBw(new UtilizationModelDynamic(initialBwUtilizationPercent))
                 .setUtilizationModelRam(ramUtilizationModel);

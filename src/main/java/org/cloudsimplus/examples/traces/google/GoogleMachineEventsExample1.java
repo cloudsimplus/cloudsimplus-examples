@@ -36,8 +36,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.HostEventInfo;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.traces.google.GoogleMachineEventsTraceReader;
@@ -172,18 +171,9 @@ public class GoogleMachineEventsExample1 {
     /// @param event an object containing the trace line read, used to create the Host.
     /// @return
     private Host createHost(final MachineEvent event) {
-        final Host host = new HostSimple(event.getRam(), HOST_BW, HOST_STORAGE, createPesList(event.getCpuCores()));
+        final Host host = new HostSimple(event.getRam(), HOST_BW, HOST_STORAGE, new CoreCapacity(event.getCpuCores(), HOST_MIPS));
         host.setId(event.getMachineId());
         return host;
-    }
-
-    private List<Pe> createPesList(final int count) {
-        List<Pe> cpuCoresList = new ArrayList<>(count);
-        for(int i = 0; i < count; i++){
-            cpuCoresList.add(new PeSimple(HOST_MIPS));
-        }
-
-        return cpuCoresList;
     }
 
     /// Creates a list of VMs and Cloudlets in a given Datacenter.
@@ -204,7 +194,7 @@ public class GoogleMachineEventsExample1 {
     /// @param host
     /// @return
     private Vm createVm(final Host host) {
-        return new VmSimple(1000, host.getPesNumber())
+        return new VmSimple(new CoreCapacity(host.getProcessor().getCores(), 1000))
             .setRam(host.getRam().getCapacity()).setBw(HOST_BW).setSize(HOST_STORAGE)
             .setCloudletScheduler(new CloudletSchedulerSpaceShared());
     }
@@ -222,7 +212,7 @@ public class GoogleMachineEventsExample1 {
 
     private Cloudlet createCloudlet(Vm vm) {
         final var utilization = new UtilizationModelFull();
-        return new CloudletSimple(CLOUDLET_LENGTH, vm.getPesNumber())
+        return new CloudletSimple(CLOUDLET_LENGTH, vm.getProcessor().getCores())
             .setFileSize(1024)
             .setOutputSize(1024)
             .setUtilizationModel(utilization)

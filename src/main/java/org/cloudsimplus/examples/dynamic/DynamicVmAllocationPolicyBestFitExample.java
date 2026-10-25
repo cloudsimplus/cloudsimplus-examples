@@ -58,8 +58,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -118,7 +117,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     private static final long   VM_SIZE = 1000; //image size (MB)
     private static final int    VM_RAM = 10000; //VM memory (MB)
     private static final double VM_BW = HOST_BW/(double)VMS;
-    private static final int    VM_PES = 2;
+    private static final int    VM_CORES = 2;
 
     private static final long   CLOUDLET_LENGHT = 20000;
     private static final long   CLOUDLET_FILESIZE = 300;
@@ -172,7 +171,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
             .getHostList()
             .stream()
             .filter(host -> host.isSuitableForVm(vm))
-            .min(Comparator.comparingInt(Host::getFreePesNumber));
+            .min(Comparator.comparingLong(host -> host.getProcessor().getFreeCores()));
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {
@@ -191,7 +190,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     /// @return the created Cloudlets
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
         final var cloudlet =
-            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getPesNumber())
+            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getProcessor().getCores())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModel(new UtilizationModelFull());
@@ -202,7 +201,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     public void createAndSubmitVms(DatacenterBroker broker) {
         final var newVmList = new ArrayList<Vm>(VMS);
         for(int i = 0; i < VMS; i++){
-            final var vm = createVm(VM_PES);
+            final var vm = createVm(VM_CORES);
             newVmList.add(vm);
         }
 
@@ -211,7 +210,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     }
 
     public Vm createVm(int pes) {
-        final var vm = new VmSimple(VM_MIPS, pes);
+        final var vm = new VmSimple(new CoreCapacity(pes, VM_MIPS));
         vm
           .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
           .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -235,7 +234,7 @@ public final class DynamicVmAllocationPolicyBestFitExample {
 
         final var dc = new DatacenterSimple(simulation, hostList, allocationPolicy);
 
-        hostList.forEach(host -> System.out.printf("#Created %s with %d PEs%n", host, host.getPesNumber()));
+        hostList.forEach(host -> System.out.printf("#Created %s with %d PEs%n", host, host.getProcessor().getCores()));
         System.out.println();
 
         dc.setSchedulingInterval(SCHEDULE_INTERVAL);
@@ -243,17 +242,10 @@ public final class DynamicVmAllocationPolicyBestFitExample {
     }
 
     public Host createHost(int pesNumber, long mipsByPe) {
-        final var peList = createPeList(pesNumber, mipsByPe);
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final var cpuCapacity = new CoreCapacity(pesNumber, mipsByPe);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
 
-    public List<Pe> createPeList(int numberOfPEs, long mips) {
-        final var peList = new ArrayList<Pe>(numberOfPEs);
-        for(int i = 0; i < numberOfPEs; i++) {
-            peList.add(new PeSimple(mips));
-        }
-        return peList;
-    }
 }

@@ -36,8 +36,7 @@ import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -80,13 +79,27 @@ public class VmDestructionExample {
     private static final int SCHEDULING_INTERVAL = 1;
 
     private static final int HOSTS = 1;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
 
     private static final int VMS = 2;
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, 1000);
 
     private static final int CLOUDLETS = 4;
-    private static final int CLOUDLET_PES = 2;
+    private static final int CLOUDLET_CORES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
     private final CloudSimPlus simulation;
@@ -163,19 +176,13 @@ public class VmDestructionExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
         final var ramProvisioner = new ResourceProvisionerSimple();
         final var bwProvisioner = new ResourceProvisionerSimple();
         final var vmScheduler = new VmSchedulerTimeShared();
-        final var host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
         host
             .setRamProvisioner(ramProvisioner)
             .setBwProvisioner(bwProvisioner)
@@ -188,7 +195,7 @@ public class VmDestructionExample {
         final var list = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             Vm vm =
-                new VmSimple(i, 1000, VM_PES)
+                new VmSimple(i, VM_CAPACITY)
                     .setRam(512).setBw(1000).setSize(10000)
                     .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -213,7 +220,7 @@ public class VmDestructionExample {
 
         for (int i = 0; i < CLOUDLETS; i++) {
             final var cloudlet =
-                new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_PES)
+                new CloudletSimple(i, CLOUDLET_LENGTH, CLOUDLET_CORES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelRam(utilization)

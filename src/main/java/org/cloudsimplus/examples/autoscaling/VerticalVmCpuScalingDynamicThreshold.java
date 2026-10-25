@@ -43,8 +43,7 @@ import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.resources.Processor;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
@@ -97,9 +96,25 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private static final int SCHEDULING_INTERVAL = 1;
     private static final int HOSTS = 1;
 
-    private static final int HOST_PES = 32;
+    private static final int HOST_CORES = 32;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
+
     private static final int VMS = 1;
-    private static final int VM_PES = 14;
+    private static final int VM_CORES = 14;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, 1000);
+
     private static final int VM_RAM = 1200;
     private final CloudSimPlus simulation;
     private final DatacenterBroker broker0;
@@ -150,9 +165,9 @@ public class VerticalVmCpuScalingDynamicThreshold {
             System.out.printf(
                 "\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%02d) Upper Threshold: %.2f%n",
                 evt.getTime(), vm.getId(), vm.getCpuPercentUtilization()*100.0,
-                vm.getPesNumber(),
+                vm.getProcessor().getCores(),
                 vm.getCloudletScheduler().getCloudletExecList().size(),
-                vm.getPeVerticalScaling().getUpperThresholdFunction().apply(vm));
+                vm.getCpuVerticalScaling().getUpperThresholdFunction().apply(vm));
         });
     }
 
@@ -176,16 +191,11 @@ public class VerticalVmCpuScalingDynamicThreshold {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 20000; //in Megabytes
         final long bw = 100000; //in Megabytes
         final long storage = 10000000; //in Megabytes
         final int id = hostList.size();
-        return new HostSimple(ram, bw, storage, peList)
+        return new HostSimple(ram, bw, storage, HOST_CAPACITY)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -201,7 +211,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
         List<Vm> newList = new ArrayList<>(numberOfVms);
         for (int i = 0; i < numberOfVms; i++) {
             final var vm = createVm();
-            vm.setPeVerticalScaling(createVerticalPeScaling());
+            vm.setCpuVerticalScaling(createVerticalPeScaling());
             newList.add(vm);
         }
 
@@ -216,7 +226,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
     private Vm createVm() {
         final int id = createsVms++;
 
-        final Vm vm = new VmSimple(id, 1000, VM_PES)
+        final Vm vm = new VmSimple(id, VM_CAPACITY)
             .setRam(VM_RAM).setBw(1000).setSize(10000)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
         return vm;

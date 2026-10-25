@@ -29,7 +29,7 @@ import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.examples.BasicFirstExample;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.vms.VmSimple;
 
@@ -66,10 +66,9 @@ void main() {
     final long bw = 100000; //in Megabits/s
 
     //Creates one Hosts with a specific list of CPU cores (PEs).
-    //Uses a PeProvisionerSimple by default to provision PEs for VMs.
     //Uses ResourceProvisionerSimple by default for RAM and BW provisioning
     //Uses VmSchedulerSpaceShared by default for VM scheduling
-    final var host0 = new HostSimple(ram, bw, storage, List.of(new PeSimple(20000)));
+    final var host0 = new HostSimple(ram, bw, storage, new CoreCapacity(20000));
 
     //Creates one Datacenter with a list of Hosts
     //Uses a VmAllocationPolicySimple by default to allocate VMs
@@ -77,7 +76,7 @@ void main() {
 
     //Creates one Vm to run applications (Cloudlets).
     //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets.
-    final var vm0 = new VmSimple(1000, 1);
+    final var vm0 = new VmSimple(new CoreCapacity(1, 1000));
     vm0.setRam(1000).setBw(1000).setSize(1000);
     final var vmList = List.of(vm0);
 

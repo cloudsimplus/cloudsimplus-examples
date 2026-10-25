@@ -36,8 +36,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -92,6 +91,13 @@ public class PauseSimulationAtGivenTimeExample2 {
     /// was set to a lower value to get updates as soon as possible.
     /// For more details, see [Datacenter#getSchedulingInterval()].
     public static final int SCHEDULING_INTERVAL = 1;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(1, 1000);
 
     private final CloudSimPlus simulation;
     private final DatacenterBrokerSimple broker;
@@ -195,17 +201,14 @@ public class PauseSimulationAtGivenTimeExample2 {
         final long storage = 1000000; // host storage (Megabyte)
         final long bw = 10000; //in Megabits/s
 
-        final var peList = new ArrayList<Pe>(); //List of CPU cores
+        //Defines the number of Host CPU cores and the MIPS capacity of each core
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
-        /*Creates the Host's CPU cores and defines the provisioner
-        used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips));
-
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm() {
-        return new VmSimple(1000, 1)
+        return new VmSimple(VM_CAPACITY)
                 .setRam(512)
                 .setBw(1000)
                 .setSize(10000)
@@ -213,7 +216,7 @@ public class PauseSimulationAtGivenTimeExample2 {
     }
 
     private Cloudlet createCloudlet(Vm vm) {
-        return new CloudletSimple(10000, vm.getPesNumber())
+        return new CloudletSimple(10000, vm.getProcessor().getCores())
                 .setFileSize(300)
                 .setOutputSize(300)
                 .setUtilizationModel(new UtilizationModelFull())

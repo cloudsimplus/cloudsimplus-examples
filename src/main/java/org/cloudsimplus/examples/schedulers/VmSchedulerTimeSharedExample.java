@@ -35,8 +35,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.vms.Vm;
@@ -83,12 +82,27 @@ public class VmSchedulerTimeSharedExample {
     private static final long HOST_BW = VM_BW * VMS; //in Megabits/s
     private static final long HOST_STORAGE = VM_SIZE * VMS; //in Megabytes
 
-    private static final int HOST_PES     = 2;
-    private static final int VM_PES       = 1;
-    private static final int CLOUDLET_PES = VM_PES;
+    private static final int HOST_CORES     = 2;
+    private static final int VM_CORES       = 1;
+    private static final int CLOUDLET_CORES = VM_CORES;
 
     private static final int HOST_MIPS = 1000;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     private static final int VM_MIPS   = HOST_MIPS/2;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
 
     private static final int CLOUDLET_LENGTH = HOST_MIPS*10;
 
@@ -136,7 +150,7 @@ public class VmSchedulerTimeSharedExample {
         hostList.forEach(this::printHostStateHistory);
 
         for (final var vm : vmList) {
-            System.out.printf("%s: Requested MIPS: %.0f Allocated MIPS: %.0f%n", vm, vm.getCurrentRequestedMips().totalMips(), vm.getMips());
+            System.out.printf("%s: Requested MIPS: %.0f Allocated MIPS: %.0f%n", vm, vm.getCurrentRequestedMips().totalMips(), vm.getProcessor().getMips());
         }
     }
 
@@ -180,13 +194,7 @@ public class VmSchedulerTimeSharedExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host.setStateHistoryEnabled(true)
             .setVmScheduler(new VmSchedulerTimeShared());
         return host;
@@ -196,7 +204,7 @@ public class VmSchedulerTimeSharedExample {
     private void createVms() {
         for (int i = 0; i < VMS; i++) {
             final var vm =
-                new VmSimple(VM_MIPS, VM_PES)
+                new VmSimple(VM_CAPACITY)
                     .setRam(VM_RAM).setBw(VM_BW).setSize(VM_SIZE);
             vmList.add(vm);
         }
@@ -205,7 +213,7 @@ public class VmSchedulerTimeSharedExample {
     /// Creates one Cloudlet for each VM belonging to [#broker0].
     private void createCloudlets() {
         for (final var vm : vmList) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
             cloudlet.setVm(vm);
             cloudletList.add(cloudlet);
         }

@@ -36,8 +36,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.datacenters.TimeZoned;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.util.Log;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.vms.Vm;
@@ -76,17 +75,31 @@ public class DatacenterSelectionByTimeZoneExample {
     );
 
     private static final int HOSTS = 5;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
 
     /// The list of timezones where each VM is expected to be placed.
     /// This way, the broker will try to place each VM at the closest
     /// Datacenter as possible.
     private static final double[] VMS_TIMEZONES = {1, 5, -3, -5, 0, 5.5, 2, 4, 9, 11, -9};
 
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, 1000);
 
     private static final int CLOUDLETS = VMS_TIMEZONES.length;
-    private static final int CLOUDLET_PES = 2;
+    private static final int CLOUDLET_CORES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
     private final CloudSimPlus simulation;
@@ -168,13 +181,6 @@ public class DatacenterSelectionByTimeZoneExample {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            //Uses a PeProvisionerSimple by default to provision PEs for VMs
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
@@ -183,7 +189,7 @@ public class DatacenterSelectionByTimeZoneExample {
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final var host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
         host.setId(++lastHostId);
         return host;
     }
@@ -195,7 +201,7 @@ public class DatacenterSelectionByTimeZoneExample {
         final var vmList = new ArrayList<Vm>(VMS_TIMEZONES.length);
         for (final double timezone : VMS_TIMEZONES) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(1000, VM_PES);
+            final Vm vm = new VmSimple(VM_CAPACITY);
             vm.setRam(512).setBw(1000).setSize(10000).setTimeZone(timezone);
             vmList.add(vm);
         }
@@ -211,7 +217,7 @@ public class DatacenterSelectionByTimeZoneExample {
         final var utilizationModel = new UtilizationModelDynamic(0.5);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
             cloudlet.setSizes(1024);
             cloudletList.add(cloudlet);
         }

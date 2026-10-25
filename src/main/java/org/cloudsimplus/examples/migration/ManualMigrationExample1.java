@@ -42,8 +42,7 @@ import org.cloudsimplus.hosts.HostStateHistoryEntry;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -113,7 +112,7 @@ public final class ManualMigrationExample1 {
     private static final long   VM_SIZE = 1000; //image size (MB)
     private static final int    VM_RAM = 10000; //VM memory (MB)
     private static final double VM_BW = HOST_BW/(double)VMS;
-    private static final int    VM_PES = 2;
+    private static final int    VM_CORES = 2;
 
     private static final long   CLOUDLET_LENGHT = 20000;
     private static final long   CLOUDLET_FILESIZE = 300;
@@ -212,7 +211,7 @@ public final class ManualMigrationExample1 {
     /// @return the created Cloudlets
     public Cloudlet createCloudlet(Vm vm, DatacenterBroker broker) {
         final var cloudlet =
-            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getPesNumber())
+            new CloudletSimple(CLOUDLET_LENGHT, (int)vm.getProcessor().getCores())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModel(new UtilizationModelFull());
@@ -224,7 +223,7 @@ public final class ManualMigrationExample1 {
     public void createAndSubmitVms(DatacenterBroker broker) {
         final var newVmList = new ArrayList<Vm>(VMS);
         for(int i = 0; i < VMS; i++){
-            newVmList.add(createVm(VM_PES));
+            newVmList.add(createVm(VM_CORES));
         }
 
         vmList.addAll(newVmList);
@@ -249,7 +248,7 @@ public final class ManualMigrationExample1 {
     }
 
     public Vm createVm(int pes) {
-        final Vm vm = new VmSimple(VM_MIPS, pes);
+        final Vm vm = new VmSimple(new CoreCapacity(pes, VM_MIPS));
         vm
           .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
           .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -273,19 +272,11 @@ public final class ManualMigrationExample1 {
     }
 
     public Host createHost(int pesNumber, long mipsByPe) {
-        final var peList = createPeList(pesNumber, mipsByPe);
-        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final var cpuCapacity = new CoreCapacity(pesNumber, mipsByPe);
+        final var host = new HostSimple(HOST_RAM, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setVmScheduler(new VmSchedulerTimeShared())
             .setStateHistoryEnabled(true);
         return host;
     }
 
-    public List<Pe> createPeList(int numberOfPEs, long mips) {
-        final var peList = new ArrayList<Pe>(numberOfPEs);
-        for(int i = 0; i < numberOfPEs; i++) {
-            peList.add(new PeSimple(mips));
-        }
-
-        return peList;
-    }
 }

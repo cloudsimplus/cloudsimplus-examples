@@ -35,9 +35,8 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.resources.HarddriveStorage;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerAbstract;
 import org.cloudsimplus.utilizationmodels.UtilizationModel;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -100,17 +99,31 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
     private static final long HOST_RAM = 20_480; //in Megabytes
 
     private static final int HOSTS = 2;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
     private static final int HOST_MIPS = 1_000;
 
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
 
     private static final int VMS = 3;
-    private static final int VM_PES = 2;
+    private static final int VM_CORES = 2;
     private static final int VM_MIPS = 1_000;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     /// VM RAM capacity (in MB)
     private static final int VM_RAM = 10_000;
 
-    private static final int CLOUDLET_PES = 1;
+    private static final int CLOUDLET_CORES = 1;
     private static final int CLOUDLET_LENGTH = 10_000;
 
     private final CloudSimPlus simulation;
@@ -205,13 +218,6 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
     /// that impact the delay imposed for Cloudlets using Virtual Memory.
     /// @return
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            //Uses a PeProvisionerSimple by default to provision PEs for VMs
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
         final long bw = 10000; //in Megabits/s
         final long storageSize = 1_000_000; //in Megabytes
         final var hardDrive = new HarddriveStorage(storageSize);
@@ -221,7 +227,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        return new HostSimple(HOST_RAM, bw, hardDrive, peList);
+        return new HostSimple(HOST_RAM, bw, hardDrive, HOST_CAPACITY);
     }
 
     /// Creates a list of VMs.
@@ -229,7 +235,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(VM_MIPS, VM_PES);
+            final Vm vm = new VmSimple(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(1000).setSize(10000);
             newVmList.add(vm);
         }
@@ -279,7 +285,7 @@ public class VirtualMemoryForRequestedRamHigherThanAvailableExample {
         final Vm vm, final UtilizationModel utilizationModelRam,
         final UtilizationModel utilizationModelBw)
     {
-        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES);
+        final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES);
         cloudlet.setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelRam(utilizationModelRam)
                 .setUtilizationModelBw(utilizationModelBw)

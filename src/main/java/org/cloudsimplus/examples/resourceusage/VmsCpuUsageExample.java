@@ -35,8 +35,7 @@ import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -103,7 +102,7 @@ public class VmsCpuUsageExample {
         simulation.start();
 
         new CloudletsTableBuilder(broker.getCloudletFinishedList())
-            .addColumn(new TextTableColumn("VM MIPS"), cl -> cl.getVm().getMips(), 7)
+            .addColumn(new TextTableColumn("VM MIPS"), cl -> cl.getVm().getProcessor().getMips(), 7)
             .build();
 
         printCpuUtilizationForAllVms();
@@ -138,7 +137,7 @@ public class VmsCpuUsageExample {
         final long bw = 1000;
 
         //create two VMs
-        final var vm = new VmSimple(id, mips, pesNumber);
+        final var vm = new VmSimple(id, new CoreCapacity(pesNumber, mips));
         vm.setRam(ram).setBw(bw)
             .setSize(size)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -175,16 +174,13 @@ public class VmsCpuUsageExample {
     }
 
     private static Host createHost(final int id, final int pesNumber, final long mips) {
-        final var peList = new ArrayList<Pe>();
-        for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(pesNumber, mips);
 
         final int ram = 2048; //host memory (Megabyte)
         final long storage = 1000000; //host storage
         final int bw = 10000;
 
-        final var host = new HostSimple(ram, bw, storage, peList)
+        final var host = new HostSimple(ram, bw, storage, cpuCapacity)
                 .setId(id)
                 .setStateHistoryEnabled(true)
                 .setRamProvisioner(new ResourceProvisionerSimple())

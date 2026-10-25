@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
@@ -63,13 +62,20 @@ public class VmGroupPlacementExample1 {
     /// Number of [Vm]s in each [VmGroup].
     private static final int VMS_BY_GROUP = 2;
 
-
     private static final int BASE_HOST_RAM = 1000;
     private static final int BASE_HOST_BW  = 1000;
     private static final int BASE_HOST_STORAGE = 100_000;
     private static final int HOST_MIPS = 1000;
 
-    private static final int VM_PES = 2;
+    private static final int VM_CORES = 2;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, HOST_MIPS);
+
     private static final int VM_RAM = 1200;
     private static final int VM_BW = 1200;
     private static final int VM_STORAGE = 10_000;
@@ -131,12 +137,7 @@ public class VmGroupPlacementExample1 {
     }
 
     private Host createHost(final long id, final int pes) {
-        final var peList = new ArrayList<Pe>(pes);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < pes; i++) {
-            //Uses a PeProvisionerSimple by default to provision PEs for VMs
-            peList.add(new PeSimple(HOST_MIPS));
-        }
+        final var cpuCapacity = new CoreCapacity(pes, HOST_MIPS);
 
         //Host resources will be defined increasingly, according to the Host id.
         final long ram = BASE_HOST_RAM * id; //in Megabytes
@@ -147,7 +148,7 @@ public class VmGroupPlacementExample1 {
         Uses ResourceProvisionerSimple by default for RAM and BW provisioning
         and VmSchedulerSpaceShared for VM scheduling.
         */
-        final Host host = new HostSimple(ram, bw, storage, peList);
+        final Host host = new HostSimple(ram, bw, storage, cpuCapacity);
         host.setId(id);
         return host;
     }
@@ -167,7 +168,7 @@ public class VmGroupPlacementExample1 {
         final var vmList = new ArrayList<Vm>(VMS_BY_GROUP);
         for (int i = 0; i < VMS_BY_GROUP; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-            final Vm vm = new VmSimple(HOST_MIPS, VM_PES);
+            final Vm vm = new VmSimple(VM_CAPACITY);
             vm.setRam(VM_RAM).setBw(VM_BW).setSize(VM_STORAGE);
             vmList.add(vm);
         }
@@ -183,7 +184,7 @@ public class VmGroupPlacementExample1 {
         final var utilizationModelCpu = new UtilizationModelFull();
 
         for (Vm vm : group.getVmList()) {
-            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_PES);
+            final var cloudlet = new CloudletSimple(CLOUDLET_LENGTH, VM_CORES);
             cloudlet.setSizes(1024)
                     .setUtilizationModelCpu(utilizationModelCpu)
                     .setUtilizationModelRam(utilizationModelRamBw)

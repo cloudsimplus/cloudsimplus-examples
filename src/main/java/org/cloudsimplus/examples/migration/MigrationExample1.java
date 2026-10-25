@@ -39,9 +39,7 @@ import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.DatacenterBrokerEventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
-import org.cloudsimplus.schedulers.MipsShare;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.selectionpolicies.VmSelectionPolicyMinimumUtilization;
@@ -146,13 +144,13 @@ public final class MigrationExample1 {
 
     /// An array where each item defines the number of PEs for each Host to be created.
     /// The length of the array represents the number of Hosts.
-    private static final int    HOST_PES[] = {4, 5, 5};
+    private static final int    HOST_CORES[] = {4, 5, 5};
 
-    private static final int    VM_PES[]   = {2, 2, 2, 1};
+    private static final int    VM_CORES[]   = {2, 2, 2, 1};
     private static final int    VM_MIPS = 1000; //for each PE
     private static final long   VM_SIZE = 1000; //image size (MB)
     private static final int    VM_RAM = 10_000; //VM memory (MB)
-    private static final double VM_BW = HOST_BW/(double)VM_PES.length;
+    private static final double VM_BW = HOST_BW/(double)VM_CORES.length;
 
     private static final long   CLOUDLET_LENGTH = 20_000;
     private static final long   CLOUDLET_FILESIZE = 300;
@@ -187,8 +185,8 @@ public final class MigrationExample1 {
     private MigrationExample1(){
         Log.setLevel(Level.INFO);
 
-        if(HOST_PES.length != HOST_RAM.length){
-            throw new IllegalStateException("The length of arrays HOST_PES and HOST_RAM must match.");
+        if(HOST_CORES.length != HOST_RAM.length){
+            throw new IllegalStateException("The length of arrays HOST_CORES and HOST_RAM must match.");
         }
 
         System.out.println("Starting " + getClass().getSimpleName());
@@ -224,7 +222,7 @@ public final class MigrationExample1 {
         System.out.println("Host ID | CPUs | MIPS");
         System.out.println("---------------------");
         for (final var host : hostList) {
-            System.out.printf("%7s | %4s | %s%n", host.getId(), host.getPesNumber(), (int)host.getMips());
+            System.out.printf("%7s | %4s | %s%n", host.getId(), host.getProcessor().getCores(), (int)host.getProcessor().getMips());
         }
     }
 
@@ -260,9 +258,9 @@ public final class MigrationExample1 {
 
     private void showVmAllocatedMips(final Vm vm, final Host targetHost, final double time) {
         final String msg = String.format("# %.2f: %s in %s: total allocated", time, vm, targetHost);
-        final MipsShare allocatedMips = targetHost.getVmScheduler().getAllocatedMips(vm);
+        final CoreCapacity allocatedMips = targetHost.getVmScheduler().getAllocatedMips(vm);
         final String msg2 = allocatedMips.totalMips() == VM_MIPS * 0.9 ? " - reduction due to migration overhead" : "";
-        System.out.printf("%s %.0f MIPs (divided by %d PEs)%s\n", msg, allocatedMips.totalMips(), allocatedMips.pes(), msg2);
+        System.out.printf("%s %.0f MIPs (divided by %d PEs)%s\n", msg, allocatedMips.totalMips(), allocatedMips.cores(), msg2);
     }
 
     /// A listener method that is called when a VM migration finishes.
@@ -284,11 +282,11 @@ public final class MigrationExample1 {
     private void showHostAllocatedMips(final double time, final Host host) {
         System.out.printf(
             "%.2f: %s allocated %.2f MIPS from %.2f total capacity%n",
-            time, host, host.getTotalAllocatedMips(), host.getTotalMipsCapacity());
+            time, host, host.getVmScheduler().getTotalAllocatedMips(), host.getTotalMipsCapacity());
     }
 
     public void createAndSubmitCloudlets(DatacenterBroker broker) {
-        final var newCloudletList = new ArrayList<Cloudlet>(VM_PES.length);
+        final var newCloudletList = new ArrayList<Cloudlet>(VM_CORES.length);
         var cloudlet = Cloudlet.NULL;
         UtilizationModelDynamic um = createCpuUtilizationModel(CLOUDLET_INITIAL_CPU_PERCENTAGE, 1);
         for(final var vm: vmList){
@@ -312,7 +310,7 @@ public final class MigrationExample1 {
         final var utilizationModelFull = new UtilizationModelFull();
 
         final var cloudlet =
-            new CloudletSimple(CLOUDLET_LENGTH, (int)vm.getPesNumber())
+            new CloudletSimple(CLOUDLET_LENGTH, (int)vm.getProcessor().getCores())
                 .setFileSize(CLOUDLET_FILESIZE)
                 .setOutputSize(CLOUDLET_OUTPUTSIZE)
                 .setUtilizationModelRam(utilizationModelFull)
@@ -324,8 +322,8 @@ public final class MigrationExample1 {
     }
 
     public void createAndSubmitVms(DatacenterBroker broker) {
-        final var newVmList = new ArrayList<Vm>(VM_PES.length);
-        for (final int pes : VM_PES) {
+        final var newVmList = new ArrayList<Vm>(VM_CORES.length);
+        for (final int pes : VM_CORES) {
             newVmList.add(createVm(pes));
         }
 
@@ -337,7 +335,7 @@ public final class MigrationExample1 {
     }
 
     public Vm createVm(final int pes) {
-        final var vm = new VmSimple(VM_MIPS, pes);
+        final var vm = new VmSimple(new CoreCapacity(pes, VM_MIPS));
         vm
             .setRam(VM_RAM).setBw((long)VM_BW).setSize(VM_SIZE)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
@@ -383,7 +381,7 @@ public final class MigrationExample1 {
         return um.getUtilization() + um.getTimeSpan()*CLOUDLET_CPU_INCREMENT_PER_SECOND;
     }
 
-    /// Creates a Datacenter with number of Hosts defined by the length of [#HOST_PES],
+    /// Creates a Datacenter with number of Hosts defined by the length of [#HOST_CORES],
     /// but only some of these Hosts will be active (powered on) initially.
     ///
     /// @return
@@ -393,7 +391,7 @@ public final class MigrationExample1 {
         for (Host host : hostList) {
             System.out.printf(
                 "# Created %s with %.0f MIPS x %d PEs (%.0f total MIPS)%n",
-                host, host.getMips(), host.getPesNumber(), host.getTotalMipsCapacity());
+                host, host.getProcessor().getMips(), host.getProcessor().getCores(), host.getTotalMipsCapacity());
         }
         dc.setSchedulingInterval(SCHEDULING_INTERVAL)
           .setHostSearchRetryDelay(HOST_SEARCH_RETRY_DELAY);
@@ -419,9 +417,9 @@ public final class MigrationExample1 {
     }
 
     private List<Host> createHosts() {
-        final var hostList = new ArrayList<Host>(HOST_PES.length);
-        for (int i = 0; i < HOST_PES.length; i++) {
-            final int pes = HOST_PES[i];
+        final var hostList = new ArrayList<Host>(HOST_CORES.length);
+        for (int i = 0; i < HOST_CORES.length; i++) {
+            final int pes = HOST_CORES[i];
             final long ram = HOST_RAM[i];
             hostList.add(createHost(pes, ram));
         }
@@ -430,20 +428,11 @@ public final class MigrationExample1 {
     }
 
     public Host createHost(final int pesNumber, final long ram) {
-        final var peList = createPeList(pesNumber);
-        final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, peList);
+        final var cpuCapacity = new CoreCapacity(pesNumber, HOST_MIPS);
+        final var host = new HostSimple(ram, HOST_BW, HOST_STORAGE, cpuCapacity);
         host.setVmScheduler(new VmSchedulerTimeShared())
             .setStateHistoryEnabled(true);
         return host;
-    }
-
-    public List<Pe> createPeList(final int pesNumber) {
-        final var peList = new ArrayList<Pe>(pesNumber);
-        for(int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
-        return peList;
     }
 
     /// A listener that is called after all VMs from a broker are created,

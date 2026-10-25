@@ -44,8 +44,7 @@ import org.cloudsimplus.heuristics.HeuristicSolution;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.util.Log;
@@ -63,7 +62,7 @@ import static java.util.Map.Entry;
 /// An example that uses a
 /// [Simulated Annealing](http://en.wikipedia.org/wiki/Simulated_annealing)
 /// heuristic to find a suboptimal mapping between Cloudlets and Vm's submitted to a
-/// DatacenterBroker. The number of [Pe]s of Vm's and Cloudlets are defined
+/// DatacenterBroker. The number of CPU cores of Vm's and Cloudlets are defined
 /// randomly.
 ///
 /// The [DatacenterBrokerHeuristic] is used
@@ -218,13 +217,10 @@ public class DatacenterBrokersMappingComparison {
         final long storage = 1000000; // host storage
         final long bw = 10000;
 
-        final var peList = new ArrayList<Pe>();
-        /*Creates the Host's CPU cores and defines the provisioner
-        used to allocate each core for requesting VMs.*/
-        for (int i = 0; i < 8; i++)
-            peList.add(new PeSimple(mips));
+        //Defines the number of Host CPU cores and the MIPS capacity of each core
+        final var cpuCapacity = new CoreCapacity(8, mips);
 
-        return new HostSimple(ram, bw, storage, peList)
+        return new HostSimple(ram, bw, storage, cpuCapacity)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
@@ -236,7 +232,7 @@ public class DatacenterBrokersMappingComparison {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000; // vm bandwidth
 
-        return new VmSimple(id, mips, pesNumber)
+        return new VmSimple(id, new CoreCapacity(pesNumber, mips))
             .setRam(ram).setBw(bw).setSize(storage)
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
     }
@@ -290,9 +286,9 @@ public class DatacenterBrokersMappingComparison {
             System.out.printf(
                 "Cloudlet %3d (%d PEs, %6d MI) mapped to Vm %3d (%d PEs, %6.0f MIPS)%n",
                 e.getKey().getId(),
-                e.getKey().getPesNumber(), e.getKey().getLength(),
+                e.getKey().getRequiredCores(), e.getKey().getLength(),
                 e.getValue().getId(),
-                e.getValue().getPesNumber(), e.getValue().getMips());
+                e.getValue().getProcessor().getCores(), e.getValue().getProcessor().getMips());
         }
 
         System.out.println();

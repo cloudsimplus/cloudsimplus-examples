@@ -21,8 +21,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.network.topologies.BriteNetworkTopology;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
@@ -41,7 +40,7 @@ import java.util.List;
 /// If 3 messages are sent to the broker for starting a Cloudlet,
 /// the total delay is the network latency multiplied by 3.
 public class NetworkExample4 {
-    private static final int VM_PES = 1;
+    private static final int VM_CORES = 1;
 
     /// In Megabits/s.
     private static final double NETWORK_BW = 10.0;
@@ -98,7 +97,7 @@ public class NetworkExample4 {
         final var utilizationModel = new UtilizationModelFull();
 
         final var cloudlet1 =
-            new CloudletSimple(length, VM_PES)
+            new CloudletSimple(length, VM_CORES)
                 .setFileSize(fileSize)
                 .setOutputSize(outputSize)
                 .setUtilizationModel(utilizationModel);
@@ -113,7 +112,7 @@ public class NetworkExample4 {
         final int ram = 512; //vm memory (Megabyte)
         final long bw = 1000;
 
-        final Vm vm1 = new VmSimple(mips, VM_PES)
+        final Vm vm1 = new VmSimple(new CoreCapacity(VM_CORES, mips))
             .setRam(ram).setBw(bw).setSize(size);
 
         vmList.add(vm1);
@@ -122,16 +121,15 @@ public class NetworkExample4 {
 
     private Datacenter createDatacenter() {
         final var hostList = new ArrayList<Host>();
-        final var peList = new ArrayList<Pe>();
 
         final long mips = 1000;
-        peList.add(new PeSimple(mips));
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
         long ram = 2048; //host memory (Megabyte)
         long storage = 1000000; //host storage (Megabyte)
         long bw = 10000; //Megabits/s
 
-        final Host host = new HostSimple(ram, bw, storage, peList)
+        final Host host = new HostSimple(ram, bw, storage, cpuCapacity)
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared());

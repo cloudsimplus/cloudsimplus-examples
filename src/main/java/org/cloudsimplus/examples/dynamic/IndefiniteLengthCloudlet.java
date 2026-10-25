@@ -34,8 +34,7 @@ import org.cloudsimplus.datacenters.Datacenter;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
@@ -63,14 +62,28 @@ import java.util.List;
 /// @since CloudSim Plus 4.0.0
 public class IndefiniteLengthCloudlet {
     private static final int HOSTS = 1;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, 1000);
 
     private static final int VMS = 2;
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
     private static final int VM_MIPS = 1000;
 
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, VM_MIPS);
+
     private static final int CLOUDLETS = 2;
-    private static final int CLOUDLET_PES = 2;
+    private static final int CLOUDLET_CORES = 2;
 
     /// Defines a negative length for Cloudlets so that
     /// they keep running until explicitly requested to finish.
@@ -128,16 +141,10 @@ public class IndefiniteLengthCloudlet {
     }
 
     private Host createHost() {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(1000));
-        }
-
         final long ram = 2048; //in Megabytes
         final long bw = 10000; //in Megabits/s
         final long storage = 1000000; //in Megabytes
-        final var host = new HostSimple(ram, bw, storage, peList);
+        final var host = new HostSimple(ram, bw, storage, HOST_CAPACITY);
         host.setVmScheduler(new VmSchedulerTimeShared());
         return host;
     }
@@ -147,7 +154,7 @@ public class IndefiniteLengthCloudlet {
         final var newVmList = new ArrayList<Vm>(VMS);
         for (int i = 0; i < VMS; i++) {
             final var vm =
-                new VmSimple(i, VM_MIPS, VM_PES)
+                new VmSimple(i, VM_CAPACITY)
                     .setRam(512).setBw(1000).setSize(10000)
                     .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
@@ -167,7 +174,7 @@ public class IndefiniteLengthCloudlet {
 
         for (int i = 0; i < CLOUDLETS; i++) {
             final var cloudlet =
-                new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES)
+                new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_CORES)
                     .setFileSize(1024)
                     .setOutputSize(1024)
                     .setUtilizationModelCpu(utilizationFull)

@@ -12,8 +12,7 @@ import org.cloudsimplus.datacenters.network.NetworkDatacenter;
 import org.cloudsimplus.hosts.network.NetworkHost;
 import org.cloudsimplus.network.switches.EdgeSwitch;
 import org.cloudsimplus.provisioners.ResourceProvisionerSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerTimeShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -32,7 +31,22 @@ import static org.cloudbus.cloudsim.examples.network.applications.NetworkVmExamp
 public class NetworkVmsExampleSimpleApp {
     private static final int HOSTS = 2;
     private static final int HOST_MIPS = 1000;
-    private static final int HOST_PES = 4;
+    private static final int HOST_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = VM_CAPACITY;
+
     private static final int HOST_RAM = 2048; // host memory (Megabyte)
     private static final long HOST_STORAGE = 1000000; // host storage
     private static final long HOST_BW = 10000;
@@ -100,23 +114,13 @@ public class NetworkVmsExampleSimpleApp {
     }
 
     private NetworkHost createHost() {
-        final var peList = createPEs(HOST_PES, HOST_MIPS);
-        final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, peList);
+        final var host = new NetworkHost(HOST_RAM, HOST_BW, HOST_STORAGE, HOST_CAPACITY);
         host
             .setRamProvisioner(new ResourceProvisionerSimple())
             .setBwProvisioner(new ResourceProvisionerSimple())
             .setVmScheduler(new VmSchedulerTimeShared());
 
         return host;
-    }
-
-    private List<Pe> createPEs(final int pesNumber, final long mips) {
-        final var peList = new ArrayList<Pe>();
-        for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
-
-        return peList;
     }
 
     /// Creates internal Datacenter network.
@@ -152,7 +156,7 @@ public class NetworkVmsExampleSimpleApp {
     }
 
     private NetworkVm createVm(int id) {
-        final var vm = new NetworkVm(id, HOST_MIPS, HOST_PES);
+        final var vm = new NetworkVm(id, HOST_CAPACITY);
         vm
                 .setRam(HOST_RAM)
                 .setBw(HOST_BW)
@@ -189,7 +193,7 @@ public class NetworkVmsExampleSimpleApp {
     /// @param vm the VM that will run the created [NetworkCloudlet]
     /// @return
     private NetworkCloudlet createNetworkCloudlet(NetworkVm vm) {
-        final var netCloudlet = new NetworkCloudlet(HOST_PES);
+        final var netCloudlet = new NetworkCloudlet(HOST_CORES);
         netCloudlet
                 .setFileSize(CLOUDLET_FILE_SIZE)
                 .setOutputSize(CLOUDLET_OUTPUT_SIZE)

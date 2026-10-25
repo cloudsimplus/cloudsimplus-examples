@@ -34,8 +34,7 @@ import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
@@ -160,12 +159,9 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final long bw = 10000; //in Megabits/s
 
         final int pesNumber = 8;
-        final var peList = new ArrayList<Pe>(pesNumber); //List of CPU cores
-        for (int i = 0; i < pesNumber; i++) {
-            peList.add(new PeSimple(mips));
-        }
+        final var cpuCapacity = new CoreCapacity(pesNumber, mips);
 
-        return new HostSimple(ram, bw, storage, peList).setVmScheduler(new VmSchedulerTimeShared());
+        return new HostSimple(ram, bw, storage, cpuCapacity).setVmScheduler(new VmSchedulerTimeShared());
     }
 
     private Vm createVm(DatacenterBroker broker) {
@@ -175,7 +171,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final long   bw = 1000; // vm bandwidth (Megabits/s)
         final int    pesNumber = 1; // number of CPU cores
 
-        return new VmSimple(createVmsNumber++, mips, pesNumber)
+        return new VmSimple(createVmsNumber++, new CoreCapacity(pesNumber, mips))
                 .setRam(ram)
                 .setBw(bw)
                 .setSize(storage)
@@ -186,7 +182,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         final long length = 10000; //in Million Instructions (MI)
         final long fileSize = 300; //Size (in bytes) before execution
         final long outputSize = 300; //Size (in bytes) after execution
-        final long numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
+        final long numberOfCpuCores = vm.getProcessor().getCores(); //cloudlet will use all the VM's CPU cores
 
         //Defines how CPU, RAM and Bandwidth resources are used
         //Sets the same utilization model for all these resources.

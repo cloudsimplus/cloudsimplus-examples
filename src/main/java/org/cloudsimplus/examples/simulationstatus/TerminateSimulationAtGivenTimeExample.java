@@ -32,8 +32,7 @@ import org.cloudsimplus.core.CloudSimPlus;
 import org.cloudsimplus.datacenters.DatacenterSimple;
 import org.cloudsimplus.hosts.Host;
 import org.cloudsimplus.hosts.HostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
@@ -122,20 +121,17 @@ public class TerminateSimulationAtGivenTimeExample {
         final long storage = 1000000; // in Megabytes
         final long bw = 10000; //in Megabits/s
 
-        final var peList = new ArrayList<Pe>(); //List of CPU cores
+        //Defines the number of Host CPU cores and the MIPS capacity of each core
+        final var cpuCapacity = new CoreCapacity(1, mips);
 
-        /*Creates the Host's CPU cores and defines the provisioner
-        used to allocate each core for requesting VMs.*/
-        peList.add(new PeSimple(mips));
-
-        return new HostSimple(ram, bw, storage, peList);
+        return new HostSimple(ram, bw, storage, cpuCapacity);
     }
 
     private Vm createVm(DatacenterBroker broker) {
         final long mips = 1000;
         final int    pesNumber = 1; // number of CPU cores
 
-        return new VmSimple(numberOfCreatedVms++, mips, pesNumber)
+        return new VmSimple(numberOfCreatedVms++, new CoreCapacity(pesNumber, mips))
                 .setRam(512)
                 .setBw((long) 1000)
                 .setSize((long) 10000)
@@ -144,7 +140,7 @@ public class TerminateSimulationAtGivenTimeExample {
 
     private Cloudlet createCloudlet(DatacenterBroker broker, Vm vm) {
         final long length = 10000; //in Million Instructions (MI)
-        final long  numberOfCpuCores = vm.getPesNumber(); //cloudlet will use all the VM's CPU cores
+        final long  numberOfCpuCores = vm.getProcessor().getCores(); //cloudlet will use all the VM's CPU cores
 
         return new CloudletSimple(
                 numberOfCreatedCloudlets++, length, numberOfCpuCores)

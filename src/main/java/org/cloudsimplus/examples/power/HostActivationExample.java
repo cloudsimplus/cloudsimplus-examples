@@ -40,8 +40,7 @@ import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.HostEventInfo;
 import org.cloudsimplus.power.models.PowerModelHost;
 import org.cloudsimplus.power.models.PowerModelHostSimple;
-import org.cloudsimplus.resources.Pe;
-import org.cloudsimplus.resources.PeSimple;
+import org.cloudsimplus.resources.CoreCapacity;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
@@ -82,7 +81,7 @@ public class HostActivationExample {
     private static final int SCHEDULING_INTERVAL = 2;
 
     private static final int HOSTS = 5;
-    private static final int HOST_PES = 8;
+    private static final int HOST_CORES = 8;
 
     /// Defines the power a Host uses, even if it's idle (in Watts).
     private static final double STATIC_POWER = 35;
@@ -109,9 +108,23 @@ public class HostActivationExample {
     private static final int HOST_IDLE_SECONDS_TO_SHUTDOWN = 5;
     private static final int HOST_MIPS = 1000;
 
+    /// The CPU capacity of every Host: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each Host copies its values into its own Processor.
+    /// So, changing the capacity of one Host's Processor doesn't affect the other Hosts.
+    /// Reusing it avoids creating one temporary object per Host (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity HOST_CAPACITY = new CoreCapacity(HOST_CORES, HOST_MIPS);
+
     private static final int MIN_VMS = 2;
     private static final int MAX_VMS = 4;
-    private static final int VM_PES = 4;
+    private static final int VM_CORES = 4;
+
+    /// The CPU capacity of every VM: a single [CoreCapacity] object is reused for all of them.
+    /// That's safe because a [CoreCapacity] is immutable: it never changes after it's created,
+    /// and each VM copies its values into its own Processor.
+    /// So, changing the capacity of one VM (such as by vertical scaling) doesn't affect the other VMs.
+    /// Reusing it avoids creating one temporary object per VM (fewer allocations and less GC work in large simulations).
+    private static final CoreCapacity VM_CAPACITY = new CoreCapacity(VM_CORES, HOST_MIPS);
 
     private static final int CLOUDLET_LENGTH = 20000;
 
@@ -224,7 +237,7 @@ public class HostActivationExample {
         final var newCloudletList = new ArrayList<Cloudlet>(vmsToCreate);
 
         for (int i = 0; i < vmsToCreate; i++) {
-            final var vm = new VmSimple(HOST_MIPS, VM_PES);
+            final var vm = new VmSimple(VM_CAPACITY);
             //vm.setSubmissionDelay(2.0);
             final var cloudlet = createCloudlet(vm);
             vmList.add(vm);
@@ -255,15 +268,9 @@ public class HostActivationExample {
     /// @return a new powered-off Host
     /// @param id
     private Host createHost(final long id) {
-        final var peList = new ArrayList<Pe>(HOST_PES);
-        //List of Host's CPUs (Processing Elements, PEs)
-        for (int i = 0; i < HOST_PES; i++) {
-            peList.add(new PeSimple(HOST_MIPS));
-        }
-
         //Indicates if the Host will be powered on or not after creation
         final boolean activate = false;
-        final var host = new HostSimple(peList, activate);
+        final var host = new HostSimple(HOST_CAPACITY, activate);
         host.setId(id)
             .setStartupDelay(HOST_START_UP_DELAY)
             .setShutDownDelay(HOST_SHUT_DOWN_DELAY);
@@ -287,7 +294,7 @@ public class HostActivationExample {
          * ensuring that a positive length is generated (Cloudlets
          * with negative length run indefinitely until being explicitly stopped. */
         final long len = Math.abs(CLOUDLET_LENGTH - cloudletList.size()*3000);
-        return new CloudletSimple(len, VM_PES)
+        return new CloudletSimple(len, VM_CORES)
                 .setUtilizationModelCpu(new UtilizationModelFull())
                 .setUtilizationModelRam(utilizationModel)
                 .setVm(vm);
