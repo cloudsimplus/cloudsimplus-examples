@@ -97,7 +97,7 @@ public class VmRelativeHostResourceUtilizationExample {
         Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         simulation = new CloudSimPlus();
-        simulation.addOnClockTickListener(this::onClockTick);
+        simulation.listeners().addOnClockTick(this::onClockTick);
         datacenter0 = createDatacenter();
 
         broker0 = new DatacenterBrokerSimple(simulation);

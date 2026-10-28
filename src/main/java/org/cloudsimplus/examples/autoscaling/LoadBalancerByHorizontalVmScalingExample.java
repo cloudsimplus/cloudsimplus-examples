@@ -48,6 +48,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -71,7 +72,7 @@ import static java.util.Comparator.comparingDouble;
 /// to enable monitoring the simulation and dynamically creating objects such as Cloudlets and VMs.
 /// It relies on
 /// [Java 8 Lambda Expressions](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html)
-/// to set a Listener for the [onClockTick event][Simulation#addOnClockTickListener(EventListener)].
+/// to set a Listener for the [onClockTick event][SimulationListeners#addOnClockTick(EventListener)].
 /// That Listener gets notified every time the simulation clock advances and then creates and submits new Cloudlets.
 ///
 /// The [DatacenterBroker] is accountable to perform horizontal down scaling.
@@ -155,7 +156,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
         cloudletList = new ArrayList<>(CLOUDLETS);
 
         simulation = new CloudSimPlus();
-        simulation.addOnClockTickListener(this::createNewCloudlets);
+        simulation.listeners().addOnClockTick(this::createNewCloudlets);
 
         dc0 = createDatacenter();
         broker0 = new DatacenterBrokerSimple(simulation);
@@ -196,7 +197,7 @@ public class LoadBalancerByHorizontalVmScalingExample {
 
     /// Creates new Cloudlets at every [#CLOUDLETS_CREATION_INTERVAL] seconds, up to the 50th simulation second.
     /// A reference to this method is set as the [EventListener]
-    /// to the [Simulation#addOnClockTickListener(EventListener)].
+    /// to the [SimulationListeners#addOnClockTick(EventListener)].
     /// The method is called every time the simulation clock advances.
     ///
     /// @param info the information about the OnClockTick event that has happened

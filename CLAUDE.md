@@ -41,7 +41,7 @@ Common structure of an example (see `BasicFirstExample`):
 1. `private static final` constants for host, VM and cloudlet sizes (MIPS, PEs, RAM in MB, BW in Mbps, storage in MB, length in MI).
 2. Constructor: `new CloudSimPlus()`, then `createDatacenter()` (`DatacenterSimple` with `HostSimple`s built from `PeSimple`s), then `new DatacenterBrokerSimple(simulation)`.
 3. `createVms()` (`VmSimple`) and `createCloudlets()` (`CloudletSimple` + a `UtilizationModel*`), then `broker.submitVmList(...)` and `broker.submitCloudletList(...)`.
-4. Optionally register event listeners (e.g. `simulation.addOnClockTickListener`, `vm.addOnHostPlacementListener`) for dynamic behaviour.
+4. Optionally register event listeners (e.g. `simulation.listeners().addOnClockTick`, `vm.listeners().addOnHostPlacement`) for dynamic behaviour.
 5. `simulation.start()`, then print results with `new CloudletsTableBuilder(broker.getCloudletFinishedList()).build()`.
 
 Default policies (VM placement, VM/cloudlet schedulers, allocators) apply unless an example sets them on purpose. Usually that choice is the point of the example.

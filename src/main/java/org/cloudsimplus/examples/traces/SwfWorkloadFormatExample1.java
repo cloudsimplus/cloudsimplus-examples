@@ -43,6 +43,7 @@ import org.cloudsimplus.util.Log;
 import org.cloudsimplus.util.TimeUtil;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.brokers.DatacenterBrokerListeners;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -136,7 +137,7 @@ public class SwfWorkloadFormatExample1 {
 
             broker.submitVmList(vmlist);
             broker.submitCloudletList(cloudletList);
-            broker.addOnVmsCreatedListener(this::onVmsCreated);
+            broker.listeners().addOnVmsCreated(this::onVmsCreated);
 
             simulation.start();
 
@@ -152,7 +153,7 @@ public class SwfWorkloadFormatExample1 {
     /// Method executed when all VMs submitted to the broker are placed
     /// into some Host.
     /// @param info
-    /// @see DatacenterBroker#addOnVmsCreatedListener(EventListener)
+    /// @see DatacenterBrokerListeners#addOnVmsCreated(EventListener)
     private void onVmsCreated(DatacenterBrokerEventInfo info) {
         System.out.printf("%d VMs from Broker %d placed into some Host%n", vmlist.size(), info.getDatacenterBroker().getId());
     }

@@ -50,6 +50,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModel;
 import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.vms.VmListeners;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -295,7 +296,7 @@ public final class InterDatacenterMigration1 {
         for (final DatacenterBroker broker : brokerList) {
             createAndSubmitVms(broker, VM_CORES[i++]);
             createAndSubmitCloudlets(broker);
-            broker.addOnVmsCreatedListener(this::onVmsCreatedListener);
+            broker.listeners().addOnVmsCreated(this::onVmsCreatedListener);
         }
     }
 
@@ -317,7 +318,7 @@ public final class InterDatacenterMigration1 {
         datacenterList.stream()
                       .map(dc -> (VmPlacementPolicyMigrationFirstFitStaticThreshold)dc.getVmPlacementPolicy())
                       .forEach(policy -> policy.setOverUtilizationThreshold(HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION));
-        broker.removeOnVmsCreatedListener(info.getListener());
+        broker.listeners().removeOnVmsCreated(info.getListener());
     }
 
     public void createAndSubmitCloudlets(final DatacenterBroker broker) {
@@ -353,13 +354,13 @@ public final class InterDatacenterMigration1 {
     public void createAndSubmitVms(final DatacenterBroker broker, final int[] vmPesArray) {
         final var vmList = Arrays.stream(vmPesArray).mapToObj(this::createVm).toList();
         broker.submitVmList(vmList);
-        vmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
+        vmList.forEach(vm -> vm.listeners().addOnMigrationStart(this::startMigration));
     }
 
     /// A listener method that is called when a VM migration starts.
     /// @param info information about the happened event
     ///
-    /// @see Vm#addOnMigrationFinishListener(EventListener)
+    /// @see VmListeners#addOnMigrationFinish(EventListener)
     private void startMigration(final VmHostEventInfo info) {
         migrationsNumber++;
     }

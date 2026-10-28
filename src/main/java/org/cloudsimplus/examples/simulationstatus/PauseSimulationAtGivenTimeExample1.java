@@ -40,6 +40,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ import java.util.List;
 /// the simulation was paused, allowing to collect the desired data.
 /// This example uses the Java 8+ Lambda Functions features
 /// to pass a listener to a [CloudSimPlus] instance, by means of the
-/// [CloudSimPlus#addOnSimulationPauseListener(EventListener)] method.
+/// [SimulationListeners#addOnSimulationPause(EventListener)] method.
 /// However, the same feature can be used for Java 7 passing an anonymous class
 /// that implements `EventListener<EventInfo>`.
 ///
@@ -63,7 +64,7 @@ import java.util.List;
 /// @since CloudSim Plus 1.0
 ///
 /// @see CloudSimPlus#pause(double)
-/// @see CloudSimPlus#addOnSimulationPauseListener(EventListener)
+/// @see SimulationListeners#addOnSimulationPause(EventListener)
 /// @see EventListener
 public class PauseSimulationAtGivenTimeExample1 {
     /// The interval in which the Datacenter will schedule events.
@@ -147,7 +148,7 @@ public class PauseSimulationAtGivenTimeExample1 {
         * that will be executed only when the simulation is paused.
         * */
         this.simulation
-            .addOnSimulationPauseListener(this::printCloudletsFinishedSoFarAndResumeSimulation);
+            .listeners().addOnSimulationPause(this::printCloudletsFinishedSoFarAndResumeSimulation);
 
         /* Starts the simulation and waits all cloudlets to be executed. */
         this.simulation.start();

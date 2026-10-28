@@ -47,6 +47,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -70,7 +71,7 @@ import static org.cloudsimplus.utilizationmodels.UtilizationModel.Unit;
 ///
 /// The example uses the CloudSim Plus [EventListener] feature
 /// to enable monitoring the simulation and dynamically creating objects such as Cloudlets and VMs.
-/// It creates a Listener for the [onClockTick event][Simulation#addOnClockTickListener(EventListener)]
+/// It creates a Listener for the [onClockTick event][SimulationListeners#addOnClockTick(EventListener)]
 /// to get notifications when the simulation clock advances, then creating and submitting new cloudlets.
 ///
 /// @author Manoel Campos da Silva Filho
@@ -159,7 +160,7 @@ public class VerticalVmRamScalingExample {
         cloudletList = new ArrayList<>(CLOUDLET_LENGTHS.length);
 
         simulation = new CloudSimPlus();
-        simulation.addOnClockTickListener(this::onClockTickListener);
+        simulation.listeners().addOnClockTick(this::onClockTickListener);
 
         createDatacenter();
         broker0 = new DatacenterBrokerSimple(simulation);

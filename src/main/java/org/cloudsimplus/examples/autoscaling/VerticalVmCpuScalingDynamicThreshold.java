@@ -53,6 +53,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.utilizationmodels.UtilizationModelStochastic;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -72,7 +73,7 @@ import static java.util.Comparator.comparingDouble;
 /// to enable monitoring the simulation and dynamically create objects such as Cloudlets and VMs at runtime.
 /// It relies on
 /// [Java 8 Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html)
-/// to set a method to be called for [onClockTick events][Simulation#addOnClockTickListener(EventListener)].
+/// to set a method to be called for [onClockTick events][SimulationListeners#addOnClockTick(EventListener)].
 /// It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
 ///
 /// @author Manoel Campos da Silva Filho
@@ -142,7 +143,7 @@ public class VerticalVmCpuScalingDynamicThreshold {
         cloudletList = new ArrayList<>(CLOUDLETS);
 
         simulation = new CloudSimPlus();
-        simulation.addOnClockTickListener(this::onClockTickListener);
+        simulation.listeners().addOnClockTick(this::onClockTickListener);
 
         createDatacenter();
         broker0 = new DatacenterBrokerSimple(simulation);

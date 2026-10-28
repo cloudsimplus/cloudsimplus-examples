@@ -45,10 +45,11 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.*;
 
-/// Shows how to use the [onClockTick Listener][Simulation#addOnClockTickListener(EventListener)]
+/// Shows how to use the [onClockTick Listener][SimulationListeners#addOnClockTick(EventListener)]
 /// to keep track os simulation clock and store VM's RAM and BW utilization along the time.
 /// CloudSim Plus already has built-in features to obtain VM's CPU utilization.
 /// Check [org.cloudsimplus.examples.power.PowerExample].
@@ -57,7 +58,7 @@ import java.util.*;
 /// to enable monitoring the simulation and dynamically collect RAM and BW usage.
 /// It relies on
 /// [Java 8 Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html)
-/// to set a method to be called for [onClockTick events][Simulation#addOnClockTickListener(EventListener)].
+/// to set a method to be called for [onClockTick events][SimulationListeners#addOnClockTick(EventListener)].
 /// It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
 ///
 /// @author Manoel Campos da Silva Filho
@@ -125,7 +126,7 @@ public class VmsRamAndBwUsageExample {
 
         allVmsRamUtilizationHistory = initializeUtilizationHistory();
         allVmsBwUtilizationHistory = initializeUtilizationHistory();
-        simulation.addOnClockTickListener(this::onClockTickListener);
+        simulation.listeners().addOnClockTick(this::onClockTickListener);
 
         simulation.start();
 

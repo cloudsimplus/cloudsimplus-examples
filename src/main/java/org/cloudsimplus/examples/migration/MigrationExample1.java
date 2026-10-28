@@ -49,6 +49,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.vms.VmListeners;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -201,7 +202,7 @@ public final class MigrationExample1 {
         createAndSubmitVms(broker);
         createAndSubmitCloudlets(broker);
 
-        broker.addOnVmsCreatedListener(this::onVmsCreatedListener);
+        broker.listeners().addOnVmsCreated(this::onVmsCreatedListener);
 
         simulation.start();
 
@@ -231,7 +232,7 @@ public final class MigrationExample1 {
     /// @param info information about the happened event
     ///
     /// @see #createAndSubmitVms(DatacenterBroker)
-    /// @see Vm#addOnMigrationFinishListener(EventListener)
+    /// @see VmListeners#addOnMigrationFinish(EventListener)
     private void startMigration(final VmHostEventInfo info) {
         final Vm vm = info.getVm();
         final Host targetHost = info.getHost();
@@ -251,7 +252,7 @@ public final class MigrationExample1 {
         }
 
         //After the first VM starts being migrated, tracks some metrics along simulation time
-        simulation.addOnClockTickListener(clock -> {
+        simulation.listeners().addOnClockTick(clock -> {
             if (clock.getTime() <= 2 || (clock.getTime() >= 11 && clock.getTime() <= 15))
                 showVmAllocatedMips(vm, targetHost, clock.getTime());
         });
@@ -268,7 +269,7 @@ public final class MigrationExample1 {
     /// @param info information about the happened event
     ///
     /// @see #createAndSubmitVms(DatacenterBroker)
-    /// @see Vm#addOnMigrationStartListener(EventListener)
+    /// @see VmListeners#addOnMigrationStart(EventListener)
     private void finishMigration(final VmHostEventInfo info) {
         final var host = info.getHost();
         System.out.printf(
@@ -331,8 +332,8 @@ public final class MigrationExample1 {
         vmList.addAll(newVmList);
         broker.submitVmList(newVmList);
 
-        newVmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
-        newVmList.forEach(vm -> vm.addOnMigrationFinishListener(this::finishMigration));
+        newVmList.forEach(vm -> vm.listeners().addOnMigrationStart(this::startMigration));
+        newVmList.forEach(vm -> vm.listeners().addOnMigrationFinish(this::finishMigration));
     }
 
     public Vm createVm(final int pes) {
@@ -445,7 +446,7 @@ public final class MigrationExample1 {
     private void onVmsCreatedListener(final DatacenterBrokerEventInfo info) {
         System.out.printf("# All %d VMs submitted to the broker have been created.%n", broker.getVmCreatedList().size());
         allocationPolicy.setOverUtilizationThreshold(HOST_OVER_UTILIZATION_THRESHOLD_FOR_VM_MIGRATION);
-        broker.removeOnVmsCreatedListener(info.getListener());
+        broker.listeners().removeOnVmsCreated(info.getListener());
         vmList.forEach(vm -> showVmAllocatedMips(vm, vm.getHost(), info.getTime()));
 
         System.out.println();

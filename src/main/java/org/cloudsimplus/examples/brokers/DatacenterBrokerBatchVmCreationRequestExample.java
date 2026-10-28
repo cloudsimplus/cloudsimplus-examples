@@ -116,7 +116,7 @@ public class DatacenterBrokerBatchVmCreationRequestExample {
         cloudletList = new ArrayList<>();
         createVmsAndCloudlets();
 
-        simulation.addOnClockTickListener(this::onClockTick);
+        simulation.listeners().addOnClockTick(this::onClockTick);
         simulation.start();
 
         final var cloudletFinishedList = broker0.getCloudletFinishedList();

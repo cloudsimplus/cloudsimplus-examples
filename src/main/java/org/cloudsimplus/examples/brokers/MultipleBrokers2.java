@@ -42,6 +42,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +133,7 @@ public class MultipleBrokers2 {
          * See the documentation of the methods called below for more details.
          */
         //submitCloudletWithDelay();
-        simulation.addOnClockTickListener(this::dynamicCloudletArrival);
+        simulation.listeners().addOnClockTick(this::dynamicCloudletArrival);
 
         simulation.start();
         printResults();
@@ -174,7 +175,7 @@ public class MultipleBrokers2 {
     /// @param e information about the generated event
     /// @return
     /// @see Datacenter#getSchedulingInterval()
-    /// @see CloudSimPlus#addOnClockTickListener(EventListener)
+    /// @see SimulationListeners#addOnClockTick(EventListener)
     private void dynamicCloudletArrival(EventInfo e) {
         if((int)e.getTime() != 35) {
             return;

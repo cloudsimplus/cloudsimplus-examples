@@ -42,6 +42,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,14 +52,14 @@ import java.util.List;
 /// The example creates 4 Cloudlets that will run sequentially using a [CloudletSchedulerSpaceShared].
 ///
 /// The pause is scheduled after the simulation starts, by adding an
-/// [OnEventProcessingListener][Simulation#addOnEventProcessingListener(EventListener)]
+/// [OnEventProcessingListener][SimulationListeners#addOnEventProcessing(EventListener)]
 /// that will be notified every time a simulation event is processed.
 ///
 /// This example uses CloudSim Plus Listener features to intercept when
 /// the simulation was paused, allowing to collect the desired data.
 /// This example uses the Java 8+ Lambda Functions features
 /// to pass a listener to a [CloudSimPlus] instance, by means of the
-/// [CloudSimPlus#addOnSimulationPauseListener(EventListener)] method.
+/// [SimulationListeners#addOnSimulationPause(EventListener)] method.
 /// However, the same feature can be used for Java 7 passing an anonymous class
 /// that implements `EventListener<EventInfo>`.
 ///
@@ -66,7 +67,7 @@ import java.util.List;
 /// @since CloudSim Plus 1.0
 ///
 /// @see CloudSimPlus#pause(double)
-/// @see CloudSimPlus#addOnSimulationPauseListener(EventListener)
+/// @see SimulationListeners#addOnSimulationPause(EventListener)
 /// @see EventListener
 public class PauseSimulationAtGivenTimeExample2 {
     /// The interval in which the Datacenter will schedule events.
@@ -144,7 +145,7 @@ public class PauseSimulationAtGivenTimeExample2 {
         /// Realise that it is being used Java 8 Lambda Expressions to define a Listener
         /// that will be executed only when a simulation event happens.
         /// See the [#pauseSimulationAtSpecificTime(SimEvent)] method for more details.
-        this.simulation.addOnEventProcessingListener(this::pauseSimulationAtSpecificTime);
+        this.simulation.listeners().addOnEventProcessing(this::pauseSimulationAtSpecificTime);
 
         /*
         * Sets a Listener that will be notified when the simulation is paused.
@@ -152,7 +153,7 @@ public class PauseSimulationAtGivenTimeExample2 {
         * that will be executed only when the simulation is paused.
         * */
         this.simulation
-            .addOnSimulationPauseListener(this::printCloudletsFinishedSoFarAndResumeSimulation);
+            .listeners().addOnSimulationPause(this::printCloudletsFinishedSoFarAndResumeSimulation);
 
         /* Starts the simulation and waits all cloudlets to be executed. */
         this.simulation.start();
