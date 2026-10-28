@@ -110,7 +110,7 @@ public class VmBootTimeAndOverheadExample {
         vmList = createVms();
         cloudletList = createCloudlets();
         broker0.submitVmList(vmList);
-        vmList.getFirst().addOnUpdateProcessingListener(this::updateVmProcessingListener);
+        vmList.getFirst().listeners().addOnUpdateProcessing(this::updateVmProcessingListener);
         broker0.submitCloudletList(cloudletList);
 
         simulation.start();

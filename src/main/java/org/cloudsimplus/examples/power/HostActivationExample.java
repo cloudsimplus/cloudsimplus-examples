@@ -148,13 +148,13 @@ public class HostActivationExample {
         datacenter0 = createDatacenter();
 
         /*After Host 1 is shutdown, send new VMs to request it to startup again.*/
-        datacenter0.getHost(1).addOnShutdownListener(this::hostShutdownListener);
+        datacenter0.getHost(1).listeners().addOnShutdown(this::hostShutdownListener);
         broker0 = createBroker();
 
         vmList = new ArrayList<>(MAX_VMS);
         cloudletList = new ArrayList<>(MAX_VMS);
         createAndSubmitVmsAndCloudlets(MIN_VMS);
-        simulation.addOnClockTickListener(this::clockTickListener);
+        simulation.listeners().addOnClockTick(this::clockTickListener);
 
         simulation.start();
 
@@ -179,7 +179,7 @@ public class HostActivationExample {
             simulation.clockStr(), createVmList.size(), host.getId(), createVmList);
 
         //Ensure the listener is fired only once.
-        host.removeOnShutdownListener(info.getListener());
+        host.listeners().removeOnShutdown(info.getListener());
     }
 
     private void printHostsUpTime() {

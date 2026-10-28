@@ -42,6 +42,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.cloudlets.CloudletListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ import java.util.List;
 /// the a Cloudlet finishes its execution to then request
 /// the creation of a new Cloudlet. It uses the Java 8+ Lambda Functions features
 /// to pass a listener to the mentioned Cloudlet, by means of the
-/// [Cloudlet#addOnFinishListener(EventListener)] method.
+/// [CloudletListeners#addOnFinish(EventListener)] method.
 ///
 /// @author Manoel Campos da Silva Filho
 /// @since CloudSim Plus 2.2.0
@@ -145,7 +146,7 @@ public class CreateCloudletAfterLastFinishedOne {
         cloudletList.add(cloudlet);
 
         if(cloudletList.size() < CLOUDLETS){
-            cloudlet.addOnFinishListener(this::cloudletFinishListener);
+            cloudlet.listeners().addOnFinish(this::cloudletFinishListener);
         }
 
         broker.submitCloudlet(cloudlet);

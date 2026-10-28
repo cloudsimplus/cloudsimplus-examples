@@ -43,6 +43,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +74,7 @@ import java.util.List;
 /// to set the scheduling interval. Check the method documentation for more details.
 /// This example uses the CloudSim Plus Listener features to enable your simulation
 /// to be notified when some event happens.
-/// In this case, it's being used the [CloudSimPlus#addOnClockTickListener(EventListener)]
+/// In this case, it's being used the [SimulationListeners#addOnClockTick(EventListener)]
 /// to pass a [EventListener] object that will be notified
 /// when the simulation clock advances.
 ///
@@ -81,7 +82,7 @@ import java.util.List;
 /// that enables using Lambda Expression
 /// or method references in order to provide a [FunctionalInterface].
 /// This example uses a reference to the [#clockTickListener(EventInfo)] method
-/// as being the [EventListener] required by the [CloudSimPlus#addOnClockTickListener(EventListener)].
+/// as being the [EventListener] required by the [SimulationListeners#addOnClockTick(EventListener)].
 ///
 /// **Lambda Expressions, method references and Functional Interfaces are Java 8+ features.**
 /// If you don't know what these features are, I suggest checking out this
@@ -142,7 +143,7 @@ public class DynamicHostCreation {
         broker0.submitVmList(vmList);
         broker0.submitCloudletList(cloudletList);
 
-        simulation.addOnClockTickListener(this::clockTickListener);
+        simulation.listeners().addOnClockTick(this::clockTickListener);
         simulation.start();
 
         final var cloudletFinishedList = broker0.getCloudletFinishedList();
@@ -173,7 +174,7 @@ public class DynamicHostCreation {
 
             /* Removes the listener so that this event is fired just once.
              * This way, it's ensured the new Host, VMs and Cloudlets are created only one time. */
-            simulation.removeOnClockTickListener(info.getListener());
+            simulation.listeners().removeOnClockTick(info.getListener());
         }
     }
 

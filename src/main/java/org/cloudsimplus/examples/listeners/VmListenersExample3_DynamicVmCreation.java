@@ -42,6 +42,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.vms.VmListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ import java.util.List;
 /// is deallocated for a VM (in this case meaning that the VM has finished
 /// executing) in order to place the next VM to run inside the host.
 ///
-/// @see Vm#addOnHostRemovalListener(EventListener)
+/// @see VmListeners#addOnHostRemoval(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -208,10 +209,11 @@ public class VmListenersExample3_DynamicVmCreation {
         final int ram = 512; // vm memory (Megabyte)
         final long bw = 1000;
 
-        return VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips))
+        final var vm = VmSimple.of(id, new CoreCapacity(VM_PES_NUMBER, mips))
             .setRam(ram).setBw(bw).setSize(size)
-            .setCloudletScheduler(new CloudletSchedulerSpaceShared())
-            .addOnHostRemovalListener(this::onHostRemovalListener);
+            .setCloudletScheduler(new CloudletSchedulerSpaceShared());
+        vm.listeners().addOnHostRemoval(this::onHostRemovalListener);
+        return vm;
     }
 
     /// Creates a cloudlet with pre-defined configuration.

@@ -41,6 +41,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.cloudlets.CloudletListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +55,12 @@ import java.util.List;
 /// the first Cloudlet finishes its execution to then request
 /// the creation of new VMs and Cloudlets. It uses the Java 8+ Lambda Functions features
 /// to pass a listener to the mentioned Cloudlet, by means of the
-/// [Cloudlet#addOnFinishListener(EventListener)] method.
+/// [CloudletListeners#addOnFinish(EventListener)] method.
 ///
 /// @author Manoel Campos da Silva Filho
 /// @since CloudSim Plus 1.0
 ///
-/// @see Cloudlet#addOnFinishListener(EventListener)
+/// @see CloudletListeners#addOnFinish(EventListener)
 /// @see EventListener
 public class DynamicCreationOfVmsAndCloudletsExample {
     private final CloudSimPlus simulation;
@@ -97,7 +98,7 @@ public class DynamicCreationOfVmsAndCloudletsExample {
         /* Assigns an EventListener to be notified when the first Cloudlets finishes executing
         * and then dynamically create a new list of VMs and Cloudlets to submit to the broker.*/
         final var cloudlet0 = this.cloudletList.get(0);
-        cloudlet0.addOnFinishListener(this::submitNewVmsAndCloudletsToBroker);
+        cloudlet0.listeners().addOnFinish(this::submitNewVmsAndCloudletsToBroker);
 
         /* Starts the simulation and waits all cloudlets to be executed. */
         simulation.start();

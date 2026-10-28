@@ -48,6 +48,8 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
+import org.cloudsimplus.vms.VmListeners;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -144,7 +146,7 @@ public final class ManualMigrationExample1 {
         broker = new DatacenterBrokerSimple(simulation);
         createAndSubmitVms(broker);
         createAndSubmitCloudlets(broker);
-        simulation.addOnClockTickListener(this::clockTickListener);
+        simulation.listeners().addOnClockTick(this::clockTickListener);
 
         simulation.start();
 
@@ -165,7 +167,7 @@ public final class ManualMigrationExample1 {
     /// an arbitrary Host.
     ///
     /// @param info information about the event happened.
-    /// @see CloudSimPlus#addOnClockTickListener(EventListener)
+    /// @see SimulationListeners#addOnClockTick(EventListener)
     private void clockTickListener(EventInfo info) {
         if(!migrationRequested && info.getTime() >= 10){
             final var sourceVm = vmList.get(0);
@@ -229,14 +231,14 @@ public final class ManualMigrationExample1 {
         vmList.addAll(newVmList);
         broker.submitVmList(newVmList);
 
-        vmList.forEach(vm -> vm.addOnMigrationStartListener(this::startMigration));
+        vmList.forEach(vm -> vm.listeners().addOnMigrationStart(this::startMigration));
     }
 
     /// A listener method that is called when a VM migration starts.
     /// @param info information about the happened event
     ///
     /// @see #createAndSubmitVms(DatacenterBroker)
-    /// @see Vm#addOnMigrationFinishListener(EventListener)
+    /// @see VmListeners#addOnMigrationFinish(EventListener)
     private void startMigration(final VmHostEventInfo info) {
         final Vm vm = info.getVm();
         final Host targetHost = info.getHost();

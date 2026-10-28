@@ -105,7 +105,7 @@ public class GoogleMachineEventsExample1 {
 
         /* Sets a listener method that will be called every time a new Host becomes available during simulation runtime
         * for the second Datacenter*/
-        datacenters.get(1).addOnHostAvailableListener(this::onHostAvailableListener);
+        datacenters.get(1).listeners().addOnHostAvailable(this::onHostAvailableListener);
 
         simulation.start();
 

@@ -41,6 +41,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.vms.VmListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,8 @@ import java.util.List;
 /// notifications while the simulation is running. It also shows how to
 /// reuse the same listener object to different VMs.
 ///
-/// @see Vm#addOnHostPlacementListener(EventListener)
-/// @see Vm#addOnHostRemovalListener(EventListener)
+/// @see VmListeners#addOnHostPlacement(EventListener)
+/// @see VmListeners#addOnHostRemoval(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -169,10 +170,10 @@ public class VmListenersExample2 {
             .setCloudletScheduler(new CloudletSchedulerTimeShared());
 
         /*Adds the listener to intercept allocation of a Host to the Vm.*/
-        vm.addOnHostPlacementListener(this.onHostPlacementListener);
+        vm.listeners().addOnHostPlacement(this.onHostPlacementListener);
 
         /*Adds the listener to intercept deallocation of a Host for the Vm.*/
-        vm.addOnHostRemovalListener(this.onHostRemovalListener);
+        vm.listeners().addOnHostRemoval(this.onHostRemovalListener);
 
         return vm;
     }

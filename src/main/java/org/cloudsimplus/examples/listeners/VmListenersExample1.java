@@ -40,6 +40,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.vms.VmListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,9 @@ import java.util.List;
 /// The example uses the new Vm listeners to get these
 /// notifications while the simulation is running.
 ///
-/// @see Vm#addOnHostPlacementListener(EventListener)
-/// @see Vm#addOnHostRemovalListener(EventListener)
-/// @see Vm#addOnCreationFailureListener(EventListener)
+/// @see VmListeners#addOnHostPlacement(EventListener)
+/// @see VmListeners#addOnHostRemoval(EventListener)
+/// @see VmListeners#addOnCreationFailure(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -129,14 +130,14 @@ public class VmListenersExample1 {
         /* Sets the Listener to intercept allocation of a Host to the Vm.
          * The Listener is created using Java 8+ Lambda Expressions.
         */
-        vm0.addOnHostPlacementListener(eventInfo -> System.out.printf(
+        vm0.listeners().addOnHostPlacement(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Host %d allocated to Vm %d at time %.2f%n",
                 eventInfo.getHost().getId(), eventInfo.getVm().getId(), eventInfo.getTime()));
 
         /* Sets the listener to intercept deallocation of a Host for the Vm.
          * The Listener is created using Java 8+ Lambda Expressions.
         */
-        vm0.addOnHostRemovalListener(eventInfo -> System.out.printf(
+        vm0.listeners().addOnHostRemoval(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Vm %d moved/removed from Host %d at time %.2f%n",
                 eventInfo.getVm().getId(), eventInfo.getHost().getId(), eventInfo.getTime()));
 
@@ -144,7 +145,7 @@ public class VmListenersExample1 {
          * The Listener is created using Java 8+ Lambda Expressions.
          */
         final var vm1 = createVm(1);
-        vm1.addOnCreationFailureListener(eventInfo -> System.out.printf(
+        vm1.listeners().addOnCreationFailure(eventInfo -> System.out.printf(
                 "%n\t#EventListener: Vm %d could not be placed into any host of Datacenter %d at time %.2f due to lack of a host with enough resources.%n",
                 eventInfo.getVm().getId(), eventInfo.getDatacenter().getId(), eventInfo.getTime()));
 

@@ -42,6 +42,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelStochastic;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.cloudlets.CloudletListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ import java.util.List;
 /// The example uses the [UtilizationModelStochastic]
 /// to define that the usage of CPU, RAM and Bandwidth is random.
 ///
-/// @see Cloudlet#addOnUpdateProcessingListener(EventListener)
+/// @see CloudletListeners#addOnUpdateProcessing(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -196,8 +197,8 @@ public class CloudletListenersExample2_ResourceUsageAlongTime {
                 .setUtilizationModelCpu(cpuUtilizationModel)
                 .setUtilizationModelRam(ramUtilizationModel)
                 .setUtilizationModelBw(bwUtilizationModel)
-                .setVm(vm)
-                .addOnUpdateProcessingListener(this::onUpdateCloudletProcessingListener);
+                .setVm(vm);
+        cloudlet.listeners().addOnUpdateProcessing(this::onUpdateCloudletProcessingListener);
 
         return cloudlet;
     }

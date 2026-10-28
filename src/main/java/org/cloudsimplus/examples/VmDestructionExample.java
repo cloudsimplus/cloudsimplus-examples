@@ -131,7 +131,7 @@ public class VmDestructionExample {
          * add this event listener for each desired VM that it will work
          * transparently for any VM.
          */
-        vmList.get(1).addOnUpdateProcessingListener(this::vmProcessingUpdateListener);
+        vmList.get(1).listeners().addOnUpdateProcessing(this::vmProcessingUpdateListener);
 
         broker0.submitVmList(vmList);
         broker0.submitCloudletList(cloudletList);

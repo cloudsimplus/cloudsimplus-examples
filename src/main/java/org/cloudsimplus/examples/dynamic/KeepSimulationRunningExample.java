@@ -44,6 +44,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.core.SimulationListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ import java.util.List;
 /// to enable monitoring the simulation and dynamically creating Cloudlets and VMs at runtime.
 /// It relies on
 /// [Java 8 Method References](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html)
-/// to set a method to be called for [onClockTick events][Simulation#addOnClockTickListener(EventListener)].
+/// to set a method to be called for [onClockTick events][SimulationListeners#addOnClockTick(EventListener)].
 /// It enables getting notifications when the simulation clock advances, then creating and submitting new cloudlets.
 ///
 /// Since the simulation was set to keep waiting for new events
@@ -144,7 +145,7 @@ public class KeepSimulationRunningExample {
         broker0.submitVmList(vmList);
         broker0.submitCloudletList(cloudletList);
 
-        simulation.addOnClockTickListener(this::createDynamicCloudletAndVm);
+        simulation.listeners().addOnClockTick(this::createDynamicCloudletAndVm);
 
         simulation.start();
 

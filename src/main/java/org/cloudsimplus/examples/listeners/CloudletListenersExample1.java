@@ -42,6 +42,7 @@ import org.cloudsimplus.utilizationmodels.UtilizationModelDynamic;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.cloudlets.CloudletListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ import java.util.List;
 /// The example uses the new Cloudlet listeners to get these
 /// notifications while the simulation is running.
 ///
-/// @see Cloudlet#addOnFinishListener(EventListener)
+/// @see CloudletListeners#addOnFinish(EventListener)
 /// @see EventListener
 ///
 /// @author Manoel Campos da Silva Filho
@@ -190,9 +191,10 @@ public class CloudletListenersExample1 {
                     .setUtilizationModelCpu(new UtilizationModelFull())
                     .setUtilizationModelBw(utilizationModel)
                     .setUtilizationModelRam(utilizationModel)
-                    .setVm(vm)
-                    .addOnStartListener(this::onCloudletStartListener)
-                    .addOnFinishListener(this::onCloudletFinishListener);
+                    .setVm(vm);
+        cloudlet.listeners()
+                .addOnStart(this::onCloudletStartListener)
+                .addOnFinish(this::onCloudletFinishListener);
         return cloudlet;
     }
 

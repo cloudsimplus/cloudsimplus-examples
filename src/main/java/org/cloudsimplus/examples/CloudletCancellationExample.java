@@ -117,7 +117,7 @@ public class CloudletCancellationExample {
         /// In order to make this work, the [Datacenter#getSchedulingInterval()]
         /// most be set.
         /// See [#SCHEDULING_INTERVAL] for more details.
-        cloudletList.get(0).addOnUpdateProcessingListener(this::cancelCloudletIfHalfExecuted);
+        cloudletList.get(0).listeners().addOnUpdateProcessing(this::cancelCloudletIfHalfExecuted);
 
         broker0.submitVmList(vmList);
         broker0.submitCloudletList(cloudletList);

@@ -42,6 +42,7 @@ import org.cloudsimplus.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
+import org.cloudsimplus.cloudlets.CloudletListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ import java.util.List;
 /// the second Cloudlet reaches 50% of its execution to then request
 /// the simulation termination. This example uses the Java 8+ Lambda Functions features
 /// to pass a listener to the mentioned Cloudlet, by means of the
-/// [Cloudlet#addOnUpdateProcessingListener(EventListener)] method.
+/// [CloudletListeners#addOnUpdateProcessing(EventListener)] method.
 /// However, the same feature can be used for Java 7 passing an anonymous class
 /// that implements `EventListener<CloudletVmEventInfo>`.
 ///
@@ -63,7 +64,7 @@ import java.util.List;
 /// @since CloudSim Plus 1.0
 ///
 /// @see CloudSimPlus#terminate()
-/// @see Cloudlet#addOnUpdateProcessingListener(EventListener)
+/// @see CloudletListeners#addOnUpdateProcessing(EventListener)
 /// @see EventListener
 public class TerminateSimulationAtGivenConditionExample {
     private final CloudSimPlus simulation;
@@ -107,7 +108,7 @@ public class TerminateSimulationAtGivenConditionExample {
         }
 
         final var lastCloudlet = this.cloudletList.get(this.cloudletList.size()-1);
-        lastCloudlet.addOnUpdateProcessingListener(this::onClouletProcessingUpdate);
+        lastCloudlet.listeners().addOnUpdateProcessing(this::onClouletProcessingUpdate);
 
         broker0.submitCloudletList(cloudletList);
 
