@@ -219,9 +219,9 @@ public class MinTimeBetweenEventsExample {
         broker.getCloudletSubmittedList().sort(Comparator.comparingDouble(Cloudlet::getStartTime));
         final var builder = new CloudletsTableBuilder(broker.getCloudletSubmittedList());
         builder
-            .column(9,  this::formatColumn)
             .column(10, this::formatColumn)
             .column(11, this::formatColumn)
+            .column(12, this::formatColumn)
             .build();
 
         final int notFinished = broker.getCloudletCreatedList().size() - broker.getCloudletFinishedList().size();
