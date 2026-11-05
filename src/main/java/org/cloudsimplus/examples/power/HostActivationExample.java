@@ -184,7 +184,7 @@ public class HostActivationExample {
 
     private void printHostsUpTime() {
         System.out.printf("%nHosts' up time (total time each Host was powered on)%n");
-        datacenter0.getHostList().stream().filter(Host::hasEverStarted).forEach(host -> {
+        datacenter0.getHostList().stream().filter(Host::hasStarted).forEach(host -> {
             final PowerModelHost powerModel = host.getPowerModel();
             System.out.printf("  Host %2d%n", host.getId());
 
