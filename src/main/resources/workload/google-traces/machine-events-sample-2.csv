@@ -1,0 +1,6 @@
+#Time stamp (microseconds),Machine ID,Event type (0-ADD 1-REMOVE 2-UPDATE),Platform ID,capacity:CPU (%),capacity:memory (%)
+0,0,0,LGzk1Or/8Ildj2+Lqv0U82NLoni8+J/Yy0U=,1,1
+0,1,0,LGzk1Or/8Ildj2+Lqv0U82NLoni8+J/Yy0U=,1,1
+0,2,0,LGzk1Or/8Ildj2+Lqv0U82NLoni8+J/Yy0U=,1,1
+0,3,0,LGzk1Or/8Ildj2+Lqv0U82NLoni8+J/Yy0U=,1,1
+40000000,1,2,LGzk1Or/8Ildj2+Lqv0U82NLoni8+J/Yy0U=,1,0.75

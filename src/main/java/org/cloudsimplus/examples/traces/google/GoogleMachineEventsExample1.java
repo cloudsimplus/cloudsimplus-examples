@@ -41,7 +41,6 @@ import org.cloudsimplus.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudsimplus.traces.TraceReaderAbstract;
 import org.cloudsimplus.traces.google.GoogleMachineEventsTraceReader;
 import org.cloudsimplus.traces.google.MachineEvent;
-import org.cloudsimplus.traces.google.MachineEventType;
 import org.cloudsimplus.utilizationmodels.UtilizationModelFull;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
@@ -62,15 +61,16 @@ import java.util.function.Function;
 /// as specified in the trace. CloudSim Plus accordingly process such events. You
 /// can confirm in the logs that Host 3 is added and removed multiple times.
 ///
+/// The trace also has an event that changes the capacity of Host 20,
+/// which ends up with more CPU cores than the others.
+///
 /// Check important details at [TraceReaderAbstract]. To better understand
 /// the structure of trace files, check the google-cluster-data-samples.xlsx
 /// spreadsheet inside the docs dir.
 ///
 /// @author Manoel Campos da Silva Filho
 /// @since CloudSim Plus 4.0.0
-///
-/// TODO [MachineEventType#UPDATE] events are not being processed yet.
-/// See https://github.com/cloudsimplus/cloudsimplus/issues/590
+/// @see GoogleMachineAndTaskEventsExample1
 public class GoogleMachineEventsExample1 {
     private static final String TRACE_FILENAME = "workload/google-traces/machine-events-sample-1.csv";
     private static final int HOST_BW = 10;
