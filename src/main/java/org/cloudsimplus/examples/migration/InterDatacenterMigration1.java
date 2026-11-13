@@ -323,9 +323,12 @@ public final class InterDatacenterMigration1 {
 
     public void createAndSubmitCloudlets(final DatacenterBroker broker) {
         final var cloudletList = new ArrayList<Cloudlet>(VM_CORES.length);
-        final UtilizationModelDynamic um = createCpuUtilizationModel(CLOUDLET_INITIAL_CPU_PERCENTAGE, 1);
         for(final var vm: broker.getVmWaitingList()){
-            final var cloudlet = createCloudlet(vm, um);
+            /* Each Cloudlet needs its own model, since it increases the CPU usage along the time.
+             * Such a model is stateful: it computes each utilization from the previous one and stores it.
+             * If Cloudlets shared it, a request from one Cloudlet would change the utilization the others get,
+             * giving inaccurate results (CloudSim Plus throws an exception in such a case). */
+            final var cloudlet = createCloudlet(vm, createCpuUtilizationModel(CLOUDLET_INITIAL_CPU_PERCENTAGE, 1));
             cloudletList.add(cloudlet);
         }
 
