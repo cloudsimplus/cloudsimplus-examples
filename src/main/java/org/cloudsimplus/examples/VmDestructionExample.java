@@ -209,15 +209,6 @@ public class VmDestructionExample {
     private List<Cloudlet> createCloudlets() {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
         final var utilization = new UtilizationModelFull();
-
-        /*Creates a utilization model that enables increasing resource usage over time.
-        * It is used to define the CPU usage of VMs dynamically.*/
-        final var dynamicUtilization = new UtilizationModelDynamic();
-
-        /// Sets a [Function] that enables the utilization model to increment resource usage by 10% over time.
-        /// This function is defined using a Lambda Expression.
-        dynamicUtilization.setUtilizationUpdateFunction(um -> um.getUtilization() + um.getTimeSpan()*0.1);
-
         for (int i = 0; i < CLOUDLETS; i++) {
             final var cloudlet =
                 CloudletSimple.of(i, CLOUDLET_LENGTH, CLOUDLET_CORES)
@@ -225,10 +216,23 @@ public class VmDestructionExample {
                     .setOutputSize(1024)
                     .setUtilizationModelRam(utilization)
                     .setUtilizationModelBw(utilization)
-                    .setUtilizationModelCpu(dynamicUtilization);
+                    .setUtilizationModelCpu(createDynamicUtilizationModel());
             list.add(cloudlet);
         }
 
         return list;
+    }
+
+    /// Creates a utilization model that enables increasing resource usage over time.
+    /// It is used to define the CPU usage of Cloudlets dynamically.
+    ///
+    /// Since the model has an update function, it's stateful: it computes each utilization
+    /// from the previous one and stores it. So each Cloudlet needs its own instance.
+    /// If many Cloudlets shared it, a request from one Cloudlet would change the utilization
+    /// the others get, giving inaccurate results (CloudSim Plus throws an exception in such a case).
+    private UtilizationModelDynamic createDynamicUtilizationModel() {
+        /// Sets a [Function] that enables the utilization model to increment resource usage by 10% over time.
+        /// This function is defined using a Lambda Expression.
+        return new UtilizationModelDynamic().setUtilizationUpdateFunction(um -> um.getUtilization() + um.getTimeSpan()*0.1);
     }
 }

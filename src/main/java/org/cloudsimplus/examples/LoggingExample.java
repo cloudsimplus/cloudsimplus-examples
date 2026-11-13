@@ -49,6 +49,7 @@ import org.cloudsimplus.vms.VmSimple;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
 /// An example showing how CloudSim Plus
 /// is flexible in managing logs of different entities.
@@ -109,14 +110,14 @@ public class LoggingExample {
         broker0.submitVmList(vmList);
 
         //Creates Cloudlets that uses 5% of all resources all the time
-        cloudletList = createCloudlets(new UtilizationModelDynamic(0.05));
+        cloudletList = createCloudlets(() -> new UtilizationModelDynamic(0.05));
 
         //Creates Cloudlets that increase resource utilization along the time
-        cloudletList.addAll(createCloudlets(createDynamicUtilizationModel()));
+        cloudletList.addAll(createCloudlets(this::createDynamicUtilizationModel));
 
         //Creates Cloudlets that increase resource utilization along the time,
         //but are submitted just after some delay.
-        cloudletList.addAll(createCloudlets(createDynamicUtilizationModel(), 10));
+        cloudletList.addAll(createCloudlets(this::createDynamicUtilizationModel, 10));
 
         Comparator<Cloudlet> hostComparator = Comparator.comparingLong(c -> c.getVm().getHost().getId());
         cloudletList.sort(hostComparator.thenComparingLong(c -> c.getVm().getId()).thenComparingLong(Identifiable::getId));
@@ -195,19 +196,25 @@ public class LoggingExample {
     }
 
     /// Creates a list of Cloudlets.
-    /// @param utilizationModel the UtilizationModel to be used for all Cloudlet resources (CPU, RAM and BW).
-    private List<Cloudlet> createCloudlets(final UtilizationModel utilizationModel) {
-        return createCloudlets(utilizationModel, 0);
+    /// @param utilizationModelSupplier creates the UtilizationModel for all resources (CPU, RAM and BW) of each Cloudlet
+    private List<Cloudlet> createCloudlets(final Supplier<UtilizationModel> utilizationModelSupplier) {
+        return createCloudlets(utilizationModelSupplier, 0);
     }
 
     /// Creates a list of Cloudlets.
-    /// @param utilizationModel the UtilizationModel to be used for all Cloudlet resources (CPU, RAM and BW).
+    /// Each Cloudlet gets its own UtilizationModel, since some of them are stateful,
+    /// such as a [UtilizationModelDynamic] that increases the utilization along the time:
+    /// it computes each utilization from the previous one and stores it.
+    /// If many Cloudlets shared such a model, a request from one Cloudlet would change
+    /// the utilization the others get, giving inaccurate results.
+    /// That's why CloudSim Plus throws an exception when a stateful model is shared.
+    /// @param utilizationModelSupplier creates the UtilizationModel for all resources (CPU, RAM and BW) of each Cloudlet
     /// @param submissionDelay the delay to submit Cloudlets to the broker
-    private List<Cloudlet> createCloudlets(final UtilizationModel utilizationModel, final double submissionDelay) {
+    private List<Cloudlet> createCloudlets(final Supplier<UtilizationModel> utilizationModelSupplier, final double submissionDelay) {
         final var list = new ArrayList<Cloudlet>(CLOUDLETS);
 
         for (int i = 0; i < CLOUDLETS; i++) {
-            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModel);
+            final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES, utilizationModelSupplier.get());
             cloudlet.setSubmissionDelay(submissionDelay);
             cloudlet.setSizes(1024);
             list.add(cloudlet);

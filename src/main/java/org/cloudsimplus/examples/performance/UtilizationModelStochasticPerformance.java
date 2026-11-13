@@ -106,18 +106,18 @@ public class UtilizationModelStochasticPerformance {
     /// Defines if one [UtilizationModel] must be instantiated
     /// for each Cloudlet or a single instance used by all Cloudlets.
     ///
-    /// Realize that if you use a single [UtilizationModel] for all
-    /// Cloudlets, the resource utilization will usually be the same
-    /// for all of them.
-    /// Using the [UtilizationModelStochastic], if two Cloudlets
-    /// consecutively request the current resource utilization for the same time,
-    /// it will be returned the same value. If they send consecutive requests for different times,
-    /// probably it will be returned distinct randomly generated values.
+    /// A single [UtilizationModelStochastic] can only be shared by all Cloudlets
+    /// if [#ALWAYS_GENERATE_NEW_RANDOM_UTILIZATION] is true.
+    /// Otherwise, the model is stateful: it stores the last utilization generated and returns it
+    /// to any Cloudlet requesting the utilization for the same time.
+    /// So Cloudlets sharing it would get the same random values, making their usage fully correlated.
+    /// That's why CloudSim Plus throws an exception when a stateful model is shared.
+    /// When using multiple models, each one gets a distinct seed, so that Cloudlets get different values.
     private static final boolean MULTIPLE_UTILIZATION_MODELS = false;
 
     /// See [UtilizationModelStochastic#isAlwaysGenNewRandUtilization()]
     /// for details.
-    private static final boolean ALWAYS_GENERATE_NEW_RANDOM_UTILIZATION = false;
+    private static final boolean ALWAYS_GENERATE_NEW_RANDOM_UTILIZATION = true;
 
     /// Indicates if the [UtilizationModelStochastic] instances
     /// will keep a map that stores the resource utilization along simulation
@@ -219,7 +219,7 @@ public class UtilizationModelStochasticPerformance {
         final var newCloudletList = new ArrayList<Cloudlet>(CLOUDLETS);
         for (int i = 0; i < CLOUDLETS; i++) {
             final var cloudlet = CloudletSimple.of(CLOUDLET_LENGTH, CLOUDLET_CORES);
-            this.um = MULTIPLE_UTILIZATION_MODELS || this.um == null ? new UtilizationModelStochastic(SEED) : this.um;
+            this.um = MULTIPLE_UTILIZATION_MODELS || this.um == null ? new UtilizationModelStochastic(SEED + i) : this.um;
             this.um
                 .setHistoryEnabled(STORE_CLOUDLETS_CPU_UTILIZATION_HISTORY)
                 .setAlwaysGenNewRandUtilization(ALWAYS_GENERATE_NEW_RANDOM_UTILIZATION);
