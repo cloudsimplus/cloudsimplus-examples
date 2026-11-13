@@ -156,18 +156,19 @@ public class VmBootTimeAndOverheadExample {
 
     /// Creates a list of VMs setting a [BootModel]
     /// to indicate how the VM will use CPU and RAM during the boot process.
+    /// Since a [BootModel] is immutable, a single instance is shared by all VMs.
+    /// Its utilization models can be shared too, since they have a fixed utilization.
     /// @see BootModel#BootModel(UtilizationModel, UtilizationModel)
     private List<Vm> createVms() {
         final var vmList = new ArrayList<Vm>(VMS);
-        final var bootModelCpu = new UtilizationModelDynamic(0.5);
-        final var bootModelRam = new UtilizationModelDynamic(0.3);
+        final var bootModel = new BootModel(new UtilizationModelDynamic(0.5), new UtilizationModelDynamic(0.3));
         for (int i = 0; i < VMS; i++) {
             //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
             final var vm = VmSimple.of(VM_CAPACITY);
             vm.setRam(512)
               .setBw(1000)
               .setSize(10_000)
-              .setBootModel(new BootModel(bootModelCpu, bootModelRam))
+              .setBootModel(bootModel)
               .setStartupDelay(VM_BOOT_DELAY*i)
               .setShutDownDelay(VM_SHUTDOWN_DELAY);
             vmList.add(vm);
